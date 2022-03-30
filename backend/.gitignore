@@ -1,0 +1,12 @@
+node_modules
+*.idea
+*.zip
+*.rar
+*.docx
+*.pdf
+*.csv
+/package-lock.json
+false
+.env
+*.7z
+/yarn.lock
