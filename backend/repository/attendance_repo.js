@@ -1,18 +1,18 @@
-const User_Model = require('../models/user_schema');
+const Attendance_Model = require('../models/attendance_schema');
 
 
 
-exports.create = (user)=>{
-    return User_Model.create(user);
+exports.create = (attendance)=>{
+    return Attendance_Model.create(attendance);
 }
 
 exports.find = (db_query, isSingle, isLeanNotRequired, select, sort, limit, skip)=>{
     let query = null
     if(isSingle){
-        query = User_Model.findOne(db_query);
+        query = Attendance_Model.findOne(db_query);
     }
     else{
-        query = User_Model.find(db_query);
+        query = Attendance_Model.find(db_query);
     }
     // if(select){
         query.select(select || {Password: false, Salt: false});
@@ -33,17 +33,17 @@ exports.find = (db_query, isSingle, isLeanNotRequired, select, sort, limit, skip
 }
 
 exports.updateOne = (query, update) =>{
-    return User_Model.updateOne(query, update);
+    return Attendance_Model.updateOne(query, update);
 }
 
 exports.updateMany = (query, update) =>{
-    return User_Model.updateMany(query, update);
+    return Attendance_Model.updateMany(query, update);
 }
 
 exports.count = (query) =>{
-    return User_Model.count(query);
+    return Attendance_Model.count(query);
 }
 
 exports.aggregate = (pipeline) =>{
-    return User_Model.aggregate(pipeline);
+    return Attendance_Model.aggregate(pipeline);
 }
