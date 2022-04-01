@@ -7,8 +7,10 @@ let routes = require('./routes/routes');
 
 if (process.env.NODE_ENV !== "production") {
   require('dotenv').config()
+  if(process.env.SEED && process.env.SEED === 'true'){
+    require('./config/seed-data');
+  }
 }
-
 app.use(express.json());
 app.use('/api', routes);
 

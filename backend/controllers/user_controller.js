@@ -27,6 +27,7 @@ module.exports.login = async (req, res) => {
             res.send({ data: user_to_send, status: true, token: assignJwt, message: 'User Login Successfully!' });
         }
     } catch (e) {
+        console.log("---------------")
         res.send({status : false , message : e.message});
     }
 }
