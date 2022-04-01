@@ -31,13 +31,19 @@ export default function UserRegister() {
   const [open, setOpen] = React.useState(false);
   const [message, SetMessage ] = React.useState({value: "", type:""});
   const [form, setForm] = React.useState({FirstName: "", LastName:"", Password:"", Email:"", Login_ID:"", Designation:""  });
+  const [isValid, setIsValid] = React.useState(false);
 
+  const emailRegex = /\S+@\S+\.\S+/;
 
   const handleClick = (event) => {
+
+    
+    
     setForm({...form  , [event.target.name] : event.target.value})
+
   };
 
-  const   handleClose = (event, reason) => {
+  const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -58,6 +64,11 @@ export default function UserRegister() {
     
     
     if(form.FirstName && form.LastName && form.Password && form.Email && form.Login_ID){
+
+      const email = form.Email;
+      if (emailRegex.test(email)) {
+        setIsValid(true);
+        
       const data = {
         FirstName: form.FirstName,
         LastName: form.LastName,
@@ -65,6 +76,7 @@ export default function UserRegister() {
         Email: form.Email,
         Login_ID: form.Login_ID
       }
+      
       const api = '/api/register'; 
       const token = localStorage.getItem('token');
       
@@ -79,10 +91,17 @@ export default function UserRegister() {
   .catch(function (error) {
     console.log(error);
   });
+
+} else {
+  setIsValid(false);
+  SetMessage({value:"'Please enter a valid email!'", type:"error"})
+}
+
 }else{
   SetMessage({value:"Please Enter Required fields", type:"error"})
 
 }
+
 
   };
 
