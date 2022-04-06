@@ -16,12 +16,10 @@ const UserSchema = new Schema({
   MiddleName: String,
   EmployeeID: String,
   NationalID: String,
-  CardNumber: { type: String },
   Designation: { type: String},
   Address: { type: String},
   Login_ID: {type: String , required: true},
   Email: { type: String, required: true},
-  ContactNumbers: [String],
   RoleTitle: [String],
   CreationDetails: ActionDetails,
   Salt: { type: String, required: true, default: uuid },
@@ -34,12 +32,11 @@ const UserSchema = new Schema({
   Password_ResetToken: String,
   LastLoginOn: Date,
   LastLoginFromIP: String,
-  WareHouse: [
-    {
-      Branch : {ID : Schema.ObjectId, Name : String},
-      WareHouse : {ID : Schema.ObjectId, Name : String}
-    }
-  ],
+  DateOfBirth: Date,
+  WorkingHours: Number,
+  DateOfJoining: Date,
+  PhoneNumber: Number,
+  NIC: Number,
   Organization : {ID : Schema.ObjectId, Name : String},
   UserDetails : [{Branch : {ID : Schema.Types.ObjectId, Name : String}, Role : {ID : Schema.Types.ObjectId, Title : String},Department : {ID : Schema.Types.ObjectId, Name : String}}],
   Login_JWT_Token_ID : { type: String},
