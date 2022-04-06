@@ -51,4 +51,14 @@ module.exports.register = (req, res) => {
         })
 }
 
+module.exports.getUsers = (req, res) => {
+    user_repo.find()
+        .then(user => {
+            res.send({ Status: true, data: user })
+        })
+        .catch(error => {
+            res.send({ Status: false, message: error.message })
+        })
+}
+
 

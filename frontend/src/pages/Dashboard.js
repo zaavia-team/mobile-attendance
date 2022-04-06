@@ -97,7 +97,7 @@ function DashboardContent({setLoggedin}) {
 
   return (
 <>
-  <ThemeProvider theme={mdTheme}>
+ 
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
         <AppBar position="absolute" open={open} color="secondary">
@@ -125,7 +125,7 @@ function DashboardContent({setLoggedin}) {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Dashboard
+              ATTENDENCE
             </Typography>
             <Button onClick={handleLogout} color="inherit">Logout</Button>
           </Toolbar>
@@ -181,7 +181,7 @@ function DashboardContent({setLoggedin}) {
           </Container>
         </Box>
       </Box>
-    </ThemeProvider>
+   
 
 </>
   );
