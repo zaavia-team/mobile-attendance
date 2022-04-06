@@ -1,8 +1,11 @@
-import { Table, TableBody, TableCell, TableHead, TableRow, makeStyles, Button } from "@material-ui/core";
+import { Table, TableBody, TableCell, TableHead, TableRow, makeStyles, Button, Typography } from "@material-ui/core";
 import {Link} from 'react-router-dom';
 import {useState, useEffect} from 'react';
 import { Box } from "@mui/system";
+
 import axios from 'axios';
+
+
 
 
 
@@ -23,28 +26,29 @@ const useStyles = makeStyles ({
 })
 
 
-
 const AllUsers = () =>{
-
+    
     const classes = useStyles();
-
+    
     const [users, setUsers] = useState([]);
-
+    
+    
     useEffect(() => {
         axios.get('/api/users')
-            .then(function (response) {
-               setUsers(response.data)
-            })
-            .catch(function (error) {
-                // handle error
-                console.log(error);
-            })
-            .then(function () {
-                // always executed
-            });
+        .then(function (response) {
+            setUsers(response.data)
+        })
+        .catch(function (error) {
+            // handle error
+            console.log(error);
+        })
+        .then(function () {
+            // always executed
+        });
         
     }, [])
-
+    
+  
    console.log(users, "<-------")
 
 
@@ -73,21 +77,16 @@ const AllUsers = () =>{
                          
                      
                          <TableCell>
-                         {/* <Box display="flex" alignItems="center">
-                                <Button  sx={{
-                                    marginLeft : "15px"
-                                    }}
-                                    variant='contained'
-                                    color='warning'
-                                    
-                                    disableElevation
-                                    
+                         <Typography color="textSecondary" variant="body1" fontWeight="400">
+                                <Button
+                                  variant="contained"
+                                  color="secondary"
+                                //   startIcon={<EditIcon />}
+                                //   onClick={() => openModaledit(user._id)}
                                 >
-                                    Details
-                                </Button >
-
-
-                              </Box> */}
+                                  Edit
+                                </Button>
+                                </Typography>
                          </TableCell>
                          </TableRow>
                     ))
