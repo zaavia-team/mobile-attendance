@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 
 module.exports.login = async (req, res) => {
     console.log('sgasdag')
+    console.log(req.body,"req")
     try {
         const login_id = req.body.Login_ID;
         const password = req.body.Password;
@@ -12,12 +13,18 @@ module.exports.login = async (req, res) => {
         console.log('sgsahfdsk', user)
 
         if (!user) {
+        console.log('sg', user)
+
             res.send({ status: false, message: 'User id or password does not match!' });
         }
         else if (!user.authenticate(password)) {
+        console.log('ff', user)
+
             res.send({ status: false, message: 'User id or password does not match!' });
         }
         else {
+        console.log('fgb', user)
+
             const token = uuid();
             const assignJwt = jwt.sign({UID: token, expiresIn: "4h"}, process.env.JWT_SECRET);
             user_repo.updateOne({ _id: user._id }, { $set: { Login_JWT_Token_ID: token } }).then(upd => {
