@@ -12,6 +12,7 @@ if (process.env.NODE_ENV !== "production") {
   }
 }
 app.use(express.json());
+app.use(express.urlencoded());
 app.use('/api', routes);
 
 // Change the 404 message modifing the middleware

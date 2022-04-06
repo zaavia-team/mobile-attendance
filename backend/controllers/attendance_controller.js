@@ -5,16 +5,25 @@ module.exports.attendance = async (req, res) => {
     const DateStr = new Date(req.body.Date);
     const TransactionType = req.body.TransactionType;
     try {
-        console.log('sgsahfdsk' , req.body)
-        if(TransactionType == 'i am In') {
+        console.log('sgsahfdsk', req.body);
+        if (TransactionType == 'i am In') {
+            const findAtt = await attendance_repo.find({
+                "Date.Month": DateStr.getMonth(),
+                "Date.Day": DateStr.getDate(),
+                "Date.Year": DateStr.getFullYear(),
+                TakenIn: { $exists: false },
+                UserID: req.user._id
+            }, true)
+            console.log("findAtt ", findAtt)
+            if (findAtt) return res.send({ status: false, message: "User Already Sign In", Data: findAtt })
             attendance_repo.create({
                 UserID: req.user._id,
                 TransactionType: TransactionType,
-                TakenIn:DateStr,
+                TakenIn: DateStr,
                 Date: {
                     Month: DateStr.getMonth(),
                     Day: DateStr.getDate(),
-                    Year: DateStr.getFullYear() ,
+                    Year: DateStr.getFullYear(),
                 },
                 UserName: req.user.Login_ID,
                 ActionDetails: {
@@ -24,40 +33,41 @@ module.exports.attendance = async (req, res) => {
                     ActionTakenByLoginID: req.user.Login_ID,
                 },
             })
-            .then(attendance => {
-                console.log("attendance " , attendance)
-                res.send({ status: true, Data: attendance })
-            })
-            .catch(error => {
-                console.log(error)
-                res.send({status:false, err:error.message})
-            })
+                .then(attendance => {
+                    console.log("attendance ", attendance)
+                    res.send({ status: true, message : "Sign In Succesfully", Data: attendance })
+                })
+                .catch(error => {
+                    console.log(error)
+                    res.send({ status: false,message : error.message || "Server Error on Sign In", err: error.message })
+                })
 
         }
-        if(TransactionType == 'i am Out'){
-            let query = { 
-                TakenIn : { $exists: true },
+        if (TransactionType == 'i am Out') {
+            let query = {
+                TakenIn: { $exists: true },
                 "Date.Month": DateStr.getMonth(),
-                "Date.Day" : DateStr.getDate(),
-                "Date.Year" : DateStr.getFullYear()
+                "Date.Day": DateStr.getDate(),
+                "Date.Year": DateStr.getFullYear(),
+                "UserID": req.user._id,
             };
             let updatequery = {
-                $set: {TakenOut: DateStr }
+                $set: { TakenOut: DateStr }
             }
-            attendance_repo.updateOne(query,updatequery)
-            .then(updateattendance => {
-                console.log(updateattendance)
-                if(updateattendance.modifiedCount > 0){
-                    res.send({ status: true, message : "Sign Out Succesfully" })
-                }
-                else {
-                    res.send({ status: false, message : "Please Sign In Before Sign Out" })
-                }
-            })
-            .catch(error => {
-                console.log(error)
-                res.send({status:false, err:error.message})
-            })
+            attendance_repo.updateOne(query, updatequery)
+                .then(updateattendance => {
+                    console.log(updateattendance)
+                    if (updateattendance.modifiedCount > 0) {
+                        res.send({ status: true, message: "Sign Out Succesfully" })
+                    }
+                    else {
+                        res.send({ status: false, message: "Please Sign In Before Sign Out" })
+                    }
+                })
+                .catch(error => {
+                    console.log(error)
+                    res.send({ status: false, message: error.message })
+                })
         }
 
     } catch (e) {
