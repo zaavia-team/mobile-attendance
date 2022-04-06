@@ -22,7 +22,8 @@ import Modal from '@mui/material/Modal';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import axios from 'axios';
 import AllUsers from '../components/AllUsers';
-
+import { Table, TableBody, TableCell, TableHead, TableRow, makeStyles } from "@material-ui/core";
+import {useState, useEffect} from 'react';
 
 
 
@@ -30,7 +31,23 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
+
+
 const theme = createTheme();
+
+const useStyles = makeStyles ({
+  table: {
+      width :"100%",
+      margin: ' 50px 0 0 50px'
+  },
+  thead:{
+      '& > *' :{
+          background : 'rgb(156 39 176)'  ,
+          color: '#fff',
+          fontsize: 20
+      }
+  }
+})
 
 export default function UserRegister() {
 
@@ -44,10 +61,7 @@ export default function UserRegister() {
   const emailRegex = /\S+@\S+\.\S+/;
 
   const handleClick = (event) => {
-
-
     setForm({ ...form, [event.target.name]: event.target.value })
-
   };
 
   const handleClose = (event, reason) => {
@@ -60,6 +74,26 @@ export default function UserRegister() {
 
   };
 
+  const classes = useStyles();
+    
+  const [users, setUsers] = useState([]);
+  
+  
+  useEffect(() => {
+      axios.get('/api/users')
+      .then(function (response) {
+          setUsers(response.data)
+      })
+      .catch(function (error) {
+          // handle error
+          console.log(error);
+      })
+      .then(function () {
+          // always executed
+      });
+      
+  }, [])
+
 
 
 
@@ -67,7 +101,6 @@ export default function UserRegister() {
     setOpen(true);
 
     event.preventDefault();
-
 
 
     if (form.FirstName && form.LastName && form.Password && form.Email && form.Login_ID && form.Designation && form.DateOfBirth && form.WorkingHours && form.DateOfJoining  && form.PhoneNumber && form.NIC) {
@@ -133,6 +166,10 @@ export default function UserRegister() {
 
   const handleOpen = () => setOpenModal(true);
   const handleclose = () => setOpenModal(false);
+
+  const openModaledit =(id)=>{
+    handleOpen()
+  }
 
   return (
     <ThemeProvider theme={theme} >
@@ -334,7 +371,50 @@ export default function UserRegister() {
           </Container>
         </Box>
       </Modal>
-      <AllUsers />
+
+      {/* ---------------------- All Users ----------------------- */}
+      <Table className = {classes.table}>
+            <TableHead>
+                <TableRow className = {classes.thead}>
+                    <TableCell>First Name</TableCell>
+                    <TableCell>Last Name</TableCell>
+                    <TableCell>User Name</TableCell>
+                    <TableCell>E-Mail</TableCell>
+                    <TableCell>Working Hours</TableCell>
+                    <TableCell>Action</TableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
+                {
+                    users.data?.map(user =>(
+                        
+                        <TableRow key={user._id}>
+                         <TableCell>{user.FirstName }</TableCell>
+                         <TableCell>{user.LastName}</TableCell>
+                         <TableCell>{user.Login_ID}</TableCell>
+                         <TableCell>{user.Email}</TableCell>
+                         <TableCell>{user.WorkingHours}</TableCell>
+                         
+                     
+                         <TableCell>
+                         <Typography color="textSecondary" variant="body1" fontWeight="400">
+                                <Button
+                                  variant="contained"
+                                  color="secondary"
+                                //   startIcon={<EditIcon />}
+                                  onClick={() => openModaledit(user._id)}
+                                >
+                                  Edit
+                                </Button>
+                                </Typography>
+                         </TableCell>
+                         </TableRow>
+                    ))
+                }
+            </TableBody>
+        </Table>
+      
+
       <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
         <Alert onClose={handleClose} severity={message.type} sx={{ width: '100%' }}>
           {message.value}
