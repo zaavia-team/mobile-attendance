@@ -11,7 +11,7 @@ module.exports.attendance = async (req, res) => {
                 "Date.Month": DateStr.getMonth(),
                 "Date.Day": DateStr.getDate(),
                 "Date.Year": DateStr.getFullYear(),
-                TakenIn: { $exists: false },
+                TakenIn: { $exists: true },
                 UserID: req.user._id
             }, true)
             console.log("findAtt ", findAtt)
@@ -35,11 +35,11 @@ module.exports.attendance = async (req, res) => {
             })
                 .then(attendance => {
                     console.log("attendance ", attendance)
-                    res.send({ status: true, message : "Sign In Succesfully", Data: attendance })
+                    res.send({ status: true, message: "Sign In Succesfully", Data: attendance })
                 })
                 .catch(error => {
                     console.log(error)
-                    res.send({ status: false,message : error.message || "Server Error on Sign In", err: error.message })
+                    res.send({ status: false, message: error.message || "Server Error on Sign In", err: error.message })
                 })
 
         }
@@ -77,14 +77,14 @@ module.exports.attendance = async (req, res) => {
 }
 
 
-module.exports.gettodayattendance = (req,res) => {
+module.exports.gettodayattendance = (req, res) => {
     let CurrentDate = new Date()
-    let query = { 
-        TakenIn : { $exists: true },
+    let query = {
+        TakenIn: { $exists: true },
         "Date.Month": CurrentDate.getMonth(),
-        "Date.Day" : CurrentDate.getDate(),
-        "Date.Year" : CurrentDate.getFullYear()
-    }; 
+        "Date.Day": CurrentDate.getDate(),
+        "Date.Year": CurrentDate.getFullYear()
+    };
     console.log(query)
     attendance_repo.find(query)
         .then(attendance => {
@@ -99,6 +99,42 @@ module.exports.register = (req, res) => {
     user_repo.create(req.body)
         .then(user => {
             res.send({ Status: true, data: user })
+        })
+        .catch(error => {
+            res.send({ Status: false, message: error.message })
+        })
+}
+
+
+module.exports.report = (req, res) => {
+    const aggr = [
+        {
+            '$addFields': {
+                'HOUR': {
+                    '$divide': [
+                        {
+                            '$subtract': [
+                                '$TakenOut', '$TakenIn'
+                            ]
+                        }, 3600000
+                    ]
+                }
+            }
+        }, {
+            '$group': {
+                '_id': '$UserID',
+                'Details': {
+                    '$push': '$$ROOT'
+                },
+                'Hours': {
+                    '$sum': '$HOUR'
+                }
+            }
+        }, {}
+    ]
+    attendance_repo.aggregate(aggr)
+        .then(attendance => {
+            res.send({ Status: true, data: attendance })
         })
         .catch(error => {
             res.send({ Status: false, message: error.message })
