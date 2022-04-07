@@ -25,6 +25,7 @@ module.exports.attendance = async (req, res) => {
                     Day: DateStr.getDate(),
                     Year: DateStr.getFullYear(),
                 },
+                WorkingHours: req.user.WorkingHours,
                 UserName: req.user.Login_ID,
                 ActionDetails: {
                     ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
@@ -109,6 +110,14 @@ module.exports.register = (req, res) => {
 module.exports.report = (req, res) => {
     const aggr = [
         {
+            $match: {
+                'TakenIn': {
+                    '$gte': new Date(req.body.StartDate), 
+                    '$lte': new Date(req.body.EndDate)
+                }
+            }
+        },
+        {
             '$addFields': {
                 'HOUR': {
                     '$divide': [
@@ -120,18 +129,30 @@ module.exports.report = (req, res) => {
                     ]
                 }
             }
-        }, {
+        },
+        {
             '$group': {
                 '_id': '$UserID',
                 'Details': {
                     '$push': '$$ROOT'
                 },
-                'Hours': {
+                'TotalHours': {
                     '$sum': '$HOUR'
-                }
+                },
+                'WorkingHours': {
+                    '$sum': '$WorkingHours'
+                },
+                'ManualAttendance': {
+                    '$sum': {
+                        $cond:[{$eq:['$WorkingHours', true]}, 1, 0]
+                    }
+                },
             }
-        }, {}
+        }
     ]
+    if(req.body.userIds){
+        aggr[0].$match['UserID']= {$in:req.body.userIds}
+    }
     attendance_repo.aggregate(aggr)
         .then(attendance => {
             res.send({ Status: true, data: attendance })
