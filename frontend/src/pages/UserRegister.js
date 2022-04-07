@@ -92,8 +92,40 @@ export default function UserRegister() {
   const handleSubmit = (event) => {
     setOpen(true);
     event.preventDefault();
-    if (form.FirstName && form.LastName && form.Password && form.Email && form.Login_ID && form.Designation
-       && form.DateOfBirth && form.WorkingHours && form.DateOfJoining  && form.PhoneNumber && form.NIC) {
+    let api = '/api/register';
+
+    console.log(form._id)
+    if (form._id && form.FirstName){
+      api =  `/api/user/${form._id}`
+
+      const data = {
+        FirstName: form.FirstName,
+        LastName: form.LastName,
+        Email: form.Email,
+        Designation: form.Designation,
+        DateOfBirth: form.DateOfBirth,
+        WorkingHours: form.WorkingHours,
+        DateOfJoining: form.DateOfJoining,
+        PhoneNumber: form.PhoneNumber,
+        NIC: form.NIC
+      }
+
+      axios.put(api, data)
+      .then(response => {
+        SetMessage({ value: "Successfuly Updated", type: "success" })
+        setForm({ FirstName: "", LastName: "", Password: "", Email: "", Login_ID: "", Designation: "", DateOfBirth:"", WorkingHours:"", DateOfJoining:"", PhoneNumber:"", NIC:""   })
+        handleclose();
+      });
+      return;
+    }
+
+    
+
+
+    if (!form._id &&
+      form.FirstName && form.LastName && form.Password && form.Email && form.Login_ID && form.Designation
+       && form.DateOfBirth && form.WorkingHours && form.DateOfJoining  && form.PhoneNumber && form.NIC
+        ) {
 
       const email = form.Email;
       if (emailRegex.test(email)) {
@@ -113,33 +145,7 @@ export default function UserRegister() {
           NIC: form.NIC
         }
 
-        let api = '/api/register';
         // const apiEdit = `/api/user/${form._id}`;
-
-        if (form._id && form.FirstName){
-          api =  `/api/user/${form._id}`
-
-          const data = {
-            FirstName: form.FirstName,
-            LastName: form.LastName,
-            Email: form.Email,
-            Designation: form.Designation,
-            DateOfBirth: form.DateOfBirth,
-            WorkingHours: form.WorkingHours,
-            DateOfJoining: form.DateOfJoining,
-            PhoneNumber: form.PhoneNumber,
-            NIC: form.NIC
-          }
-  
-          axios.put(api, data)
-          .then(response => {
-            SetMessage({ value: "Successfuly Updated", type: "success" })
-            setForm({ FirstName: "", LastName: "", Password: "", Email: "", Login_ID: "", Designation: "", DateOfBirth:"", WorkingHours:"", DateOfJoining:"", PhoneNumber:"", NIC:""   })
-            handleclose();
-          });
-
-        }
-
         const token = localStorage.getItem('token');
 
         axios.post(api, data,
