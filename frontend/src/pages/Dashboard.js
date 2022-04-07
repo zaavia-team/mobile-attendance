@@ -10,14 +10,13 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import { Button } from '@mui/material';
-import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import { mainListItems } from '../components/MainListItems';
 import UserRegister from './UserRegister';
+import AdminReport from './AdminReport';
 import { Route, Routes } from 'react-router-dom';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
@@ -175,9 +174,9 @@ function DashboardContent({setLoggedin}) {
                 <Routes>
                 <Route exact path = "/" element = {<Home />} />
                 <Route exact path = "/userregister" element = {<UserRegister />} />
+                <Route exact path = "/adminreport" element = {<AdminReport />} />
                 </Routes>
             </Grid>
-           
           </Container>
         </Box>
       </Box>
