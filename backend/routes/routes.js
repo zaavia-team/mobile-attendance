@@ -10,6 +10,7 @@ routes.get('/users', controller.getUsers);
 routes.post('/register',  auth.authMiddleware,controller.register);
 routes.post('/attendance_transaction',auth.authMiddleware,attendance_controller.attendance)
 routes.get('/gettodayattendance',auth.authMiddleware,attendance_controller.gettodayattendance)
+routes.post('/getreportattendance',auth.authMiddleware,attendance_controller.report)
 
 
 
