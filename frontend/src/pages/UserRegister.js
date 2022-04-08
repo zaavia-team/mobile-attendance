@@ -168,11 +168,23 @@ export default function UserRegister() {
 
             SetMessage({ value: "Successfuly Registered", type: "success" })
             setForm({ FirstName: "", LastName: "", Password: "", Email: "", Login_ID: "", Designation: "", DateOfBirth:"", WorkingHours:"", DateOfJoining:"", PhoneNumber:"", NIC:""   })
+            
+            axios.get('/api/users')
+          .then(function (response) {
+              setUsers(response.data)
+          })
+          .catch(function (error) {
+              // handle error
+              console.log(error);
+          })
+            
             handleclose();
           })
           .catch(function (error) {
             console.log(error);
           });
+
+          
 
       } else {
         setIsValid(false);
@@ -278,6 +290,7 @@ export default function UserRegister() {
                       fullWidth
                       id="username"
                       label="User Name"
+                      disabled = {form._id ? true : false}
                       value={form.Login_ID}
                       onChange={handleClick}
                       name="Login_ID"
