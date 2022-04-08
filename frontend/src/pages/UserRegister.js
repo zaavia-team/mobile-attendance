@@ -74,7 +74,8 @@ export default function UserRegister() {
   useEffect(() => {
       axios.get('/api/users')
       .then(function (response) {
-          setUsers(response.data)
+        // response.data.filter((Users) => Users.Login_ID === "admin01")
+        setUsers(response.data)
       })
       .catch(function (error) {
           // handle error
@@ -97,6 +98,7 @@ export default function UserRegister() {
     console.log(form._id)
     if (form._id && form.FirstName){
       api =  `/api/user/${form._id}`
+      const token = localStorage.getItem('token');
 
       const data = {
         FirstName: form.FirstName,
@@ -110,10 +112,21 @@ export default function UserRegister() {
         NIC: form.NIC
       }
 
-      axios.put(api, data)
+      axios.post(api, data,  { headers: { "Authorization": `${token}` } })
       .then(response => {
         SetMessage({ value: "Successfuly Updated", type: "success" })
         setForm({ FirstName: "", LastName: "", Password: "", Email: "", Login_ID: "", Designation: "", DateOfBirth:"", WorkingHours:"", DateOfJoining:"", PhoneNumber:"", NIC:""   })
+        
+        axios.get('/api/users')
+      .then(function (response) {
+          setUsers(response.data)
+      })
+      .catch(function (error) {
+          // handle error
+          console.log(error);
+      })
+        
+        
         handleclose();
       });
       return;
@@ -404,17 +417,17 @@ export default function UserRegister() {
       </Modal>
 
       {/* ---------------------- All Users ----------------------- */}
-      <Table className = {classes.table}>
-            <TableHead>
-                <TableRow className = {classes.thead}>
-                    <TableCell>First Name</TableCell>
-                    <TableCell>Last Name</TableCell>
-                    <TableCell>User Name</TableCell>
-                    <TableCell>E-Mail</TableCell>
-                    <TableCell>Working Hours</TableCell>
-                    <TableCell>Action</TableCell>
-                </TableRow>
-            </TableHead>
+             <Table className = {classes.table}>
+              <TableHead>
+                  <TableRow className = {classes.thead}>
+                      <TableCell>First Name</TableCell>
+                      <TableCell>Last Name</TableCell>
+                      <TableCell>User Name</TableCell>
+                      <TableCell>E-Mail</TableCell>
+                      <TableCell>Working Hours</TableCell>
+                      <TableCell>Action</TableCell>
+                  </TableRow>
+              </TableHead>
             <TableBody>
                 {
                     users.data?.map(user =>(

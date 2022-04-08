@@ -33,17 +33,15 @@ export default function AdminReport() {
   return (
     <Container >
     <h1>Admin Report</h1>
-        <Grid container justifyContent="center" alignItems="center" sx={{ mb: 3 }}>
-        <Grid item xs={6} sm={6}>
-                  
-                  </Grid>
+        <Grid container justifyContent="center" alignItems="center" sx={{ mb: 3, mt:1 }}>
+    
             <Box >
             <TextField
                     id="date"
                     label="Start Date"
                     type="date"
                     name="DateOfBirth"
-                    sx={{ mr: 2 }}
+                    sx={{ mr: 2, mt:1 }}
                     InputLabelProps={{
                       shrink: true,
                     }}
@@ -53,12 +51,12 @@ export default function AdminReport() {
                     label="End Date"
                     type="date"
                     name="DateOfBirth"
-                    sx={{ mr: 2 }}
+                    sx={{ mr: 2, mt:1 }}
                     InputLabelProps={{
                       shrink: true,
                     }}
                   />        
-                <Button variant="contained" color="secondary"  >Search</Button>
+                <Button variant="contained" color="secondary"  sx={{ mr: 2, mt:1 }}>Search</Button>
             </Box>
         </Grid>
 
