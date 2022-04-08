@@ -15,6 +15,8 @@ const AttendanceSchema = new Schema({
     TransactionType: String,
     TakenIn : Date,
     TakenOut : Date,
+    WorkingHours: Number,
+    ManualEntry: Boolean,
     Date: { 
       Month: Number,
       Day: Number,

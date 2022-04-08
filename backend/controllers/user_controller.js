@@ -61,4 +61,32 @@ module.exports.getUsers = (req, res) => {
         })
 }
 
+module.exports.editUser = async (req, res) => {
+   
+    try {
+        _id = req.params.id
+        FirstName= req.body.FirstName
+        LastName = req.body.LastName
+        Email = req.body.Email
+        Designation = req.body.Designation
+        DateOfBirth = req.body.DateOfBirth
+        WorkingHours = req.body.WorkingHours
+        DateOfJoining = req.body.DateOfJoining
+        PhoneNumber = req.body.PhoneNumber
+        NIC= req.body.NIC
 
+        const user = await user_repo.find({ _id: _id }, true, true, {});
+
+        if (!user) {
+
+            res.send({ status: false, message: `User doesn't exists!` });
+        }
+        else {
+            const updUsr = await user_repo.updateOne({ _id: _id }, { $set: { FirstName, LastName, Email, Designation, WorkingHours, DateOfBirth, DateOfJoining, PhoneNumber, NIC} })
+
+            res.send({ data: updUsr, status: true, message: 'User Updates Successfully!' });
+        }
+    } catch (e) {
+        res.send({status : false , message : e.message});
+    }
+}

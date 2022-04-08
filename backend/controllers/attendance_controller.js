@@ -25,6 +25,7 @@ module.exports.attendance = async (req, res) => {
                     Day: DateStr.getDate(),
                     Year: DateStr.getFullYear(),
                 },
+                WorkingHours: req.user.WorkingHours,
                 UserName: req.user.Login_ID,
                 ActionDetails: {
                     ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
@@ -35,11 +36,11 @@ module.exports.attendance = async (req, res) => {
             })
                 .then(attendance => {
                     console.log("attendance ", attendance)
-                    res.send({ status: true, message : "Sign In Succesfully", Data: attendance })
+                    res.send({ status: true, message: "Sign In Succesfully", Data: attendance })
                 })
                 .catch(error => {
                     console.log(error)
-                    res.send({ status: false,message : error.message || "Server Error on Sign In", err: error.message })
+                    res.send({ status: false, message: error.message || "Server Error on Sign In", err: error.message })
                 })
 
         }
@@ -77,14 +78,14 @@ module.exports.attendance = async (req, res) => {
 }
 
 
-module.exports.gettodayattendance = (req,res) => {
+module.exports.gettodayattendance = (req, res) => {
     let CurrentDate = new Date()
-    let query = { 
-        TakenIn : { $exists: true },
+    let query = {
+        TakenIn: { $exists: true },
         "Date.Month": CurrentDate.getMonth(),
-        "Date.Day" : CurrentDate.getDate(),
-        "Date.Year" : CurrentDate.getFullYear()
-    }; 
+        "Date.Day": CurrentDate.getDate(),
+        "Date.Year": CurrentDate.getFullYear()
+    };
     console.log(query)
     attendance_repo.find(query, false, null, "UserName UserID")
         .then(attendance => {
@@ -99,6 +100,62 @@ module.exports.register = (req, res) => {
     user_repo.create(req.body)
         .then(user => {
             res.send({ Status: true, data: user })
+        })
+        .catch(error => {
+            res.send({ Status: false, message: error.message })
+        })
+}
+
+
+module.exports.report = (req, res) => {
+    const aggr = [
+        {
+            $match: {
+                'TakenIn': {
+                    '$gte': new Date(req.body.StartDate), 
+                    '$lte': new Date(req.body.EndDate)
+                }
+            }
+        },
+        {
+            '$addFields': {
+                'HOUR': {
+                    '$divide': [
+                        {
+                            '$subtract': [
+                                '$TakenOut', '$TakenIn'
+                            ]
+                        }, 3600000
+                    ]
+                }
+            }
+        },
+        {
+            '$group': {
+                '_id': '$UserID',
+                'Details': {
+                    '$push': '$$ROOT'
+                },
+                'TotalHours': {
+                    '$sum': '$HOUR'
+                },
+                'WorkingHours': {
+                    '$sum': '$WorkingHours'
+                },
+                'ManualAttendance': {
+                    '$sum': {
+                        $cond:[{$eq:['$WorkingHours', true]}, 1, 0]
+                    }
+                },
+            }
+        }
+    ]
+    if(req.body.userIds){
+        aggr[0].$match['UserID']= {$in:req.body.userIds}
+    }
+    attendance_repo.aggregate(aggr)
+        .then(attendance => {
+            res.send({ Status: true, data: attendance })
         })
         .catch(error => {
             res.send({ Status: false, message: error.message })

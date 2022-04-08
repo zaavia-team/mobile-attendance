@@ -1,28 +1,20 @@
 import * as React from 'react';
-import * as startOfDay from "date-fns";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import DesktopDatePicker from '@mui/lab/DesktopDatePicker';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import Modal from '@mui/material/Modal';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import axios from 'axios';
-import AllUsers from '../components/AllUsers';
-
+import { Table, TableBody, TableCell, TableHead, TableRow, makeStyles } from "@material-ui/core";
+import {useState, useEffect} from 'react';
 
 
 
@@ -30,7 +22,23 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
+
+
 const theme = createTheme();
+
+const useStyles = makeStyles ({
+  table: {
+      width :"100%",
+      margin: ' 50px 0 0 50px'
+  },
+  thead:{
+      '& > *' :{
+          background : 'rgb(156 39 176)'  ,
+          color: '#fff',
+          fontsize: 20
+      }
+  }
+})
 
 export default function UserRegister() {
 
@@ -40,14 +48,12 @@ export default function UserRegister() {
   const [form, setForm] = React.useState({ FirstName: "", LastName: "", Password: "", Email: "", Login_ID: "", Designation: "", DateOfBirth:"", WorkingHours:"", DateOfJoining:"", PhoneNumber:"", NIC:"" });
   const [isValid, setIsValid] = React.useState(false);
   const [openModal, setOpenModal] = React.useState(false);
-
+  
+ 
   const emailRegex = /\S+@\S+\.\S+/;
 
   const handleClick = (event) => {
-
-
     setForm({ ...form, [event.target.name]: event.target.value })
-
   };
 
   const handleClose = (event, reason) => {
@@ -60,17 +66,79 @@ export default function UserRegister() {
 
   };
 
+  const classes = useStyles();
+    
+  const [users, setUsers] = useState([]);
+  
+  
+  useEffect(() => {
+      axios.get('/api/users')
+      .then(function (response) {
+        // response.data.filter((Users) => Users.Login_ID === "admin01")
+        setUsers(response.data)
+      })
+      .catch(function (error) {
+          // handle error
+          console.log(error);
+      })
+      .then(function () {
+          // always executed
+      });
+      
+  }, [])
+
 
 
 
   const handleSubmit = (event) => {
     setOpen(true);
-
     event.preventDefault();
+    let api = '/api/register';
+
+    console.log(form._id)
+    if (form._id && form.FirstName){
+      api =  `/api/user/${form._id}`
+      const token = localStorage.getItem('token');
+
+      const data = {
+        FirstName: form.FirstName,
+        LastName: form.LastName,
+        Email: form.Email,
+        Designation: form.Designation,
+        DateOfBirth: form.DateOfBirth,
+        WorkingHours: form.WorkingHours,
+        DateOfJoining: form.DateOfJoining,
+        PhoneNumber: form.PhoneNumber,
+        NIC: form.NIC
+      }
+
+      axios.post(api, data,  { headers: { "Authorization": `${token}` } })
+      .then(response => {
+        SetMessage({ value: "Successfuly Updated", type: "success" })
+        setForm({ FirstName: "", LastName: "", Password: "", Email: "", Login_ID: "", Designation: "", DateOfBirth:"", WorkingHours:"", DateOfJoining:"", PhoneNumber:"", NIC:""   })
+        
+        axios.get('/api/users')
+      .then(function (response) {
+          setUsers(response.data)
+      })
+      .catch(function (error) {
+          // handle error
+          console.log(error);
+      })
+        
+        
+        handleclose();
+      });
+      return;
+    }
+
+    
 
 
-
-    if (form.FirstName && form.LastName && form.Password && form.Email && form.Login_ID && form.Designation && form.DateOfBirth && form.WorkingHours && form.DateOfJoining  && form.PhoneNumber && form.NIC) {
+    if (!form._id &&
+      form.FirstName && form.LastName && form.Password && form.Email && form.Login_ID && form.Designation
+       && form.DateOfBirth && form.WorkingHours && form.DateOfJoining  && form.PhoneNumber && form.NIC
+        ) {
 
       const email = form.Email;
       if (emailRegex.test(email)) {
@@ -88,10 +156,9 @@ export default function UserRegister() {
           DateOfJoining: form.DateOfJoining,
           PhoneNumber: form.PhoneNumber,
           NIC: form.NIC
-
         }
 
-        const api = '/api/register';
+        // const apiEdit = `/api/user/${form._id}`;
         const token = localStorage.getItem('token');
 
         axios.post(api, data,
@@ -125,14 +192,27 @@ export default function UserRegister() {
     transform: 'translate(-50%, -50%)',
     width: 600,
     bgcolor: 'background.paper',
-    // border: '2px solid #000',
     boxShadow: 24,
     p: 4,
   };
 
 
   const handleOpen = () => setOpenModal(true);
-  const handleclose = () => setOpenModal(false);
+  const handleclose = () => 
+  {
+    setForm({})
+  setOpenModal(false);
+}
+  const openModaledit = (userObj) => {
+    
+    
+    setForm({...userObj,DateOfBirth:new Date(userObj.DateOfBirth).toISOString().slice(0, 10), 
+      DateOfJoining:new Date(userObj.DateOfJoining).toISOString().slice(0, 10),
+    })
+
+    handleOpen()
+    
+  }
 
   return (
     <ThemeProvider theme={theme} >
@@ -281,10 +361,11 @@ export default function UserRegister() {
                     name="DateOfJoining"
                     value = {form.DateOfJoining}
                     onChange={handleClick}
-
+                    display   
                     sx={{ width: 190 }}
                     InputLabelProps={{
                       shrink: true,
+                      required: true
                     }}
                   />
                   </Grid>
@@ -303,7 +384,7 @@ export default function UserRegister() {
                   </Grid>
 
 
-                  <Grid item xs={12}>
+                 { !form._id && <Grid item xs={12}>
                     <TextField
                       required
                       fullWidth
@@ -315,7 +396,7 @@ export default function UserRegister() {
                       id="password"
                       autoComplete="new-password"
                     />
-                  </Grid>
+                  </Grid>}
 
                 </Grid>
                 <Button
@@ -326,7 +407,7 @@ export default function UserRegister() {
                   onClick={handleSubmit}
                   sx={{ mt: 3, mb: 2 }}
                 >
-                  Register
+                 {form._id? "Update" : "Register"}
                 </Button>
 
               </Box>
@@ -334,7 +415,51 @@ export default function UserRegister() {
           </Container>
         </Box>
       </Modal>
-      <AllUsers />
+
+      {/* ---------------------- All Users ----------------------- */}
+             <Table className = {classes.table}>
+              <TableHead>
+                  <TableRow className = {classes.thead}>
+                      <TableCell>First Name</TableCell>
+                      <TableCell>Last Name</TableCell>
+                      <TableCell>User Name</TableCell>
+                      <TableCell>E-Mail</TableCell>
+                      <TableCell>Working Hours</TableCell>
+                      <TableCell>Action</TableCell>
+                  </TableRow>
+              </TableHead>
+            <TableBody>
+                {
+                    users.data?.map(user =>(
+                        
+                        <TableRow key={user._id}>
+                         <TableCell>{user.FirstName }</TableCell>
+                         <TableCell>{user.LastName}</TableCell>
+                         <TableCell>{user.Login_ID}</TableCell>
+                         <TableCell>{user.Email}</TableCell>
+                         <TableCell>{user.WorkingHours}</TableCell>
+                         
+                     
+                        { <TableCell>
+                         <Typography color="textSecondary" variant="body1" fontWeight="400">
+                                <Button
+                                  variant="contained"
+                                  color="secondary"
+                                //   startIcon={<EditIcon />}
+                                  onClick={() => openModaledit(user)}
+                                >
+                                  Edit
+                                </Button>
+                                </Typography>
+                         </TableCell>}
+
+                         </TableRow>
+                    ))
+                }
+            </TableBody>
+        </Table>
+      
+
       <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
         <Alert onClose={handleClose} severity={message.type} sx={{ width: '100%' }}>
           {message.value}
