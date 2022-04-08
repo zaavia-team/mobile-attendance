@@ -10,40 +10,62 @@ import axios from 'axios';
 
 
 
+
 export default function AdminReport() {
 
-    const [data, setData] = useState([
-        {Name:"Areeb", month:"January"},
-        {Name:"Srmad", month:"January"},
-        {Name:"Sharjeel", month:"January"}])
 
-    // useEffect(() => {
-    //     axios.get()
-    //     .then(res=>{
-    //         setData(res.data)
-    //         console.log(res)
-    //     }
-    //     )
-    //     .catch(err =>{
-    //         console.log(err, "err")
-    //     })
-    // }, [])
 
+
+    const [form, setForm] = useState({startDate:"", endDate:""});
+    const [data, setData] = useState([])
+
+
+  const handleChange = (e) =>{
+    setForm({ ...form, [e.target.name] : e.target.value})
+    
+  }
+
+  const HandleSearch = () =>{
+    if (form.startDate && form.endDate ) {
+      const api="/api/getreportattendance"
+      const token = localStorage.getItem("token") 
+      const data = {
+        StartDate:form.startDate,
+        EndDate:form.endDate
+      }
+      
+        axios.post(api, data,
+          { headers: { "Authorization": `${token}` } })
+        .then(res=>{
+          console.log(res)  
+
+            setData(res.data?.data);
+        }
+        )
+        .catch(err =>{
+            console.log(err, "err")
+        })
+
+    }
+
+  }
+
+    
 
   return (
     <Container >
     <h1>Admin Report</h1>
-        <Grid container justifyContent="center" alignItems="center" sx={{ mb: 3 }}>
-        <Grid item xs={6} sm={6}>
-                  
-                  </Grid>
+        <Grid container justifyContent="center" alignItems="center" sx={{ mb: 3, mt:1 }}>
+    
             <Box >
             <TextField
                     id="date"
                     label="Start Date"
                     type="date"
-                    name="DateOfBirth"
-                    sx={{ mr: 2 }}
+                    name="startDate"
+                    value={form.startDate}
+                    onChange={handleChange}
+                    sx={{ mr: 2, mt:1 }}
                     InputLabelProps={{
                       shrink: true,
                     }}
@@ -52,13 +74,15 @@ export default function AdminReport() {
                     id="date"
                     label="End Date"
                     type="date"
-                    name="DateOfBirth"
-                    sx={{ mr: 2 }}
+                    name="endDate"
+                    value={form.endDate}
+                    onChange={handleChange}
+                    sx={{ mr: 2, mt:1 }}
                     InputLabelProps={{
                       shrink: true,
                     }}
                   />        
-                <Button variant="contained" color="secondary"  >Search</Button>
+                <Button variant="contained" color="secondary" onClick={HandleSearch} sx={{ mr: 2, mt:1 }}>Search</Button>
             </Box>
         </Grid>
 

@@ -1,10 +1,11 @@
 import 'dart:convert';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
+import 'package:login_app/pages/login.dart';
 
 class Dashboard extends StatefulWidget {
   @override
@@ -17,6 +18,7 @@ class _DashboardState extends State<Dashboard> {
   var transactionType = 'i am In';
 
   var token;
+  var Users = [];
 
   late Box box1;
 
@@ -45,12 +47,31 @@ class _DashboardState extends State<Dashboard> {
   void getData() async {
     if (box1.get('token') != null) {
       token = box1.get('token');
+      getUsers();
     }
   }
 
-  void attendanceDetails(BuildContext context) async {
+  void getUsers() async {
+    try {
+      var response = await http.get(
+        Uri.parse(dotenv.env['API_URL']! + "/api/gettodayattendance"),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': token
+        },
+      );
+      print(response.body);
+      setState(() {
+        Users = jsonDecode(response.body)["data"];
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void attendanceDetails() async {
     var response = await http.post(
-        Uri.parse("http://192.168.18.51:3000/api/attendance_transaction"),
+        Uri.parse(dotenv.env['API_URL']! + "/api/attendance_transaction"),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': token
@@ -61,50 +82,6 @@ class _DashboardState extends State<Dashboard> {
               _dateTime?.toIso8601String() ?? DateTime.now().toIso8601String()
         }));
 
-    if (transactionType == 'i am Out') {
-      showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                title: const Text("Are you sure your want to sign out",
-                    textAlign: TextAlign.center),
-                actions: [
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        RaisedButton(
-                          onPressed: () {
-                            setState(() {
-                              transactionType = 'i am In';
-                            });
-                            Fluttertoast.showToast(
-                              msg: jsonDecode(response.body)["message"],
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 2,
-                              backgroundColor: Colors.purple,
-                              fontSize: 15
-                            );
-                            Navigator.pop(context);
-                          },
-                          child: Text('Yes'),
-                          color: Theme.of(context).primaryColor,
-                          textColor: Colors.white,
-                        ),
-                        RaisedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text('No'),
-                          color: Theme.of(context).primaryColor,
-                          textColor: Colors.white,
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ));
-    }
     if (response.statusCode == 200 &&
         jsonDecode(response.body)["status"] == false) {
       Fluttertoast.showToast(
@@ -114,15 +91,61 @@ class _DashboardState extends State<Dashboard> {
           timeInSecForIosWeb: 2,
           backgroundColor: Colors.purple,
           fontSize: 15);
-    } 
-    else {
+    } else {
       setState(() {
-        transactionType = "i am Out";
-            // transactionType == 'i am Out' ? "i am In" : 'i am Out';
+        transactionType = transactionType == 'i am Out' ? "i am In" : 'i am Out';
       });
-      
+      print(transactionType);
+      getData();
+      Fluttertoast.showToast(
+          msg: jsonDecode(response.body)["message"],
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 2,
+          backgroundColor: Colors.purple,
+          fontSize: 15);
     }
-    print(response.body);
+  }
+
+  void alertDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text("Are you sure your want to sign out",
+                  textAlign: TextAlign.center),
+              actions: [
+                Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      RaisedButton(
+                        onPressed: () {
+                          attendanceDetails();
+                          Navigator.pop(context);
+                        },
+                        child: Text('Yes'),
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0)),
+                        color: Theme.of(context).primaryColor,
+                        textColor: Colors.white,
+                      ),
+                      RaisedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('No'),
+                        color: Theme.of(context).primaryColor,
+                        textColor: Colors.white,
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0)),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ));
   }
 
   Future pickDateTime(BuildContext context) async {
@@ -173,45 +196,82 @@ class _DashboardState extends State<Dashboard> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text("Main Screen"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () {
+              box1.delete("token");
+              box1.delete("email");
+              box1.delete("Name");
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Login()),
+              );
+            },
+          )
+        ],
       ),
-      body: Card(
-        elevation: 5,
-        child: Center(
-          child: Container(
-            padding: EdgeInsets.all(10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _dateTime == null
-                      ? '${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}, ${DateTime.now().hour}:${DateTime.now().minute}'
-                      : getDate(),
-                  style: TextStyle(fontSize: 20),
-                ),
-                FlatButton(
-                  onPressed: () {
-                    pickDateTime(context);
-                  },
-                  child: Text('Pick a date', style: TextStyle(fontSize: 15)),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    RaisedButton(
-                      child: Text(transactionType),
-                      color: Theme.of(context).primaryColor,
-                      textColor: Colors.white,
-                      onPressed: () {
-                        attendanceDetails(context);
-                      },
+      body: Container(
+        padding: EdgeInsets.all(10),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              ListView.builder(
+                itemCount:  Users.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Card(
+                    color: Colors.purple,
+                    elevation: 5,
+                    child: ListTile(
+                      leading: Icon(Icons.person),
+                      title: Text(
+                        '${Users[index]["UserName"]}',
+                        style: TextStyle(color: Colors.white, fontSize: 17),
+                      ),
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  );
+                },
+                shrinkWrap: true,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                _dateTime == null
+                    ? '${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}, ${DateTime.now().hour}:${DateTime.now().minute}'
+                    : getDate(),
+                style: TextStyle(fontSize: 20),
+              ),
+              FlatButton(
+                onPressed: () {
+                  pickDateTime(context);
+                },
+                child: Text('Pick a date', style: TextStyle(fontSize: 15)),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RaisedButton(
+                    elevation: 5,
+                    child: Text(
+                      transactionType,
+                      style: TextStyle(fontSize: 15),
+                    ),
+                    color: Theme.of(context).primaryColor,
+                    textColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0)),
+                    onPressed: () {
+                      transactionType == "i am In"
+                          ? attendanceDetails()
+                          : alertDialog(context);
+                    },
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
