@@ -113,7 +113,7 @@ module.exports.report = (req, res) => {
             $match: {
                 'TakenIn': {
                     '$gte': new Date(req.body.StartDate), 
-                    '$lte': new Date(req.body.EndDate.setHours(23,59,59))
+                    '$lte': new Date(new Date(req.body.EndDate).setHours(23,59,59))
                 }
             }
         },
