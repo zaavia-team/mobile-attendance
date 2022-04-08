@@ -65,10 +65,14 @@ class _LoginState extends State<Login> {
             MaterialPageRoute(builder: (context) => Dashboard()),
           );
         }
-
-        print(response.body);
       } catch (e) {
-        print(e);
+         Fluttertoast.showToast(
+              msg: dotenv.env['API_URL'] ?? "Url null catch",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 2,
+              backgroundColor: Colors.purple,
+              fontSize: 15);
       }
     }
   }
@@ -112,7 +116,7 @@ class _LoginState extends State<Login> {
                     prefixIcon: Icon(Icons.email),
                     border: OutlineInputBorder(
                         borderSide: BorderSide(width: 2),
-                        borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+                        borderRadius: BorderRadius.all(Radius.circular(27.0)))),
                 controller: email,
               ),
               const SizedBox(
@@ -124,7 +128,7 @@ class _LoginState extends State<Login> {
                     prefixIcon: Icon(Icons.lock),
                     border: OutlineInputBorder(
                         borderSide: BorderSide(width: 2),
-                        borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+                        borderRadius: BorderRadius.all(Radius.circular(27.0)))),
                 controller: password,
                 obscureText: true,
               ),
@@ -146,7 +150,7 @@ class _LoginState extends State<Login> {
                   color: Colors.purple,
                   textColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25.0)),
+                      borderRadius: BorderRadius.circular(24.0)),
                 ),
               ),
             ],
