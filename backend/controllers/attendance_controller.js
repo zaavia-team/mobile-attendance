@@ -11,7 +11,7 @@ module.exports.attendance = async (req, res) => {
                 "Date.Month": DateStr.getMonth(),
                 "Date.Day": DateStr.getDate(),
                 "Date.Year": DateStr.getFullYear(),
-                TakenIn: { $exists: false },
+                TakenIn: { $exists: true },
                 UserID: req.user._id
             }, true)
             console.log("findAtt ", findAtt)
@@ -86,7 +86,7 @@ module.exports.gettodayattendance = (req,res) => {
         "Date.Year" : CurrentDate.getFullYear()
     }; 
     console.log(query)
-    attendance_repo.find(query)
+    attendance_repo.find(query, false, null, "UserName UserID")
         .then(attendance => {
             res.send({ Status: true, data: attendance })
         })
