@@ -68,8 +68,6 @@ export default function SignIn({setLoggedin}) {
         console.log("token", token )
         setLoggedin(true);
         SetMessage({value: "Login Success", type:"success"})
-       
-     
       }else{
         SetMessage({value: response.data.message, type:"error"})
       }

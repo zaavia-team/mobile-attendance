@@ -10,25 +10,47 @@ import axios from 'axios';
 
 
 
+
 export default function AdminReport() {
 
-    const [data, setData] = useState([
-        {Name:"Areeb", month:"January"},
-        {Name:"Srmad", month:"January"},
-        {Name:"Sharjeel", month:"January"}])
 
-    // useEffect(() => {
-    //     axios.get()
-    //     .then(res=>{
-    //         setData(res.data)
-    //         console.log(res)
-    //     }
-    //     )
-    //     .catch(err =>{
-    //         console.log(err, "err")
-    //     })
-    // }, [])
 
+
+    const [form, setForm] = useState({startDate:"", endDate:""});
+    const [data, setData] = useState([])
+
+
+  const handleChange = (e) =>{
+    setForm({ ...form, [e.target.name] : e.target.value})
+    
+  }
+
+  const HandleSearch = () =>{
+    if (form.startDate && form.endDate ) {
+      const api="/api/getreportattendance"
+      const token = localStorage.getItem("token") 
+      const data = {
+        StartDate:form.startDate,
+        EndDate:form.endDate
+      }
+      
+        axios.post(api, data,
+          { headers: { "Authorization": `${token}` } })
+        .then(res=>{
+          console.log(res)  
+
+            setData(res.data?.data);
+        }
+        )
+        .catch(err =>{
+            console.log(err, "err")
+        })
+
+    }
+
+  }
+
+    
 
   return (
     <Container >
@@ -40,7 +62,9 @@ export default function AdminReport() {
                     id="date"
                     label="Start Date"
                     type="date"
-                    name="DateOfBirth"
+                    name="startDate"
+                    value={form.startDate}
+                    onChange={handleChange}
                     sx={{ mr: 2, mt:1 }}
                     InputLabelProps={{
                       shrink: true,
@@ -50,13 +74,15 @@ export default function AdminReport() {
                     id="date"
                     label="End Date"
                     type="date"
-                    name="DateOfBirth"
+                    name="endDate"
+                    value={form.endDate}
+                    onChange={handleChange}
                     sx={{ mr: 2, mt:1 }}
                     InputLabelProps={{
                       shrink: true,
                     }}
                   />        
-                <Button variant="contained" color="secondary"  sx={{ mr: 2, mt:1 }}>Search</Button>
+                <Button variant="contained" color="secondary" onClick={HandleSearch} sx={{ mr: 2, mt:1 }}>Search</Button>
             </Box>
         </Grid>
 
