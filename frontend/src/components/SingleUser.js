@@ -12,7 +12,7 @@ export default function SingleUser({ data }) {
         <div >
             <Card elevation={1} sx={{ maxWidth: 345 }}>
                 <CardHeader
-                    title={data.Name}
+                    title={data?.Details[0]?.UserName}
                     subheader={data.month}
                 />
                 <CardContent>
@@ -31,8 +31,8 @@ export default function SingleUser({ data }) {
               
                         
                         <TableRow >
-                         <TableCell>{data.Name }</TableCell>
-                         <TableCell>{data.Name}</TableCell>
+                         <TableCell>{data?.Details[0]?.WorkingHours }</TableCell>
+                         <TableCell>{data?.TotalHours?.toFixed(2)}</TableCell>
                          <TableCell>{data.Name}</TableCell>
 
                          </TableRow>
