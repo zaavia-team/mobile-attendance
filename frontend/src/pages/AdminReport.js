@@ -16,7 +16,7 @@ export default function AdminReport() {
 
 
 
-    const [form, setForm] = useState({startDate:"", endDate:"", UserId:[]});
+    const [form, setForm] = useState({startDate:"", endDate:"", });
     const [data, setData] = useState([])
 
 
@@ -26,13 +26,13 @@ export default function AdminReport() {
   }
 
   const HandleSearch = () =>{
-    if (form.startDate && form.endDate && form.UserId ) {
+    if (form.startDate && form.endDate ) {
       const api="/api/getreportattendance"
       const token = localStorage.getItem("token") 
       const data = {
         StartDate:form.startDate,
         EndDate:form.endDate,
-        userIds:form.UserId
+        // userIds:form.UserId
       }
       
         axios.post(api, data,
@@ -59,16 +59,16 @@ export default function AdminReport() {
         <Grid container justifyContent="center" alignItems="center" sx={{ mb: 3, mt:1 }}>
     
             <Box xs={12} sm={6}>
-            <TextField
+            {/* <TextField
                       
                       id="UserId"
                       label="User Id"
                       name="UserId"
                       value={form.UserId}
-                      onChange={handleChange}
+                      onChange={han dleChange}
                       sx={{ mr: 2, mt:1 }}
                       autoComplete="family-name"
-                    />
+                    /> */}
             <TextField
                     id="date"
                     label="Start Date"
