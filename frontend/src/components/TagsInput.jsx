@@ -85,12 +85,13 @@ export default function TagsInput({ selectedTags, tags, ...other }) {
             placeholder
           }); */}
 
-      <div>
+      
         <TextField
           // tags={tags}
           inputValue={inputValue}
           onKeyDown={handleKeyDown}
           onChange={handleChange}
+          
           InputProps={{
             startAdornment: tags.map(item => (
               <Chip
@@ -111,7 +112,7 @@ export default function TagsInput({ selectedTags, tags, ...other }) {
           {...other}
         // {...inputProps}
         />
-      </div>
+     
 
       {/* }} */}
       {/* </Downshift> */}

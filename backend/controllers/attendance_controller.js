@@ -104,12 +104,13 @@ module.exports.register = (req, res) => {
         .catch(error => {
             res.send({ Status: false, message: error.message })
         })
-}
-
-
-module.exports.report = (req, res) => {
-    const aggr = [
-        {
+    }
+    
+    
+    module.exports.report = (req, res) => {
+        console.log(req.body.userIds, "req.body.userIds")
+        const aggr = [
+            {
             $match: {
                 'TakenIn': {
                     '$gte': new Date(req.body.StartDate), 
@@ -150,8 +151,9 @@ module.exports.report = (req, res) => {
             }
         }
     ]
-    if(req.body.userIds){
-        aggr[0].$match['UserID']= {$in:req.body.userIds}
+    if(req.body.userIds && req.body.userIds.length){
+        console.log("here");
+        aggr[0].$match['UserName']= {$in:req.body.userIds}
     }
     attendance_repo.aggregate(aggr)
         .then(attendance => {
