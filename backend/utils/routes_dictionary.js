@@ -19,27 +19,32 @@ exports.getTitle = (path)=>{
     return titles;
 }
 
-exports.getAllTitles = () => {
+exports.getAllTitles = async (req,res) => {
     console.log("titles")
-
-    let titles = {};
-    for(let url in routes){
-        console.log('url: ', url)
-        for(let i = 0; i < routes[url].RightTitles.length; i++){
-            if(i == 0){
-                let module_name = routes[url].RightTitles[i].ModuleName;
-                titles[module_name] = titles[module_name] || {};
-                titles[module_name]["Title"] = titles[module_name]["Title"] || [];
-                if(titles[module_name]["Title"].indexOf(routes[url].RightTitles[i].Title) == -1){
-                    titles[module_name]["Title"].push(routes[url].RightTitles[i].Title);
-    
-                }
-            }            
+    try {
+        let titles = {};
+        for(let url in routes){
+            console.log('url: ', url)
+            for(let i = 0; i < routes[url].RightTitles.length; i++){
+                if(i == 0){
+                    let module_name = routes[url].RightTitles[i].ModuleName;
+                    titles[module_name] = titles[module_name] || {};
+                    titles[module_name]["Title"] = titles[module_name]["Title"] || [];
+                    if(titles[module_name]["Title"].indexOf(routes[url].RightTitles[i].Title) == -1){
+                        titles[module_name]["Title"].push(routes[url].RightTitles[i].Title);
+        
+                    }
+                }            
+            }
         }
+        console.log(titles)
+        
+        res.send({ data: titles, status: true, message: 'get All Title Successfully!' });
+
+    } catch (e) {
+    console.log("---------------")
+    res.send({status : false , message : e.message});
     }
-    console.log(titles)
-    
-    return titles;
 };
 
 

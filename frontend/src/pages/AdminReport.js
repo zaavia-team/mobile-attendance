@@ -76,19 +76,22 @@ export default function AdminReport() {
                       sx={{ mr: 2, mt:1 }}
                       autoComplete="family-name"
                       /> */}
-<Grid item xs={12} sm={3}>
-                      <TagsInput 
-                            selectedTags={handleSelecetedTags}
-                            tags={tags}
-                            sx={{ mr: 2, mt:1,}}
-                            size="small"
-                            variant="outlined"
-                            id="UserID"
-                            name="UserID"
-                            inputValue={form.UserID}
-                            helperText="please enter after typing Username."
-                            />
-                            </Grid>
+          <Grid item xs={12} sm={3}>
+          <TagsInput
+            selectedTags={handleSelecetedTags}
+            label="User Name"
+            tags={tags}
+            sx={{ mr: 2, mt:4 }}
+            size="small"
+            variant="outlined"
+            id="UserID"
+            name="UserID"
+            inputValue={form.UserID}
+            // helperText="please enter after typing Username."
+            />          
+                              
+          </Grid>
+           <Grid item xs={12} sm={2}>
             <TextField
                     id="date"
                     label="Start Date"
@@ -101,6 +104,8 @@ export default function AdminReport() {
                       shrink: true,
                     }}
                   />
+                  </Grid>
+        <Grid item xs={12} sm={2}>
             <TextField
                     id="date"
                     label="End Date"
@@ -112,7 +117,8 @@ export default function AdminReport() {
                     InputLabelProps={{
                       shrink: true,
                     }}
-                  />        
+                  />   
+          </Grid>     
                 <Button variant="contained" color="secondary" onClick={HandleSearch} sx={{ mr: 2, mt:1 }}>Search</Button>
            
         </Grid>
