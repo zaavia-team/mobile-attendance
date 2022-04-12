@@ -5,7 +5,6 @@ import './dashboard.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:fluttertoast/fluttertoast.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -16,7 +15,7 @@ class _LoginState extends State<Login> {
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
   var token;
-
+  String msg = "";
   late Box box1;
 
   @override
@@ -27,13 +26,12 @@ class _LoginState extends State<Login> {
 
   void login() async {
     if (email.text.isEmpty || password.text.isEmpty) {
-      Fluttertoast.showToast(
-          msg: "Kindly fill both the fields",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 2,
-          backgroundColor: Colors.purple,
-          fontSize: 15);
+      const snackBar = SnackBar(
+        content: Text('Kindly fill both the fields', style: TextStyle(fontSize: 16.5),),
+        backgroundColor: Colors.red,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else {
       try {
         var response = await http.post(
@@ -46,13 +44,13 @@ class _LoginState extends State<Login> {
 
         if (response.statusCode == 200 &&
             jsonDecode(response.body)["status"] == false) {
-          Fluttertoast.showToast(
-              msg: "User ID or Password does not match",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 2,
-              backgroundColor: Colors.purple,
-              fontSize: 15);
+          msg = jsonDecode(response.body)["message"];
+          var snackBar = SnackBar(
+            content: Text(msg, style: TextStyle(fontSize: 16.5),),
+            backgroundColor: Colors.red,
+          );
+
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
         } else {
           var data = jsonDecode(response.body);
           box1.put('email', data["data"]["Login_ID"]);
@@ -66,13 +64,14 @@ class _LoginState extends State<Login> {
           );
         }
       } catch (e) {
-         Fluttertoast.showToast(
-              msg: dotenv.env['API_URL'] ?? "Url null catch",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 2,
-              backgroundColor: Colors.purple,
-              fontSize: 15);
+        print(e);
+        msg = dotenv.env['API_URL'] ?? "Url null catch";
+        var snackBar = SnackBar(
+          content: Text(msg),
+          
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     }
   }

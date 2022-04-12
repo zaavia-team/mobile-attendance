@@ -16,7 +16,7 @@ export default function AdminReport() {
 
 
 
-    const [form, setForm] = useState({startDate:"", endDate:"", UserId:""});
+    const [form, setForm] = useState({startDate:"", endDate:""});
     const [data, setData] = useState([])
 
 
@@ -26,13 +26,13 @@ export default function AdminReport() {
   }
 
   const HandleSearch = () =>{
-    if (form.startDate && form.endDate && form.UserName ) {
+    if (form.startDate && form.endDate  ) {
       const api="/api/getreportattendance"
       const token = localStorage.getItem("token") 
       const data = {
         StartDate:form.startDate,
         EndDate:form.endDate,
-        userIds:form.UserId
+        // userIds:form.UserId
       }
       
         axios.post(api, data,

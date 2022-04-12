@@ -82,6 +82,7 @@ module.exports.gettodayattendance = (req, res) => {
     let CurrentDate = new Date()
     let query = {
         TakenIn: { $exists: true },
+        TakenOut: { $exists: false },
         "Date.Month": CurrentDate.getMonth(),
         "Date.Day": CurrentDate.getDate(),
         "Date.Year": CurrentDate.getFullYear()
