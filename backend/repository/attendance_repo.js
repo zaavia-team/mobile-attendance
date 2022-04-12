@@ -47,3 +47,7 @@ exports.count = (query) =>{
 exports.aggregate = (pipeline) =>{
     return Attendance_Model.aggregate(pipeline);
 }
+
+exports.createmultiple = (Docs) =>{
+    return Attendance_Model.insertMany(Docs);
+}

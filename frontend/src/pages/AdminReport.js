@@ -4,6 +4,7 @@ import  { useState, useEffect } from 'react'
 import { Container } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { Box,Button, TextField } from '@mui/material';
+import TagsInput from '../components/TagsInput';
 
 import axios from 'axios';
 
@@ -16,8 +17,14 @@ export default function AdminReport() {
 
 
 
+<<<<<<< HEAD
     const [form, setForm] = useState({startDate:"", endDate:""});
+=======
+    const [form, setForm] = useState({startDate:"", endDate:"", UserID:[]});
+>>>>>>> a24650ba03a19275819690b63d517fd0517a2528
     const [data, setData] = useState([])
+    const [tags, setTags] = useState([]);
+
 
 
   const handleChange = (e) =>{
@@ -25,14 +32,26 @@ export default function AdminReport() {
     
   }
 
+  function handleSelecetedTags(items) {
+    setTags(items)
+  }
+
   const HandleSearch = () =>{
+<<<<<<< HEAD
     if (form.startDate && form.endDate  ) {
+=======
+    if (form.startDate && form.endDate ) {
+>>>>>>> a24650ba03a19275819690b63d517fd0517a2528
       const api="/api/getreportattendance"
       const token = localStorage.getItem("token") 
       const data = {
         StartDate:form.startDate,
         EndDate:form.endDate,
+<<<<<<< HEAD
         // userIds:form.UserId
+=======
+        userIds:tags
+>>>>>>> a24650ba03a19275819690b63d517fd0517a2528
       }
       
         axios.post(api, data,
@@ -58,17 +77,33 @@ export default function AdminReport() {
     <h1>Admin Report</h1>
         <Grid container justifyContent="center" alignItems="center" sx={{ mb: 3, mt:1 }}>
     
-            <Box xs={12} sm={6}>
-            <TextField
+          
+            {/* <TextField
                       
                       id="UserId"
                       label="User Id"
                       name="UserId"
                       value={form.UserId}
-                      onChange={handleChange}
+                      onChange={han dleChange}
                       sx={{ mr: 2, mt:1 }}
                       autoComplete="family-name"
-                    />
+                      /> */}
+          <Grid item xs={12} sm={3}>
+          <TagsInput
+            selectedTags={handleSelecetedTags}
+            label="User Name"
+            tags={tags}
+            sx={{ mr: 2, mt:4 }}
+            size="small"
+            variant="outlined"
+            id="UserID"
+            name="UserID"
+            inputValue={form.UserID}
+            // helperText="please enter after typing Username."
+            />          
+                              
+          </Grid>
+           <Grid item xs={12} sm={2}>
             <TextField
                     id="date"
                     label="Start Date"
@@ -81,6 +116,8 @@ export default function AdminReport() {
                       shrink: true,
                     }}
                   />
+                  </Grid>
+        <Grid item xs={12} sm={2}>
             <TextField
                     id="date"
                     label="End Date"
@@ -92,9 +129,10 @@ export default function AdminReport() {
                     InputLabelProps={{
                       shrink: true,
                     }}
-                  />        
+                  />   
+          </Grid>     
                 <Button variant="contained" color="secondary" onClick={HandleSearch} sx={{ mr: 2, mt:1 }}>Search</Button>
-            </Box>
+           
         </Grid>
 
     <Grid container spacing={3} justifyContent="center" alignItems="center"

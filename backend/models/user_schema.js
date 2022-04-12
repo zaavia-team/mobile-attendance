@@ -20,7 +20,7 @@ const UserSchema = new Schema({
   Address: { type: String},
   Login_ID: {type: String , required: true},
   Email: { type: String, required: true},
-  RoleTitle: [String],
+  RightsTitle: [String],
   CreationDetails: ActionDetails,
   Salt: { type: String, required: true, default: uuid },
   Password: { type: String, required: true },
