@@ -139,6 +139,11 @@ module.exports.report = (req, res) => {
                         $cond: [{ $eq: ['$WorkingHours', true] }, 1, 0]
                     }
                 },
+                'TotalHolidays': {
+                    '$sum': {
+                        $cond: [{ $eq: ['$Title', "Holiday"] }, 1, 0]
+                    }
+                },
             }
         }
     ]
