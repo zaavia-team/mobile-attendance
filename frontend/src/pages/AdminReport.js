@@ -13,15 +13,9 @@ import axios from 'axios';
 
 
 export default function AdminReport() {
-
-
-
-
     const [form, setForm] = useState({startDate:"", endDate:"", UserID:[]});
     const [data, setData] = useState([])
     const [tags, setTags] = useState([]);
-
-
 
   const handleChange = (e) =>{
     setForm({ ...form, [e.target.name] : e.target.value})
@@ -76,7 +70,7 @@ export default function AdminReport() {
                       sx={{ mr: 2, mt:1 }}
                       autoComplete="family-name"
                       /> */}
-          <Grid item xs={12} sm={3}>
+          {/* <Grid item xs={12} sm={3}>
           <TagsInput
             selectedTags={handleSelecetedTags}
             label="User Name"
@@ -90,7 +84,9 @@ export default function AdminReport() {
             // helperText="please enter after typing Username."
             />          
                               
-          </Grid>
+          </Grid> */}
+
+          
            <Grid item xs={12} sm={2}>
             <TextField
                     id="date"

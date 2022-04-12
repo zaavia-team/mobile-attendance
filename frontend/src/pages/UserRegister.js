@@ -13,11 +13,12 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import Modal from '@mui/material/Modal';
 import axios from 'axios';
-import { Table, TableBody, TableCell, TableHead, TableRow, makeStyles, InputLabel, MenuItem, FormControl,Select     } from "@material-ui/core";
+import { Table, TableBody, TableCell, TableHead, TableRow, makeStyles, InputLabel, MenuItem, FormControl,Select, ListItem     } from "@material-ui/core";
 import { useState, useEffect } from 'react';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -126,6 +127,7 @@ export default function UserRegister() {
   useEffect(() => {
     axios.get('/api/users')
       .then(function (response) {
+
         // response.data.filter((Users) => Users.Login_ID === "admin01")
         setUsers(response.data)
       })
@@ -165,7 +167,9 @@ export default function UserRegister() {
         RightsTitle: form.RightsTitle
       }
 
-      axios.post(api, data, { headers: { "Authorization": `${token}` } })
+      axios.post(api, data, 
+        { headers: { "Authorization": `${token}` } },  
+      )
         .then(response => {
           SetMessage({ value: "Successfuly Updated", type: "success" })
           setForm({ FirstName: "", LastName: "", Password: "", Email: "", Login_ID: "", Designation: "", DateOfBirth: "", 
@@ -508,11 +512,12 @@ export default function UserRegister() {
                     MenuProps={MenuProps}
                   >
                     {names.Setup?.Title.map((name) => (
-                      <MenuItem key={name} value={name}>
+                      <ListItem key={name} value={name}>
                         <Checkbox checked={form?.RightsTitle?.indexOf(name) > -1} />
                         <ListItemText primary={name} />
-                      </MenuItem>
+                      </ListItem>
                     ))}
+                  
                   </Select>
                   </Grid>
 
@@ -611,7 +616,7 @@ export default function UserRegister() {
       </Modal>
 
       {/* ---------------------- All Users ----------------------- */}
-      <Table className={classes.table}>
+      {users ? <Table className={classes.table}>
         <TableHead>
           <TableRow className={classes.thead}>
             <TableCell>First Name</TableCell>
@@ -651,7 +656,7 @@ export default function UserRegister() {
             ))
           }
         </TableBody>
-      </Table>
+      </Table> : <CircularProgress color="secondary" />}
 
 
       <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
