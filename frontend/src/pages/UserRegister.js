@@ -251,15 +251,28 @@ export default function UserRegister() {
   const handleHolidaySubmit = () => {
     const { Type, StartDate, EndDate } = form
     if (Type && StartDate && EndDate) {
-      axios.get()
-      SetMessage({ value: "Successfuly Registered", type: "success" })
-      setForm({
-        FirstName: "", LastName: "", Password: "", Email: "", Login_ID: "", Designation: "",
-        DateOfBirth: "", WorkingHours: "", DateOfJoining: "", PhoneNumber: "", NIC: ""
-      })
-      handleclose();
-    }
+      const data ={
+        Datestart: StartDate,
+        Dateend: EndDate,
+        TransactionType: Type
+      }
+      axios.post('api/holiday', data ,  { headers: { "Authorization": `${token}` } })
+      .then(function(response){
 
+        SetMessage({ value: "Successfuly Registered", type: "success" })
+        setForm({
+          FirstName: "", LastName: "", Password: "", Email: "", Login_ID: "", Designation: "",
+          DateOfBirth: "", WorkingHours: "", DateOfJoining: "", PhoneNumber: "", NIC: "",
+          StartDate: "", EndDate: "", Type: "",RightsTitle:[]
+        })
+        handleclose();
+      }).catch(function(error){
+        console.log(error)
+      });
+
+
+
+      }
   }
 
   const style = {
@@ -284,7 +297,7 @@ export default function UserRegister() {
   const openModaledit = (userObj) => {
     setForm({
       ...userObj, DateOfBirth: new Date(userObj.DateOfBirth).toISOString().slice(0, 10),
-      DateOfJoining: new Date(userObj.DateOfJoining).toISOString().slice(0, 10),
+      DateOfJoining: new Date(userObj.DateOfJoining).toISOString().slice(0, 10),RightsTitle:[]
     })
     handleOpen();
   }
