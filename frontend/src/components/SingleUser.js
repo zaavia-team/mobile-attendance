@@ -12,13 +12,10 @@ export default function SingleUser({ data }) {
         <div >
             <Card elevation={1} sx={{ maxWidth: 345 }}>
                 <CardHeader
-<<<<<<< HEAD
-                    title={data?.Details[0].UserName}
-                    // subheader={data.month}
-=======
+
                     title={data?.Details[0]?.UserName}
                     subheader={data.month}
->>>>>>> a24650ba03a19275819690b63d517fd0517a2528
+
                 />
                 <CardContent>
                     <Grid container  justifyContent="center" alignItems="center">
@@ -36,15 +33,15 @@ export default function SingleUser({ data }) {
               
                         
                         <TableRow >
-<<<<<<< HEAD
+
                          <TableCell>{data.WorkingHours }</TableCell>
                          <TableCell>{Math.floor(data.TotalHours)}</TableCell>
                          <TableCell>1</TableCell>
-=======
+
                          <TableCell>{data?.Details[0]?.WorkingHours }</TableCell>
                          <TableCell>{data?.TotalHours?.toFixed(2)}</TableCell>
                          <TableCell>{data.Name}</TableCell>
->>>>>>> a24650ba03a19275819690b63d517fd0517a2528
+
 
                          </TableRow>
                   
