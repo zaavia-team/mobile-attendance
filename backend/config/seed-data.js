@@ -8,6 +8,7 @@ const user = {
     Login_ID: "admin01",
     Email: "admin",
     RoleTitle: "Admin",
+    WorkingHours: 8,
     CreationDetails: {
         ActionTakenByName: "System",
         ActionTakenOn: new Date(),
