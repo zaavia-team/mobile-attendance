@@ -250,3 +250,20 @@ module.exports.LeaveReq = (req, res) => {
             res.send({ Status: false, message: error.message })
         })
 }
+
+module.exports.getUsershowLeave = async (req, res) => {
+
+    const usershow = await attendance_repo.find({
+        UserID: req.user._id,
+        TransactionType: 'Leave',
+        Status:{ $in: ['Pending','Approved' ]},
+        'Date.Month': new Date().getMonth()
+
+    }, false, false)
+        .then(res1 => {
+            res.send({ Status: true, data: res1 })
+        })
+        .catch(error => {
+            res.send({ Status: false, message: error.message })
+        })
+}
