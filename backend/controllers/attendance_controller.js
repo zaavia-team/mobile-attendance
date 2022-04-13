@@ -1,5 +1,5 @@
 const attendance_repo = require('../repository/attendance_repo');
-const user_repo = require ('../repository/user_repo');
+const user_repo = require('../repository/user_repo');
 
 module.exports.attendance = async (req, res) => {
     const DateStr = new Date(req.body.Date);
@@ -181,7 +181,7 @@ module.exports.holiday = async (req, res) => {
                     Year: loop.getFullYear(),
                 },
                 WorkingHours: user.WorkingHours,
-                Title : req.body.Title,
+                Title: req.body.Title,
                 ActionDetails: {
                     ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
                     ActionTakenByID: req.user._id,
@@ -193,7 +193,7 @@ module.exports.holiday = async (req, res) => {
             var newDate = loop.setDate(loop.getDate() + 1);
             loop = new Date(newDate);
         }
-        
+
     });
     attendance_repo.createmultiple(Docs)
         .then(user => {
@@ -205,3 +205,44 @@ module.exports.holiday = async (req, res) => {
 }
 
 
+
+module.exports.LeaveReq = (req, res) => {
+    const Req = [];
+    const TransactionType = req.body.TransactionType;
+    const Datestart = new Date(req.body.Datestart);
+    const Dateend = new Date(req.body.Dateend);
+    let loop = new Date(req.body.Datestart);
+    while (loop <= Dateend) {
+        let newReqObj = {
+            UserID: req.user._id,
+            UserName: req.user.Login_ID,
+            TransactionType: TransactionType,
+            Date: {
+                Month: loop.getMonth(),
+                Day: loop.getDate(),
+                Year: loop.getFullYear(),
+            },
+            WorkingHours: req.user.WorkingHours,
+            Reason: req.body.Reason,
+            
+            ActionDetails: {
+                ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
+                ActionTakenByID: req.user._id,
+                ActionTakenOn: new Date(),
+                ActionTakenByLoginID: req.user.Login_ID,
+            },
+        };
+        Req.push(newReqObj);
+        var newDate = loop.setDate(loop.getDate() + 1);
+        loop = new Date(newDate);
+
+    }
+
+    attendance_repo.create(Req)
+        .then(user => {
+            res.send({ Status: true, data: user })
+        })
+        .catch(error => {
+            res.send({ Status: false, message: error.message })
+        })
+}

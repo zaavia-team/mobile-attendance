@@ -18,6 +18,8 @@ const AttendanceSchema = new Schema({
     WorkingHours: Number,
     ManualEntry: Boolean,
     Title: String,
+    Reason : String,
+    Approved : Boolean,
     Date: { 
       Month: Number,
       Day: Number,
