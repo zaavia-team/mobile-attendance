@@ -19,13 +19,15 @@ const AttendanceSchema = new Schema({
     ManualEntry: Boolean,
     Title: String,
     Reason : String,
-    Approved : Boolean,
+    Status : String,
     Date: { 
       Month: Number,
       Day: Number,
       Year: Number ,
     },
     ActionDetails,
+    ApprovedDetails: ActionDetails,
+    RejectedDetails: ActionDetails,
     UserName: String,
     Comment: String,
 });

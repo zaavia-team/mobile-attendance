@@ -75,7 +75,6 @@ module.exports.gettodayattendance = (req, res) => {
     let CurrentDate = new Date()
     let query = {
         TakenIn: { $exists: true },
-        TakenOut: { $exists: false },
         "Date.Month": CurrentDate.getMonth(),
         "Date.Day": CurrentDate.getDate(),
         "Date.Year": CurrentDate.getFullYear()
@@ -145,6 +144,11 @@ module.exports.report = (req, res) => {
                         $cond: [{ $eq: ['$Title', "Holiday"] }, 1, 0]
                     }
                 },
+                'Leave': {
+                    '$sum': {
+                        $cond: [{ $eq: ['$Title', "Leave"] }, 1, 0]
+                    }
+                },
             }
         }
     ]
@@ -181,7 +185,7 @@ module.exports.holiday = async (req, res) => {
                     Day: loop.getDate(),
                     Year: loop.getFullYear(),
                 },
-                WorkingHours: user.WorkingHours,
+                WorkingHours: 0,
                 Title: req.body.Title,
                 ActionDetails: {
                     ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
@@ -209,7 +213,6 @@ module.exports.holiday = async (req, res) => {
 
 module.exports.LeaveReq = (req, res) => {
     const Req = [];
-    const TransactionType = req.body.TransactionType;
     const Datestart = new Date(req.body.Datestart);
     const Dateend = new Date(req.body.Dateend);
     let loop = new Date(req.body.Datestart);
@@ -217,15 +220,15 @@ module.exports.LeaveReq = (req, res) => {
         let newReqObj = {
             UserID: req.user._id,
             UserName: req.user.Login_ID,
-            TransactionType: TransactionType,
+            TransactionType: 'Leave',
             Date: {
                 Month: loop.getMonth(),
                 Day: loop.getDate(),
                 Year: loop.getFullYear(),
             },
-            WorkingHours: req.user.WorkingHours,
+            WorkingHours: 0,
             Reason: req.body.Reason,
-            
+            Status: 'Pending',
             ActionDetails: {
                 ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
                 ActionTakenByID: req.user._id,
