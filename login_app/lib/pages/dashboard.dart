@@ -215,9 +215,9 @@ class _DashboardState extends State<Dashboard> {
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () {
-              box1.delete("token");
-              box1.delete("email");
-              box1.delete("Name");
+              box1.delete('token');
+              box1.delete('email');
+              box1.delete('Name');
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => Login()),
