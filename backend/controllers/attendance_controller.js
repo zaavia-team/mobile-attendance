@@ -23,6 +23,7 @@ module.exports.attendance = async (req, res) => {
                     Day: DateStr.getDate(),
                     Year: DateStr.getFullYear(),
                 },
+                ManualEntry: req.body.ManualEntry,
                 WorkingHours: req.user.WorkingHours,
                 UserName: req.user.Login_ID,
                 ActionDetails: {
@@ -49,7 +50,10 @@ module.exports.attendance = async (req, res) => {
                 "UserID": req.user._id,
             };
             let updatequery = {
-                $set: { TakenOut: DateStr }
+                $set: { 
+                    TakenOut: DateStr,
+                    ManualEntry: req.body.ManualEntry
+                }
             }
             attendance_repo.updateOne(query, updatequery)
                 .then(updateattendance => {
