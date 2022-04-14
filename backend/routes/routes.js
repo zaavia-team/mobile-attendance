@@ -14,6 +14,8 @@ routes.post('/attendance_transaction',auth.authMiddleware,attendance_controller.
 routes.get('/gettodayattendance',auth.authMiddleware,attendance_controller.gettodayattendance)
 routes.post('/getreportattendance',auth.authMiddleware,attendance_controller.report)
 routes.post('/holiday',auth.authMiddleware,attendance_controller.holiday)
+routes.post('/LeaveReq',auth.authMiddleware,attendance_controller.LeaveReq)
+routes.post('/getUsershowLeave',auth.authMiddleware,attendance_controller.getUsershowLeave)
 routes.get ('/getalltitles', auth.authMiddleware,titlesDictionary.getAllTitles)
 
 

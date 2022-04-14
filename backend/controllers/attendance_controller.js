@@ -1,5 +1,5 @@
 const attendance_repo = require('../repository/attendance_repo');
-const user_repo = require ('../repository/user_repo');
+const user_repo = require('../repository/user_repo');
 
 module.exports.attendance = async (req, res) => {
     const DateStr = new Date(req.body.Date);
@@ -75,7 +75,6 @@ module.exports.gettodayattendance = (req, res) => {
     let CurrentDate = new Date()
     let query = {
         TakenIn: { $exists: true },
-        TakenOut: { $exists: false },
         "Date.Month": CurrentDate.getMonth(),
         "Date.Day": CurrentDate.getDate(),
         "Date.Year": CurrentDate.getFullYear()
@@ -145,6 +144,11 @@ module.exports.report = (req, res) => {
                         $cond: [{ $eq: ['$Title', "Holiday"] }, 1, 0]
                     }
                 },
+                'Leave': {
+                    '$sum': {
+                        $cond: [{ $eq: ['$Title', "Leave"] }, 1, 0]
+                    }
+                },
             }
         }
     ]
@@ -181,8 +185,8 @@ module.exports.holiday = async (req, res) => {
                     Day: loop.getDate(),
                     Year: loop.getFullYear(),
                 },
-                WorkingHours: user.WorkingHours,
-                Title : req.body.Title,
+                WorkingHours: 0,
+                Title: req.body.Title,
                 ActionDetails: {
                     ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
                     ActionTakenByID: req.user._id,
@@ -194,7 +198,7 @@ module.exports.holiday = async (req, res) => {
             var newDate = loop.setDate(loop.getDate() + 1);
             loop = new Date(newDate);
         }
-        
+
     });
     attendance_repo.createmultiple(Docs)
         .then(user => {
@@ -206,3 +210,60 @@ module.exports.holiday = async (req, res) => {
 }
 
 
+
+module.exports.LeaveReq = (req, res) => {
+    const Req = [];
+    const Datestart = new Date(req.body.Datestart);
+    const Dateend = new Date(req.body.Dateend);
+    let loop = new Date(req.body.Datestart);
+    while (loop <= Dateend) {
+        let newReqObj = {
+            UserID: req.user._id,
+            UserName: req.user.Login_ID,
+            TransactionType: 'Leave',
+            Date: {
+                Month: loop.getMonth(),
+                Day: loop.getDate(),
+                Year: loop.getFullYear(),
+            },
+            WorkingHours: 0,
+            Reason: req.body.Reason,
+            Status: 'Pending',
+            ActionDetails: {
+                ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
+                ActionTakenByID: req.user._id,
+                ActionTakenOn: new Date(),
+                ActionTakenByLoginID: req.user.Login_ID,
+            },
+        };
+        Req.push(newReqObj);
+        var newDate = loop.setDate(loop.getDate() + 1);
+        loop = new Date(newDate);
+
+    }
+
+    attendance_repo.create(Req)
+        .then(user => {
+            res.send({ Status: true, data: user })
+        })
+        .catch(error => {
+            res.send({ Status: false, message: error.message })
+        })
+}
+
+module.exports.getUsershowLeave = async (req, res) => {
+
+    const usershow = await attendance_repo.find({
+        UserID: req.user._id,
+        TransactionType: 'Leave',
+        Status:{ $in: ['Pending','Approved' ]},
+        'Date.Month': new Date().getMonth()
+
+    }, false, false)
+        .then(res1 => {
+            res.send({ Status: true, data: res1 })
+        })
+        .catch(error => {
+            res.send({ Status: false, message: error.message })
+        })
+}

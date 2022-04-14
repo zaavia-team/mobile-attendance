@@ -1,24 +1,20 @@
 import React from 'react'
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
 import { CardHeader, Grid } from '@mui/material';
 import { Table, TableBody, TableCell, TableHead, TableRow, makeStyles } from "@material-ui/core";
 
 
 export default function SingleUser({ data }) {
-    console.log(data)
+   const month = ["january", "February", "March", "April","May", "June", "July", "August", "September", "October", "Novemper", "December"]
     return (
         <div >
             <Card elevation={1} sx={{ maxWidth: 345 }}>
                 <CardHeader
-<<<<<<< HEAD
-                    title={data?.Details[0].UserName}
-                    // subheader={data.month}
-=======
+
                     title={data?.Details[0]?.UserName}
-                    subheader={data.month}
->>>>>>> a24650ba03a19275819690b63d517fd0517a2528
+                    subheader= {`Month : ${month[data?.Details[0]?.Date?.Month]}`}
+
                 />
                 <CardContent>
                     <Grid container  justifyContent="center" alignItems="center">
@@ -36,15 +32,15 @@ export default function SingleUser({ data }) {
               
                         
                         <TableRow >
-<<<<<<< HEAD
-                         <TableCell>{data.WorkingHours }</TableCell>
+
+                         {/* <TableCell>{data.WorkingHours }</TableCell>
                          <TableCell>{Math.floor(data.TotalHours)}</TableCell>
-                         <TableCell>1</TableCell>
-=======
-                         <TableCell>{data?.Details[0]?.WorkingHours }</TableCell>
-                         <TableCell>{data?.TotalHours?.toFixed(2)}</TableCell>
-                         <TableCell>{data.Name}</TableCell>
->>>>>>> a24650ba03a19275819690b63d517fd0517a2528
+                         <TableCell>1</TableCell> */}
+
+                         <TableCell>{data?.WorkingHours }</TableCell>
+                         <TableCell >{data?.TotalHours?.toFixed(2)}</TableCell>
+                         <TableCell>0</TableCell>
+
 
                          </TableRow>
                   

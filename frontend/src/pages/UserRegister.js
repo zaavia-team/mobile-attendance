@@ -12,12 +12,14 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import Modal from '@mui/material/Modal';
+import Backdrop from '@mui/material/Backdrop';
 import axios from 'axios';
-import { Table, TableBody, TableCell, TableHead, TableRow, makeStyles, InputLabel, MenuItem, FormControl,Select     } from "@material-ui/core";
+import { Table, TableBody, TableCell, TableHead, TableRow, makeStyles, InputLabel, MenuItem, FormControl,Select, ListItem     } from "@material-ui/core";
 import { useState, useEffect } from 'react';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -63,6 +65,10 @@ export default function UserRegister() {
   const [isValid, setIsValid] = React.useState(false);
   const [openModal, setOpenModal] = React.useState(false);
   const [holiday, setHoliday] = React.useState(false);
+  const token = localStorage.getItem('token');
+  const [personName, setPersonName] = React.useState([]);
+  const [names, setNames] = React.useState([]);
+  const [openBackdrop, setopenBackdrop] = React.useState(false);
 
 
   const emailRegex = /\S+@\S+\.\S+/;
@@ -71,35 +77,29 @@ export default function UserRegister() {
     setForm({ ...form, [event.target.name]: event.target.value })
   };
 
+  const handleCloseBackdrop = () => {
+    setopenBackdrop(false);
+  };
+
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
-
     setOpen(false);
     SetMessage({})
 
   };
 
-  const token = localStorage.getItem('token');
-
-  const [personName, setPersonName] = React.useState([]);
-
-  const [names, setNames] = React.useState([]);
 
   useEffect(()=>{
-
+    
     axios.get('/api/getalltitles', { headers: { "Authorization": `${token}` } })
      .then(function (response) {
-       console.log(response,"response")
-       setNames(response.data.data)
+      setNames(response.data.data)
       })
     .catch(function (error) {
-      // handle error
        console.log(error);
       })
-  
-
   }, [])
     
 
@@ -124,8 +124,10 @@ export default function UserRegister() {
 
 
   useEffect(() => {
+    setopenBackdrop(!openBackdrop);
     axios.get('/api/users')
       .then(function (response) {
+        handleCloseBackdrop();
         // response.data.filter((Users) => Users.Login_ID === "admin01")
         setUsers(response.data)
       })
@@ -139,11 +141,41 @@ export default function UserRegister() {
 
   }, [])
 
+  const handleHolidaySubmit = () => {
+    setOpen(true)
+    setopenBackdrop(!openBackdrop);
+    const { Type, StartDate, EndDate } = form
+    if (Type && StartDate && EndDate) {
+      const data ={
+        Datestart: StartDate,
+        Dateend: EndDate,
+        TransactionType: Type
+      }
+      axios.post('api/holiday', data ,  
+      { headers: { "Authorization": `${token}` } })
+      .then(function(response){
+        SetMessage({ value: "Successfuly Registered", type: "success" })
+        setForm({
+          FirstName: "", LastName: "", Password: "", Email: "", Login_ID: "", Designation: "",
+          DateOfBirth: "", WorkingHours: "", DateOfJoining: "", PhoneNumber: "", NIC: "",
+          StartDate: "", EndDate: "", Type: "",RightsTitle:[]
+        })
+        handleclose();
+        handleCloseBackdrop();
+        
+      }).catch(function(error){
+        console.log(error)
+      });
+      }else{
+        SetMessage({ value: "Please Enter Required fields", type: "error" })
 
+      }
+  }
 
 
   const handleSubmit = (event) => {
     setOpen(true);
+    setopenBackdrop(!openBackdrop);
     event.preventDefault();
     let api = '/api/register';
 
@@ -165,7 +197,9 @@ export default function UserRegister() {
         RightsTitle: form.RightsTitle
       }
 
-      axios.post(api, data, { headers: { "Authorization": `${token}` } })
+      axios.post(api, data, 
+        { headers: { "Authorization": `${token}` } },  
+      )
         .then(response => {
           SetMessage({ value: "Successfuly Updated", type: "success" })
           setForm({ FirstName: "", LastName: "", Password: "", Email: "", Login_ID: "", Designation: "", DateOfBirth: "", 
@@ -179,8 +213,9 @@ export default function UserRegister() {
               // handle error
               console.log(error);
             })
-          handleclose();
-        });
+            handleclose();
+            handleCloseBackdrop();
+          });
       return;
     }
     if (!form._id &&
@@ -213,7 +248,7 @@ export default function UserRegister() {
         axios.post(api, data,
           { headers: { "Authorization": `${token}` } })
           .then(function (response) {
-            console.log(response);
+            
             SetMessage({ value: "Successfuly Registered", type: "success" })
             setForm({
               FirstName: "", LastName: "", Password: "", Email: "", Login_ID: "", Designation: "",
@@ -230,6 +265,7 @@ export default function UserRegister() {
               })
 
             handleclose();
+            handleCloseBackdrop();
           })
           .catch(function (error) {
             console.log(error);
@@ -248,32 +284,7 @@ export default function UserRegister() {
     }
   };
 
-  const handleHolidaySubmit = () => {
-    const { Type, StartDate, EndDate } = form
-    if (Type && StartDate && EndDate) {
-      const data ={
-        Datestart: StartDate,
-        Dateend: EndDate,
-        TransactionType: Type
-      }
-      axios.post('api/holiday', data ,  { headers: { "Authorization": `${token}` } })
-      .then(function(response){
-
-        SetMessage({ value: "Successfuly Registered", type: "success" })
-        setForm({
-          FirstName: "", LastName: "", Password: "", Email: "", Login_ID: "", Designation: "",
-          DateOfBirth: "", WorkingHours: "", DateOfJoining: "", PhoneNumber: "", NIC: "",
-          StartDate: "", EndDate: "", Type: "",RightsTitle:[]
-        })
-        handleclose();
-      }).catch(function(error){
-        console.log(error)
-      });
-
-
-
-      }
-  }
+  
 
   const style = {
     position: 'absolute',
@@ -295,9 +306,10 @@ export default function UserRegister() {
     
   }
   const openModaledit = (userObj) => {
+    
     setForm({
       ...userObj, DateOfBirth: new Date(userObj.DateOfBirth).toISOString().slice(0, 10),
-      DateOfJoining: new Date(userObj.DateOfJoining).toISOString().slice(0, 10),RightsTitle:[]
+      DateOfJoining: new Date(userObj.DateOfJoining).toISOString().slice(0, 10), RightsTitle: userObj?.RightsTitle || []
     })
     handleOpen();
   }
@@ -334,9 +346,9 @@ export default function UserRegister() {
                 alignItems: 'center',
               }}
             >
-              {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+              <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
                 <LockOutlinedIcon />
-              </Avatar> */}
+              </Avatar>
               <Typography component="h1" variant="h5">
                 Employee Registration
               </Typography>
@@ -508,11 +520,12 @@ export default function UserRegister() {
                     MenuProps={MenuProps}
                   >
                     {names.Setup?.Title.map((name) => (
-                      <MenuItem key={name} value={name}>
+                      <ListItem key={name} value={name}>
                         <Checkbox checked={form?.RightsTitle?.indexOf(name) > -1} />
                         <ListItemText primary={name} />
-                      </MenuItem>
+                      </ListItem>
                     ))}
+                  
                   </Select>
                   </Grid>
 
@@ -611,7 +624,7 @@ export default function UserRegister() {
       </Modal>
 
       {/* ---------------------- All Users ----------------------- */}
-      <Table className={classes.table}>
+      {users ? <Table className={classes.table}>
         <TableHead>
           <TableRow className={classes.thead}>
             <TableCell>First Name</TableCell>
@@ -651,7 +664,7 @@ export default function UserRegister() {
             ))
           }
         </TableBody>
-      </Table>
+      </Table> : <CircularProgress color="secondary" />}
 
 
       <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
@@ -659,6 +672,14 @@ export default function UserRegister() {
           {message.value}
         </Alert>
       </Snackbar>
+
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openBackdrop}
+        onClick={handleCloseBackdrop}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </ThemeProvider>
   );
 }

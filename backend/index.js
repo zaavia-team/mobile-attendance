@@ -21,7 +21,7 @@ app.use(function(req, res, next) {
 });
 
 // start the server in the port 3000 !
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 4000
 app.listen(PORT, function () {
     console.log('Attendance app listening on port ' , PORT);
 });
