@@ -1,9 +1,16 @@
 const attendance_repo = require('../repository/attendance_repo');
 const user_repo = require('../repository/user_repo');
 
+
 module.exports.attendance = async (req, res) => {
     const DateStr = new Date(req.body.Date);
     const TransactionType = req.body.TransactionType;
+    const ActionDetails = {
+        ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
+        ActionTakenByID: req.user._id,
+        ActionTakenOn: new Date(),
+        ActionTakenByLoginID: req.user.Login_ID,
+    };
     try {
         if (TransactionType == 'i am In') {
             const findAtt = await attendance_repo.find({
@@ -23,14 +30,10 @@ module.exports.attendance = async (req, res) => {
                     Day: DateStr.getDate(),
                     Year: DateStr.getFullYear(),
                 },
+                ManualEntry: req.body.ManualEntry,
                 WorkingHours: req.user.WorkingHours,
                 UserName: req.user.Login_ID,
-                ActionDetails: {
-                    ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
-                    ActionTakenByID: req.user._id,
-                    ActionTakenOn: new Date(),
-                    ActionTakenByLoginID: req.user.Login_ID,
-                },
+                ActionDetails: ActionDetails
             })
                 .then(attendance => {
                     res.send({ status: true, message: "Sign In Succesfully", Data: attendance })
@@ -49,7 +52,10 @@ module.exports.attendance = async (req, res) => {
                 "UserID": req.user._id,
             };
             let updatequery = {
-                $set: { TakenOut: DateStr }
+                $set: { 
+                    TakenOut: DateStr,
+                    ManualEntry: req.body.ManualEntry
+                }
             }
             attendance_repo.updateOne(query, updatequery)
                 .then(updateattendance => {
@@ -166,7 +172,12 @@ module.exports.report = (req, res) => {
 
 module.exports.holiday = async (req, res) => {
     const Docs = [];
-
+    const ActionDetails = {
+        ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
+        ActionTakenByID: req.user._id,
+        ActionTakenOn: new Date(),
+        ActionTakenByLoginID: req.user.Login_ID,
+    };
     const TransactionType = req.body.TransactionType;
     const Users = await user_repo.find({
         StatusCode: 1,
@@ -187,12 +198,7 @@ module.exports.holiday = async (req, res) => {
                 },
                 WorkingHours: 0,
                 Title: req.body.Title,
-                ActionDetails: {
-                    ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
-                    ActionTakenByID: req.user._id,
-                    ActionTakenOn: new Date(),
-                    ActionTakenByLoginID: req.user.Login_ID,
-                },
+                ActionDetails: ActionDetails
             };
             Docs.push(newDocObj)
             var newDate = loop.setDate(loop.getDate() + 1);
@@ -213,8 +219,20 @@ module.exports.holiday = async (req, res) => {
 
 module.exports.LeaveReq = (req, res) => {
     const Req = [];
+    let Dateend = "";
+    const ActionDetails = {
+        ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
+        ActionTakenByID: req.user._id,
+        ActionTakenOn: new Date(),
+        ActionTakenByLoginID: req.user.Login_ID,
+    };
     const Datestart = new Date(req.body.Datestart);
-    const Dateend = new Date(req.body.Dateend);
+    // const Dateend = new Date(req.body.Dateend);
+    if(req.body.Dateend){
+        Dateend = new Date(req.body.Dateend);
+    } else{
+        Dateend = new Date(req.body.Datestart);
+    }
     let loop = new Date(req.body.Datestart);
     while (loop <= Dateend) {
         let newReqObj = {
@@ -229,12 +247,7 @@ module.exports.LeaveReq = (req, res) => {
             WorkingHours: 0,
             Reason: req.body.Reason,
             Status: 'Pending',
-            ActionDetails: {
-                ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
-                ActionTakenByID: req.user._id,
-                ActionTakenOn: new Date(),
-                ActionTakenByLoginID: req.user.Login_ID,
-            },
+            ActionDetails:ActionDetails
         };
         Req.push(newReqObj);
         var newDate = loop.setDate(loop.getDate() + 1);
@@ -262,6 +275,46 @@ module.exports.getUsershowLeave = async (req, res) => {
     }, false, false)
         .then(res1 => {
             res.send({ Status: true, data: res1 })
+        })
+        .catch(error => {
+            res.send({ Status: false, message: error.message })
+        })
+}
+
+module.exports.approvedLeave = async (req, res) => {
+    const ActionDetails = {
+        ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
+        ActionTakenByID: req.user._id,
+        ActionTakenOn: new Date(),
+        ActionTakenByLoginID: req.user.Login_ID,
+    };
+    attendance_repo.updateOne(
+        {_id : req.params.id},
+        {$set:{ ApprovedDetails: ActionDetails,Status: "Approved"},
+        } 
+        )
+        .then(user => {
+            res.send({ Status: true, data: user })
+        })
+        .catch(error => {
+            res.send({ Status: false, message: error.message })
+        })
+}
+
+module.exports.rejectedLeave = async (req, res) => {
+    const ActionDetails = {
+        ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
+        ActionTakenByID: req.user._id,
+        ActionTakenOn: new Date(),
+        ActionTakenByLoginID: req.user.Login_ID,
+    };
+    attendance_repo.updateOne(
+        {_id : req.params.id},
+        {$set:{ RejectedDetails: ActionDetails,Status: "RejectedDetails"},
+        } 
+        )
+        .then(user => {
+            res.send({ Status: true, data: user })
         })
         .catch(error => {
             res.send({ Status: false, message: error.message })
