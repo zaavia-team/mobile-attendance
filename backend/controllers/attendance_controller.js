@@ -1,11 +1,10 @@
 const attendance_repo = require('../repository/attendance_repo');
+const user_repo = require('../repository/user_repo');
 
 module.exports.attendance = async (req, res) => {
-    console.log('sgasdag')
     const DateStr = new Date(req.body.Date);
     const TransactionType = req.body.TransactionType;
     try {
-        console.log('sgsahfdsk', req.body);
         if (TransactionType == 'i am In') {
             const findAtt = await attendance_repo.find({
                 "Date.Month": DateStr.getMonth(),
@@ -14,7 +13,6 @@ module.exports.attendance = async (req, res) => {
                 TakenIn: { $exists: true },
                 UserID: req.user._id
             }, true)
-            console.log("findAtt ", findAtt)
             if (findAtt) return res.send({ status: false, message: "User Already Sign In", Data: findAtt })
             attendance_repo.create({
                 UserID: req.user._id,
@@ -35,11 +33,9 @@ module.exports.attendance = async (req, res) => {
                 },
             })
                 .then(attendance => {
-                    console.log("attendance ", attendance)
                     res.send({ status: true, message: "Sign In Succesfully", Data: attendance })
                 })
                 .catch(error => {
-                    console.log(error)
                     res.send({ status: false, message: error.message || "Server Error on Sign In", err: error.message })
                 })
 
@@ -57,7 +53,6 @@ module.exports.attendance = async (req, res) => {
             }
             attendance_repo.updateOne(query, updatequery)
                 .then(updateattendance => {
-                    console.log(updateattendance)
                     if (updateattendance.modifiedCount > 0) {
                         res.send({ status: true, message: "Sign Out Succesfully" })
                     }
@@ -66,13 +61,11 @@ module.exports.attendance = async (req, res) => {
                     }
                 })
                 .catch(error => {
-                    console.log(error)
                     res.send({ status: false, message: error.message })
                 })
         }
 
     } catch (e) {
-        console.log(e)
         res.send({ status: false, message: e.message });
     }
 }
@@ -86,7 +79,6 @@ module.exports.gettodayattendance = (req, res) => {
         "Date.Day": CurrentDate.getDate(),
         "Date.Year": CurrentDate.getFullYear()
     };
-    console.log(query)
     attendance_repo.find(query, false, null, "UserName UserID")
         .then(attendance => {
             res.send({ Status: true, data: attendance })
@@ -112,8 +104,8 @@ module.exports.report = (req, res) => {
         {
             $match: {
                 'TakenIn': {
-                    '$gte': new Date(req.body.StartDate), 
-                    '$lte': new Date(new Date(req.body.EndDate).setHours(23,59,59))
+                    '$gte': new Date(req.body.StartDate),
+                    '$lte': new Date(new Date(req.body.EndDate).setHours(23, 59, 59))
                 }
             }
         },
@@ -144,14 +136,24 @@ module.exports.report = (req, res) => {
                 },
                 'ManualAttendance': {
                     '$sum': {
-                        $cond:[{$eq:['$WorkingHours', true]}, 1, 0]
+                        $cond: [{ $eq: ['$WorkingHours', true] }, 1, 0]
+                    }
+                },
+                'TotalHolidays': {
+                    '$sum': {
+                        $cond: [{ $eq: ['$Title', "Holiday"] }, 1, 0]
+                    }
+                },
+                'Leave': {
+                    '$sum': {
+                        $cond: [{ $eq: ['$Title', "Leave"] }, 1, 0]
                     }
                 },
             }
         }
     ]
-    if(req.body.userIds){
-        aggr[0].$match['UserID']= {$in:req.body.userIds}
+    if (req.body.userIds && req.body.userIds.length) {
+        aggr[0].$match['UserName'] = { $in: req.body.userIds }
     }
     attendance_repo.aggregate(aggr)
         .then(attendance => {
@@ -162,4 +164,106 @@ module.exports.report = (req, res) => {
         })
 }
 
+module.exports.holiday = async (req, res) => {
+    const Docs = [];
 
+    const TransactionType = req.body.TransactionType;
+    const Users = await user_repo.find({
+        StatusCode: 1,
+    }, false, false);
+    Users.map(user => {
+        const Datestart = new Date(req.body.Datestart);
+        const Dateend = new Date(req.body.Dateend);
+        let loop = new Date(req.body.Datestart);
+        while (loop <= Dateend) {
+            let newDocObj = {
+                UserID: user._id,
+                UserName: user.Login_ID,
+                TransactionType: TransactionType,
+                Date: {
+                    Month: loop.getMonth(),
+                    Day: loop.getDate(),
+                    Year: loop.getFullYear(),
+                },
+                WorkingHours: 0,
+                Title: req.body.Title,
+                ActionDetails: {
+                    ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
+                    ActionTakenByID: req.user._id,
+                    ActionTakenOn: new Date(),
+                    ActionTakenByLoginID: req.user.Login_ID,
+                },
+            };
+            Docs.push(newDocObj)
+            var newDate = loop.setDate(loop.getDate() + 1);
+            loop = new Date(newDate);
+        }
+
+    });
+    attendance_repo.createmultiple(Docs)
+        .then(user => {
+            res.send({ Status: true, data: user })
+        })
+        .catch(error => {
+            res.send({ Status: false, message: error.message })
+        })
+}
+
+
+
+module.exports.LeaveReq = (req, res) => {
+    const Req = [];
+    const Datestart = new Date(req.body.Datestart);
+    const Dateend = new Date(req.body.Dateend);
+    let loop = new Date(req.body.Datestart);
+    while (loop <= Dateend) {
+        let newReqObj = {
+            UserID: req.user._id,
+            UserName: req.user.Login_ID,
+            TransactionType: 'Leave',
+            Date: {
+                Month: loop.getMonth(),
+                Day: loop.getDate(),
+                Year: loop.getFullYear(),
+            },
+            WorkingHours: 0,
+            Reason: req.body.Reason,
+            Status: 'Pending',
+            ActionDetails: {
+                ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
+                ActionTakenByID: req.user._id,
+                ActionTakenOn: new Date(),
+                ActionTakenByLoginID: req.user.Login_ID,
+            },
+        };
+        Req.push(newReqObj);
+        var newDate = loop.setDate(loop.getDate() + 1);
+        loop = new Date(newDate);
+
+    }
+
+    attendance_repo.create(Req)
+        .then(user => {
+            res.send({ Status: true, data: user })
+        })
+        .catch(error => {
+            res.send({ Status: false, message: error.message })
+        })
+}
+
+module.exports.getUsershowLeave = async (req, res) => {
+
+    const usershow = await attendance_repo.find({
+        UserID: req.user._id,
+        TransactionType: 'Leave',
+        Status:{ $in: ['Pending','Approved' ]},
+        'Date.Month': new Date().getMonth()
+
+    }, false, false)
+        .then(res1 => {
+            res.send({ Status: true, data: res1 })
+        })
+        .catch(error => {
+            res.send({ Status: false, message: error.message })
+        })
+}

@@ -3,27 +3,21 @@ const uuid = require('uuid').v1;
 const jwt = require("jsonwebtoken");
 
 module.exports.login = async (req, res) => {
-    console.log('sgasdag')
-    console.log(req.body,"req")
     try {
         const login_id = req.body.Login_ID;
         const password = req.body.Password;
-        console.log('sgsahfdsk')
+
         const user = await user_repo.find({ Login_ID: login_id }, true, true, {});
-        console.log('sgsahfdsk', user)
 
         if (!user) {
-        console.log('sg', user)
 
             res.send({ status: false, message: 'User id or password does not match!' });
         }
         else if (!user.authenticate(password)) {
-        console.log('ff', user)
 
             res.send({ status: false, message: 'User id or password does not match!' });
         }
         else {
-        console.log('fgb', user)
 
             const token = uuid();
             const assignJwt = jwt.sign({UID: token, expiresIn: "4h"}, process.env.JWT_SECRET);
@@ -34,7 +28,6 @@ module.exports.login = async (req, res) => {
             res.send({ data: user_to_send, status: true, token: assignJwt, message: 'User Login Successfully!' });
         }
     } catch (e) {
-        console.log("---------------")
         res.send({status : false , message : e.message});
     }
 }

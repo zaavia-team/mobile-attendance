@@ -17,12 +17,17 @@ const AttendanceSchema = new Schema({
     TakenOut : Date,
     WorkingHours: Number,
     ManualEntry: Boolean,
+    Title: String,
+    Reason : String,
+    Status : String,
     Date: { 
       Month: Number,
       Day: Number,
       Year: Number ,
     },
     ActionDetails,
+    ApprovedDetails: ActionDetails,
+    RejectedDetails: ActionDetails,
     UserName: String,
     Comment: String,
 });

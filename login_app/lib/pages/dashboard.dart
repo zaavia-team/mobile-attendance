@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
@@ -19,6 +18,7 @@ class _DashboardState extends State<Dashboard> {
 
   var token;
   var Users = [];
+  String msg = "";
 
   late Box box1;
 
@@ -63,7 +63,18 @@ class _DashboardState extends State<Dashboard> {
       print(response.body);
       setState(() {
         Users = jsonDecode(response.body)["data"];
+        print("currentUsedfsghr");
+
+        var currentUser =
+            Users.any((user) => user["UserName"] == box1.get('email'));
+        print("currentUser");
+        print(currentUser);
+        if (currentUser) {
+          transactionType = "i am Out";
+        }
       });
+      print("Users");
+      print(Users);
     } catch (e) {
       print(e);
     }
@@ -84,26 +95,30 @@ class _DashboardState extends State<Dashboard> {
 
     if (response.statusCode == 200 &&
         jsonDecode(response.body)["status"] == false) {
-      Fluttertoast.showToast(
-          msg: jsonDecode(response.body)["message"],
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 2,
-          backgroundColor: Colors.purple,
-          fontSize: 15);
+      msg = jsonDecode(response.body)["message"];
+      var snackBar = SnackBar(
+        content: Text(
+          msg,
+          style: TextStyle(fontSize: 16.5)
+        ),
+        backgroundColor: Color.fromARGB(255, 185, 175, 40),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else {
       setState(() {
-        transactionType = transactionType == 'i am Out' ? "i am In" : 'i am Out';
+        transactionType =
+            transactionType == 'i am Out' ? "i am In" : 'i am Out';
       });
-      print(transactionType);
       getData();
-      Fluttertoast.showToast(
-          msg: jsonDecode(response.body)["message"],
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 2,
-          backgroundColor: Colors.purple,
-          fontSize: 15);
+      msg = jsonDecode(response.body)["message"];
+
+      var snackBar = SnackBar(
+        content: Text(msg, style: TextStyle(fontSize: 16.5)),
+        backgroundColor: Colors.green,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
@@ -219,7 +234,7 @@ class _DashboardState extends State<Dashboard> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               ListView.builder(
-                itemCount:  Users.length,
+                itemCount: Users.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Card(
                     color: Colors.purple,
