@@ -138,14 +138,13 @@ export default function UserRegister() {
       .then(function () {
         // always executed
       });
-
   }, [])
-
   const handleHolidaySubmit = () => {
     setOpen(true)
     setopenBackdrop(!openBackdrop);
     const { Type, StartDate, EndDate } = form
     if (Type && StartDate && EndDate) {
+      if(StartDate <= EndDate){
       const data ={
         Datestart: StartDate,
         Dateend: EndDate,
@@ -166,6 +165,11 @@ export default function UserRegister() {
       }).catch(function(error){
         console.log(error)
       });
+    }else{
+      SetMessage({ value: "Please Enter correct date", type: "error" })
+
+    }
+
       }else{
         SetMessage({ value: "Please Enter Required fields", type: "error" })
 
@@ -518,6 +522,7 @@ export default function UserRegister() {
                     input={<OutlinedInput label="Role" />}
                     renderValue={(selected) => selected.join(', ')}
                     MenuProps={MenuProps}
+                    
                   >
                     {names.Setup?.Title.map((name) => (
                       <ListItem key={name} value={name}>

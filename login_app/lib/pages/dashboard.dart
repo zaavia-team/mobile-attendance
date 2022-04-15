@@ -6,6 +6,9 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:login_app/pages/approval_List.dart';
 import './leavelist.dart';
+import 'package:login_app/data/menu_items.dart';
+import 'package:login_app/model/menu_item.dart';
+import 'package:login_app/pages/leavelist.dart';
 import 'package:login_app/pages/login.dart';
 
 class Dashboard extends StatefulWidget {
@@ -21,6 +24,7 @@ class _DashboardState extends State<Dashboard> {
   var token;
   var Users = [];
   String msg = "";
+  // final
 
   late Box box1;
 
@@ -92,17 +96,15 @@ class _DashboardState extends State<Dashboard> {
         body: jsonEncode({
           'TransactionType': transactionType,
           'Date':
-              _dateTime?.toIso8601String() ?? DateTime.now().toIso8601String()
+              _dateTime?.toIso8601String() ?? DateTime.now().toIso8601String(),
+          'ManualEntry': _dateTime?.toIso8601String() != null ? true : false
         }));
 
     if (response.statusCode == 200 &&
         jsonDecode(response.body)["status"] == false) {
       msg = jsonDecode(response.body)["message"];
       var snackBar = SnackBar(
-        content: Text(
-          msg,
-          style: TextStyle(fontSize: 16.5)
-        ),
+        content: Text(msg, style: TextStyle(fontSize: 16.5)),
         backgroundColor: Color.fromARGB(255, 185, 175, 40),
       );
 
@@ -214,18 +216,14 @@ class _DashboardState extends State<Dashboard> {
         automaticallyImplyLeading: false,
         title: const Text("Main Screen"),
         actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () {
-              // box1.delete('token');
-              // box1.delete('email');
-              // box1.delete('Name');
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ApprovalList()),
-              );
-            },
-          )
+          PopupMenuButton<MenuItem>(
+            onSelected: (item) => onSelected(context, item),
+            itemBuilder: (context) => [
+              ...MenuItems.itemsFirst.map(buildItem).toList(),
+              PopupMenuDivider(),
+              ...MenuItems.itemsSecond.map(buildItem).toList(),
+            ],
+          ),
         ],
       ),
       body: Container(
@@ -293,5 +291,42 @@ class _DashboardState extends State<Dashboard> {
         ),
       ),
     );
+  }
+
+  PopupMenuItem<MenuItem> buildItem(MenuItem item) => PopupMenuItem<MenuItem>(
+        value: item,
+        child: Row(
+          children: [
+            Icon(
+              item.icon,
+              color: Colors.black,
+            ),
+            SizedBox(
+              width: 12,
+            ),
+            Text(item.text),
+          ],
+        ),
+      );
+
+  void onSelected(BuildContext context, MenuItem item) {
+    switch (item) {
+      case MenuItems.itemLeave:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LeaveList()),
+        );
+        break;
+
+      case MenuItems.itemLogout:
+        box1.delete('token');
+        box1.delete('email');
+        box1.delete('Name');
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Login()),
+        );
+        break;
+    }
   }
 }

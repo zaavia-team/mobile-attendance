@@ -145,6 +145,16 @@ class _LeaveListState extends State<LeaveList> {
   }
 
 
+  // void getData () async {
+
+  //   if (box1.get('token') != null) {
+  //    token = box1.get('token');
+  //     print(box1);
+  //     print('box');
+  //   }else{
+  //     print('here2');
+  //   }
+  // }
 
   void leaveRequest() async {
     print(firstDate);
@@ -268,8 +278,7 @@ class _LeaveListState extends State<LeaveList> {
                           child: ListTile(
                             leading: Icon(Icons.person),
                             title: Text(
-                              '${leaveRequests[index]["Status"]} '
-                                 ,
+                              '${leaveRequests[index]["Status"]} ',
                               style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
                             ),
                             subtitle: Text(
@@ -284,8 +293,28 @@ class _LeaveListState extends State<LeaveList> {
                       shrinkWrap: true,
                     ),
                   ),
-                  ),
-              ],
+                  //  SizedBox(
+                  //
+                  //   child: ListView.builder(
+                  //     // itemCount: Users.length,
+                  //     itemBuilder: (BuildContext context, int index) {
+                  //       return Card(
+                  //         color: Colors.purple,
+                  //         elevation: 5,
+                  //         child: ListTile(
+                  //           leading: Icon(Icons.person),
+                  //           title: Text(
+                  //             '${Users[index]["UserName"]}',
+                  //             style: TextStyle(color: Colors.white, fontSize: 17),
+                  //           ),
+                  //         ),
+                  //       );
+                  //     },
+                  //     shrinkWrap: true,
+                  //   // ),
+                  //   ),
+                  // ),
+                )],
             ),
           )
         ],
