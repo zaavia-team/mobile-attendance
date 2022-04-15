@@ -104,7 +104,7 @@ class _LeaveListState extends State<LeaveList> {
 
   }
 
-  Future getData() async {
+  void getData() async {
 
     if (box1.get('token') != null) {
      token = box1.get('token');
