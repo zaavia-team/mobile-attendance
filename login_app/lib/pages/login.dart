@@ -27,8 +27,10 @@ class _LoginState extends State<Login> {
   void login() async {
     if (email.text.isEmpty || password.text.isEmpty) {
       const snackBar = SnackBar(
-        content: Text('Kindly fill both the fields', style: TextStyle(fontSize: 16.5),),
-        backgroundColor: Colors.red,
+        content: Text(
+          'Kindly fill both the fields',
+          style: TextStyle(fontSize: 16.5),
+        ),
       );
 
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -46,7 +48,10 @@ class _LoginState extends State<Login> {
             jsonDecode(response.body)["status"] == false) {
           msg = jsonDecode(response.body)["message"];
           var snackBar = SnackBar(
-            content: Text(msg, style: TextStyle(fontSize: 16.5),),
+            content: Text(
+              msg,
+              style: TextStyle(fontSize: 16.5),
+            ),
             backgroundColor: Colors.red,
           );
 
@@ -68,7 +73,6 @@ class _LoginState extends State<Login> {
         msg = dotenv.env['API_URL'] ?? "Url null catch";
         var snackBar = SnackBar(
           content: Text(msg),
-          
         );
 
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -102,12 +106,20 @@ class _LoginState extends State<Login> {
         title: const Text('Attendance App'),
         backgroundColor: Colors.purple,
       ),
-      body: Card(
-        child: Container(
-          padding: const EdgeInsets.all(10),
+      body: Container(
+        padding: const EdgeInsets.all(10),
+        child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Image.asset(
+                'assets/images/ZaaviaLogo.png',
+                width: 120,
+                height: 100,
+              ),
+              SizedBox(
+                height: 110,
+              ),
               TextField(
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
@@ -152,6 +164,10 @@ class _LoginState extends State<Login> {
                       borderRadius: BorderRadius.circular(24.0)),
                 ),
               ),
+              const SizedBox(
+                height: 120,
+              ),
+              Text('Copyrights by Zaavia! © 2022'),
             ],
           ),
         ),
