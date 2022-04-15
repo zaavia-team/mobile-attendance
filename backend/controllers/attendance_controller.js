@@ -269,7 +269,7 @@ module.exports.getUsershowLeave = async (req, res) => {
     const usershow = await attendance_repo.find({
         UserID: req.user._id,
         TransactionType: 'Leave',
-        Status: { $in: ['Pending', 'Approved'] },
+        Status: { $in: ['Pending', 'Approved','Rejected'] },
         'Date.Month': new Date().getMonth()
 
     }, false, false)
@@ -336,7 +336,7 @@ module.exports.rejectedLeave = async (req, res) => {
     attendance_repo.updateOne(
         { _id: req.params.id },
         {
-            $set: { RejectedDetails: ActionDetails, Status: "RejectedDetails" },
+            $set: { RejectedDetails: ActionDetails, Status: "Rejected" },
         }
     )
         .then(user => {
