@@ -38,7 +38,6 @@ const UserSchema = new Schema({
   PhoneNumber: Number,
   NIC: Number,
   Organization : {ID : Schema.ObjectId, Name : String},
-  UserDetails : [{Branch : {ID : Schema.Types.ObjectId, Name : String}, Role : {ID : Schema.Types.ObjectId, Title : String},Department : {ID : Schema.Types.ObjectId, Name : String}}],
   Login_JWT_Token_ID : { type: String},
   Status: Boolean
 });
