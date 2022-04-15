@@ -22,6 +22,7 @@ class _LeaveListState extends State<LeaveList> {
   final reasonController = TextEditingController();
   String enteredReason = "";
   String msg = "";
+  var leaveRequests = [];
 
   late Box box1;
 
@@ -40,7 +41,7 @@ class _LeaveListState extends State<LeaveList> {
 
   void getRequests() async {
     try {
-      var response = await http.get(
+      var response = await http.post(
         Uri.parse(dotenv.env['API_URL']! + "/api/getUsershowLeave"),
         headers: <String, String>{
           'Content-Type': 'application/json',
@@ -48,6 +49,7 @@ class _LeaveListState extends State<LeaveList> {
         },
       );
       print(response.body);
+      leaveRequests = jsonDecode(response.body)["data"];
       // setState(() {
       //   Users = jsonDecode(response.body)["data"];
       //   print("currentUsedfsghr");
@@ -252,26 +254,37 @@ class _LeaveListState extends State<LeaveList> {
                         RaisedButton(onPressed: () => onSubmitDataMultiple(), child: Text('Submit', style: TextStyle(fontSize: 16),),)
                       ],
                     ),
+                SizedBox(height: 20),
                 SingleChildScrollView(
-                  child: ListView.builder(
-                    itemCount: Users.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Card(
-                        color: Colors.purple,
-                        elevation: 5,
-                        child: ListTile(
-                          leading: Icon(Icons.person),
-                          title: Text(
-                            '${Users[index]["UserName"]}',
-                            style: TextStyle(color: Colors.white, fontSize: 17),
+                  child: SizedBox(
+                    height: 300,
+                    child: ListView.builder(
+                     itemCount: leaveRequests.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Card(
+
+                          color: Colors.orangeAccent,
+                          elevation: 5,
+                          child: ListTile(
+                            leading: Icon(Icons.person),
+                            title: Text(
+                              '${leaveRequests[index]["Status"]} '
+                                 ,
+                              style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Text(
+                                '${leaveRequests[index]["Date"]["Day"]}/'
+                                    '${leaveRequests[index]["Date"]["Month"]}/'
+                                    '${leaveRequests[index]["Date"]["Year"]}',
+                                style: TextStyle(color: Colors.white, fontSize: 15),
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    shrinkWrap: true,
+                        );
+                      },
+                      shrinkWrap: true,
+                    ),
                   ),
                   ),
-                ),
               ],
             ),
           )
