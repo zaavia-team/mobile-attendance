@@ -139,6 +139,9 @@ export default function UserRegister() {
         // always executed
       });
   }, [])
+
+
+
   const handleHolidaySubmit = () => {
     setOpen(true)
     setopenBackdrop(!openBackdrop);
@@ -175,6 +178,41 @@ export default function UserRegister() {
 
       }
   }
+
+  const handleactivate = (userObj) => {
+
+    const data = {...userObj};
+
+console.log(data)
+    if(data.StatusCode === 1 ){
+      data.StatusCode = 0
+    }
+    else{
+      data.StatusCode = 1
+    }
+
+    axios.post(`/api/user/${userObj._id}`, data, 
+      { headers: { "Authorization": `${token}` } },  
+    )
+      .then(response => {
+        SetMessage({ value: "Successfuly Updated", type: "success" })
+        setForm({ FirstName: "", LastName: "", Password: "", Email: "", Login_ID: "", Designation: "", DateOfBirth: "", 
+        WorkingHours: "", DateOfJoining: "", PhoneNumber: "", NIC: "", StartDate: "", EndDate: "", Type: "",RightsTitle:[] })
+
+        axios.get('/api/users')
+          .then(function (response) {
+            setUsers(response.data)
+          })
+          .catch(function (error) {
+            // handle error
+            console.log(error);
+          })
+          handleclose();
+          handleCloseBackdrop();
+        });
+
+
+    }
 
 
   const handleSubmit = (event) => {
@@ -654,6 +692,7 @@ export default function UserRegister() {
 
                 {<TableCell>
                   <Typography color="textSecondary" variant="body1" fontWeight="400">
+
                     <Button
                       variant="contained"
                       color="secondary"
@@ -662,6 +701,16 @@ export default function UserRegister() {
                     >
                       Edit
                     </Button>
+                    
+                    <Button sx={{ml:2}}
+                      variant="contained"
+                      color={user.StatusCode ? 'secondary' : 'primary'}
+                      //   startIcon={<EditIcon />}
+                      onClick={() => handleactivate(user)}
+                    >
+                      {user.StatusCode ? 'Deactivate' : 'Activate'}
+                    </Button>
+
                   </Typography>
                 </TableCell>}
 
