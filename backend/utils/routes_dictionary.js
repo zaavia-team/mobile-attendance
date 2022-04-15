@@ -2,13 +2,95 @@ let routes = {
     //General Settings
     "/api/alltitles/get" : {
         RightTitles : [{
-            Title:"Approved Leave",
-            ModuleName: "Setup"
+            Title:"Common",
+            ModuleName: "Common"
         }],
         Methods : ["get"]
     },
-   
-    
+    "/api/users" : {
+        RightTitles : [{
+            Title:"Common",
+            ModuleName: "Common"
+        }],
+        Methods : ["get"]
+    },
+    "/api/user/:id" : {
+        RightTitles : [{
+            Title:"Common",
+            ModuleName: "Common"
+        }],
+        Methods : ["post"]
+    },
+    "/api/register" : {
+        RightTitles : [{
+            Title:"Common",
+            ModuleName: "Common"
+        }],
+        Methods : ["post"]
+    },
+    "/api/attendance_transaction" : {
+        RightTitles : [{
+            Title:"Common",
+            ModuleName: "Common"
+        }],
+        Methods : ["post"]
+    },
+    "/api/gettodayattendance" : {
+        RightTitles : [{
+            Title:"Common",
+            ModuleName: "Common"
+        }],
+        Methods : ["get"]
+    },
+    "/api/getreportattendance" : {
+        RightTitles : [{
+            Title:"Common",
+            ModuleName: "Common"
+        }],
+        Methods : ["post"]
+    },
+    "/api/holiday" : {
+        RightTitles : [{
+            Title:"Common",
+            ModuleName: "Common"
+        }],
+        Methods : ["post"]
+    },
+    "/api/LeaveReq" : {
+        RightTitles : [{
+            Title:"Common",
+            ModuleName: "Common"
+        }],
+        Methods : ["post"]
+    },  
+     "/api/getUsershowLeave" : {
+        RightTitles : [{
+            Title:"Approved Leave",
+            ModuleName: "Setup"
+        }],
+        Methods : ["post"]
+    },  
+     "/api/getlisPendLeave" : {
+        RightTitles : [{
+            Title:"Approved Leave",
+            ModuleName: "Setup"
+        }],
+        Methods : ["post"]
+    },
+    "/api/approvalLeave/:id" : {
+        RightTitles : [{
+            Title:"Approved Leave",
+            ModuleName: "Setup"
+        }],
+        Methods : ["put"]
+    },
+    "/api/rejectedLeave/:id" : {
+        RightTitles : [{
+            Title:"Approved Leave",
+            ModuleName: "Setup"
+        }],
+        Methods : ["put"]
+    },
 };
 
 exports.getTitle = (path)=>{
@@ -26,6 +108,8 @@ exports.getAllTitles = async (req,res) => {
         for(let url in routes){
             console.log('url: ', url)
             for(let i = 0; i < routes[url].RightTitles.length; i++){
+                // common roles does not show in frontend
+                if(routes[url].RightTitles[i].ModuleName == "Common") continue;
                 if(i == 0){
                     let module_name = routes[url].RightTitles[i].ModuleName;
                     titles[module_name] = titles[module_name] || {};
