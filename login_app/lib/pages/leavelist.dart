@@ -13,13 +13,61 @@ class LeaveList extends StatefulWidget {
 }
 
 class _LeaveListState extends State<LeaveList> {
+  final String singleLeave = 'Single leave';
+  final String multipleLeave = 'Multiple leave';
+  DateTime? firstDate;
+  DateTime? lastDate;
   String selectedValue = 'Single leave';
-  DateTime? _dateTime;
-  DateTime? date;
   var token;
-  late Box box1;
   final reasonController = TextEditingController();
-  String? enteredReason;
+  String enteredReason = "";
+  String msg = "";
+  var leaveRequests = [];
+
+  late Box box1;
+
+  void createBox() async {
+    box1 = await Hive.openBox('loginData');
+    box1 = Hive.box('loginData');
+    getData();
+  }
+
+  void getData() async {
+    if (box1.get('token') != null) {
+      token = box1.get('token');
+      getRequests();
+    }
+  }
+
+  void getRequests() async {
+    try {
+      var response = await http.post(
+        Uri.parse(dotenv.env['API_URL']! + "/api/getUsershowLeave"),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': token
+        },
+      );
+      print(response.body);
+      leaveRequests = jsonDecode(response.body)["data"];
+      // setState(() {
+      //   Users = jsonDecode(response.body)["data"];
+      //   print("currentUsedfsghr");
+      //
+      //   var currentUser =
+      //   Users.any((user) => user["UserName"] == box1.get('email'));
+      //   print("currentUser");
+      //   print(currentUser);
+      //   if (currentUser) {
+      //     transactionType = "i am Out";
+      //   }
+      // });
+      // print("Users");
+      // print(Users);
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   void initState() {
@@ -33,7 +81,7 @@ class _LeaveListState extends State<LeaveList> {
     if (date == null) return;
 
     setState(() {
-      _dateTime = DateTime(
+      firstDate = DateTime(
         date.year,
         date.month,
         date.day,
@@ -55,30 +103,30 @@ class _LeaveListState extends State<LeaveList> {
   }
 
   String getDate() {
-    if (_dateTime == null) {
-      return 'Select Date';
+    if (firstDate == null) {
+      return 'Select First Date';
     } else {
-      return DateFormat.yMMMEd().format(_dateTime!);
+      return DateFormat.yMMMEd().format(firstDate!);
     }
   }
   String getLastDate() {
     if (lastDate == null) {
-      return 'Select Date';
+      return 'Select Last Date';
     } else {
       return DateFormat.yMMMEd().format(lastDate!);
     }
   }
   void onSubmitData(){
-    final enteredReason = reasonController.text;
-    if(enteredReason.isEmpty || _dateTime==null){
+    enteredReason = reasonController.text;
+    if(enteredReason.isEmpty || firstDate==null){
       return;
     }
     print(enteredReason);
-    print(_dateTime);
+    print(firstDate);
     leaveRequest();
   }
   void onSubmitDataMultiple(){
-    final enteredReason = reasonController.text;
+    enteredReason = reasonController.text;
     if(enteredReason.isEmpty || firstDate==null || lastDate==null){
       return;
     }
@@ -89,35 +137,28 @@ class _LeaveListState extends State<LeaveList> {
     final initialDate = DateTime.now();
     final newDate = await showDatePicker(
       context: context,
-      initialDate: _dateTime ?? initialDate,
+      initialDate: firstDate ?? initialDate,
       firstDate: DateTime(DateTime.now().year - 5),
       lastDate: DateTime(DateTime.now().year + 5),
     );
-
     return newDate!;
   }
 
-  void createBox() async {
-    box1 = await Hive.openBox('loginData');
-    box1 = Hive.box('loginData');
-    getData();
 
-  }
+  // void getData () async {
 
-  Future getData() async {
-
-    if (box1.get('token') != null) {
-     token = box1.get('token');
-      print(box1);
-      print('box');
-    }else{
-      print('here2');
-    }
-  }
+  //   if (box1.get('token') != null) {
+  //    token = box1.get('token');
+  //     print(box1);
+  //     print('box');
+  //   }else{
+  //     print('here2');
+  //   }
+  // }
 
   void leaveRequest() async {
-    print('here');
-    print(token);
+    print(firstDate);
+    print(box1.get('token'));
     var response = await http.post(
         Uri.parse(dotenv.env['API_URL']! + "/api/LeaveReq"),
         headers: <String, String>{
@@ -125,23 +166,28 @@ class _LeaveListState extends State<LeaveList> {
           'Authorization': token
         },
         body: jsonEncode({
-          'Datestart': firstDate,
+          'Datestart': firstDate?.toIso8601String(),
           'Reason': enteredReason,
-          'Dateend': lastDate,
+          'Dateend': lastDate?.toIso8601String(),
         }));
     print('here 1');
     if (response.statusCode == 200 &&
         jsonDecode(response.body)["status"] == false) {
       print('Error');
     } else {
-      print('success');
+      msg = jsonDecode(response.body)["message"];
+      var snackBar = SnackBar(
+        content: Text(
+            msg,
+            style: TextStyle(fontSize: 16.5)
+        ),
+        backgroundColor: Color.fromARGB(255, 185, 175, 40),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
-  final String singleLeave = 'Single leave';
-  final String multipleLeave = 'Multiple leave';
-  DateTime? firstDate;
-  DateTime? lastDate;
+
 
   final items = ['Single leave', 'Multiple leave'];
 
@@ -164,7 +210,7 @@ class _LeaveListState extends State<LeaveList> {
                   );
                 }).toList(),
                 hint: Text(
-                  "Please choose a langauage",
+                  "Please choose leave",
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 14,
@@ -185,7 +231,7 @@ class _LeaveListState extends State<LeaveList> {
                     ? Column(
                       children: [
                         RaisedButton(child: Text('Select Date'),onPressed: () => pickDateTime(context)),
-                        Text(_dateTime==null ? 'Please Select a Date' : getDate()),
+                        Text(firstDate==null ? 'Please Select a Date' : getDate()),
                         TextField(
                           decoration: InputDecoration(labelText: 'Enter Reason'),
                           controller: reasonController,
@@ -200,7 +246,6 @@ class _LeaveListState extends State<LeaveList> {
                       children: [
                         RaisedButton(child: Text('Start Date'),onPressed: () {
                           pickDateTime(context);
-                          firstDate = _dateTime;
 
                         }),
                         Text(firstDate==null ? 'Please Select Start Date' : getDate()),
@@ -219,16 +264,57 @@ class _LeaveListState extends State<LeaveList> {
                         RaisedButton(onPressed: () => onSubmitDataMultiple(), child: Text('Submit', style: TextStyle(fontSize: 16),),)
                       ],
                     ),
+                SizedBox(height: 20),
                 SingleChildScrollView(
-                  child: Card(
-                    elevation: 5,
-                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                    child: ListTile(
-                      title: Text('Leave Request'),
+                  child: SizedBox(
+                    height: 300,
+                    child: ListView.builder(
+                     itemCount: leaveRequests.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Card(
+
+                          color: Colors.orangeAccent,
+                          elevation: 5,
+                          child: ListTile(
+                            leading: Icon(Icons.person),
+                            title: Text(
+                              '${leaveRequests[index]["Status"]} ',
+                              style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Text(
+                                '${leaveRequests[index]["Date"]["Day"]}/'
+                                    '${leaveRequests[index]["Date"]["Month"]}/'
+                                    '${leaveRequests[index]["Date"]["Year"]}',
+                                style: TextStyle(color: Colors.white, fontSize: 15),
+                            ),
+                          ),
+                        );
+                      },
+                      shrinkWrap: true,
                     ),
                   ),
-                ),
-              ],
+                  //  SizedBox(
+                  //
+                  //   child: ListView.builder(
+                  //     // itemCount: Users.length,
+                  //     itemBuilder: (BuildContext context, int index) {
+                  //       return Card(
+                  //         color: Colors.purple,
+                  //         elevation: 5,
+                  //         child: ListTile(
+                  //           leading: Icon(Icons.person),
+                  //           title: Text(
+                  //             '${Users[index]["UserName"]}',
+                  //             style: TextStyle(color: Colors.white, fontSize: 17),
+                  //           ),
+                  //         ),
+                  //       );
+                  //     },
+                  //     shrinkWrap: true,
+                  //   // ),
+                  //   ),
+                  // ),
+                )],
             ),
           )
         ],

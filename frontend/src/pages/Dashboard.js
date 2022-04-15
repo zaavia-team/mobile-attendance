@@ -22,7 +22,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { useNavigate  } from 'react-router-dom';
-import Home from './Home';
+
 
 
 
@@ -150,7 +150,7 @@ function DashboardContent({setLoggedin}) {
                 onClick={()=> navigate(item.path)}
               >
                 <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.text}  href="/userregister"/>
+                <ListItemText primary={item.text}  />
 
               </ListItemButton>
             ) )}
@@ -172,8 +172,7 @@ function DashboardContent({setLoggedin}) {
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
                 <Routes>
-                <Route exact path = "/" element = {<Home />} />
-                <Route exact path = "/userregister" element = {<UserRegister />} />
+                <Route exact path = "/" element = {<UserRegister />} />
                 <Route exact path = "/adminreport" element = {<AdminReport />} />
                 </Routes>
             </Grid>
