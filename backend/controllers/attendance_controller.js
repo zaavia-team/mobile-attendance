@@ -52,7 +52,7 @@ module.exports.attendance = async (req, res) => {
                 "UserID": req.user._id,
             };
             let updatequery = {
-                $set: { 
+                $set: {
                     TakenOut: DateStr,
                     ManualEntry: req.body.ManualEntry
                 }
@@ -228,9 +228,9 @@ module.exports.LeaveReq = (req, res) => {
     };
     const Datestart = new Date(req.body.Datestart);
     // const Dateend = new Date(req.body.Dateend);
-    if(req.body.Dateend){
+    if (req.body.Dateend) {
         Dateend = new Date(req.body.Dateend);
-    } else{
+    } else {
         Dateend = new Date(req.body.Datestart);
     }
     let loop = new Date(req.body.Datestart);
@@ -247,7 +247,7 @@ module.exports.LeaveReq = (req, res) => {
             WorkingHours: 0,
             Reason: req.body.Reason,
             Status: 'Pending',
-            ActionDetails:ActionDetails
+            ActionDetails: ActionDetails
         };
         Req.push(newReqObj);
         var newDate = loop.setDate(loop.getDate() + 1);
@@ -269,12 +269,26 @@ module.exports.getUsershowLeave = async (req, res) => {
     const usershow = await attendance_repo.find({
         UserID: req.user._id,
         TransactionType: 'Leave',
-        Status:{ $in: ['Pending','Approved' ]},
+        Status: { $in: ['Pending', 'Approved'] },
         'Date.Month': new Date().getMonth()
 
     }, false, false)
         .then(res1 => {
             res.send({ Status: true, data: res1 })
+        })
+        .catch(error => {
+            res.send({ Status: false, message: error.message })
+        })
+}
+
+module.exports.getlisPendLeave = async (req, res) => {
+
+    const pendList = await attendance_repo.find({
+        TransactionType: 'Leave',
+        Status: 'Pending',
+    }, false)
+        .then(list => {
+            res.send({ Status: true, data: list })
         })
         .catch(error => {
             res.send({ Status: false, message: error.message })
@@ -289,10 +303,11 @@ module.exports.approvedLeave = async (req, res) => {
         ActionTakenByLoginID: req.user.Login_ID,
     };
     attendance_repo.updateOne(
-        {_id : req.params.id},
-        {$set:{ ApprovedDetails: ActionDetails,Status: "Approved"},
-        } 
-        )
+        { _id: req.params.id },
+        {
+            $set: { ApprovedDetails: ActionDetails, Status: "Approved" },
+        }
+    )
         .then(user => {
             res.send({ Status: true, data: user })
         })
@@ -309,10 +324,11 @@ module.exports.rejectedLeave = async (req, res) => {
         ActionTakenByLoginID: req.user.Login_ID,
     };
     attendance_repo.updateOne(
-        {_id : req.params.id},
-        {$set:{ RejectedDetails: ActionDetails,Status: "RejectedDetails"},
-        } 
-        )
+        { _id: req.params.id },
+        {
+            $set: { RejectedDetails: ActionDetails, Status: "RejectedDetails" },
+        }
+    )
         .then(user => {
             res.send({ Status: true, data: user })
         })
