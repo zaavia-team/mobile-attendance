@@ -704,7 +704,7 @@ console.log(data)
                     
                     <Button sx={{ml:2}}
                       variant="contained"
-                      color={user.StatusCode ? 'secondary' : 'primary'}
+                      color={user.StatusCode ? 'inherit' : 'warning'}
                       //   startIcon={<EditIcon />}
                       onClick={() => handleactivate(user)}
                     >
