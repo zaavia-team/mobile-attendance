@@ -269,7 +269,7 @@ module.exports.getUsershowLeave = async (req, res) => {
     const usershow = await attendance_repo.find({
         UserID: req.user._id,
         TransactionType: 'Leave',
-        Status: { $in: ['Pending', 'Approved'] },
+        Status: { $in: ['Pending', 'Approved','Rejected'] },
         'Date.Month': new Date().getMonth()
 
     }, false, false)
@@ -302,6 +302,7 @@ module.exports.approvedLeave = async (req, res) => {
         ActionTakenOn: new Date(),
         ActionTakenByLoginID: req.user.Login_ID,
     };
+    console.log(req.params.id + 'hello params id');
     attendance_repo.updateOne(
         { _id: req.params.id },
         {
