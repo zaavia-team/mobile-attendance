@@ -1,6 +1,6 @@
 const attendance_repo = require('../repository/attendance_repo');
 const user_repo = require('../repository/user_repo');
-const excelJs = require("excelJs");
+
 
 
 module.exports.attendance = async (req, res) => {
@@ -82,12 +82,11 @@ module.exports.gettodayattendance = (req, res) => {
     let CurrentDate = new Date()
     let query = {
         TakenIn: { $exists: true },
-        TakenOut: { $exists: false },
         "Date.Month": CurrentDate.getMonth(),
         "Date.Day": CurrentDate.getDate(),
         "Date.Year": CurrentDate.getFullYear()
     };
-    attendance_repo.find(query, false, null, "UserName UserID TakeIn")
+    attendance_repo.find(query, false, null, "UserName UserID TakenIn")
         .then(attendance => {
             res.send({ Status: true, data: attendance })
         })
@@ -314,7 +313,6 @@ module.exports.approvedLeave = async (req, res) => {
         ActionTakenOn: new Date(),
         ActionTakenByLoginID: req.user.Login_ID,
     };
-    console.log(req.params.id + 'hello params id');
     attendance_repo.updateOne(
         { _id: req.params.id },
         {
@@ -349,4 +347,5 @@ module.exports.rejectedLeave = async (req, res) => {
             res.send({ Status: false, message: error.message })
         })
 }
+
 
