@@ -282,17 +282,27 @@ module.exports.getUsershowLeave = async (req, res) => {
 }
 
 module.exports.getlisPendLeave = async (req, res) => {
-
-    const pendList = await attendance_repo.find({
-        TransactionType: 'Leave',
-        Status: 'Pending',
-    }, false)
+    const user = await user_repo.find({
+        _id : req.user._id
+    },true)
+    const approvedRight = user.RightsTitle.find((right) => {
+        return right === 'Approved Leave'})
+    if(approvedRight){
+            console.log(user)
+        const pendList = await attendance_repo.find({
+            TransactionType: 'Leave',
+            Status: 'Pending',
+        }, false)
         .then(list => {
             res.send({ Status: true, data: list })
         })
         .catch(error => {
             res.send({ Status: false, message: error.message })
         })
+    }
+    else{
+        res.send({ Status: true,message:"Not Authorized" })
+    }
 }
 
 module.exports.approvedLeave = async (req, res) => {
@@ -327,7 +337,7 @@ module.exports.rejectedLeave = async (req, res) => {
     attendance_repo.updateOne(
         { _id: req.params.id },
         {
-            $set: { RejectedDetails: ActionDetails, Status: "RejectedDetails" },
+            $set: { RejectedDetails: ActionDetails, Status: "Rejected" },
         }
     )
         .then(user => {

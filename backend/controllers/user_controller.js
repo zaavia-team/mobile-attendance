@@ -67,6 +67,11 @@ module.exports.editUser = async (req, res) => {
         DateOfJoining = req.body.DateOfJoining
         PhoneNumber = req.body.PhoneNumber
         NIC= req.body.NIC
+        StatusCode = req.body.StatusCode
+        RightsTitle = [];
+        if(req.body.RightsTitle){
+            RightsTitle = req.body.RightsTitle;
+        }
 
         const user = await user_repo.find({ _id: _id }, true, true, {});
 
@@ -75,7 +80,7 @@ module.exports.editUser = async (req, res) => {
             res.send({ status: false, message: `User doesn't exists!` });
         }
         else {
-            const updUsr = await user_repo.updateOne({ _id: _id }, { $set: { FirstName, LastName, Email, Designation, WorkingHours, DateOfBirth, DateOfJoining, PhoneNumber, NIC} })
+            const updUsr = await user_repo.updateOne({ _id: _id }, { $set: { FirstName, LastName, Email, Designation, WorkingHours, DateOfBirth, DateOfJoining, PhoneNumber, NIC, StatusCode, RightsTitle} })
 
             res.send({ data: updUsr, status: true, message: 'User Updates Successfully!' });
         }
