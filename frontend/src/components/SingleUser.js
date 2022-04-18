@@ -39,7 +39,7 @@ export default function SingleUser({ data }) {
 
                          <TableCell>{data?.WorkingHours }</TableCell>
                          <TableCell >{data?.TotalHours?.toFixed(2)}</TableCell>
-                         <TableCell>0</TableCell>
+                         <TableCell>{data?.Leave || 0}</TableCell>
 
 
                          </TableRow>
