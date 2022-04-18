@@ -49,7 +49,10 @@ class _LeaveListState extends State<LeaveList> {
         },
       );
       print(response.body);
-      leaveRequests = jsonDecode(response.body)["data"];
+      setState(() {
+        leaveRequests = jsonDecode(response.body)["data"];
+      });
+
       // setState(() {
       //   Users = jsonDecode(response.body)["data"];
       //   print("currentUsedfsghr");
@@ -170,25 +173,21 @@ class _LeaveListState extends State<LeaveList> {
           'Reason': enteredReason,
           'Dateend': lastDate?.toIso8601String(),
         }));
-    print('here 1');
     if (response.statusCode == 200 &&
         jsonDecode(response.body)["status"] == false) {
       print('Error');
     } else {
-      msg = jsonDecode(response.body)["message"];
+      msg = "Leave Applied Successfully";
       var snackBar = SnackBar(
         content: Text(
             msg,
             style: TextStyle(fontSize: 16.5)
         ),
-        backgroundColor: Color.fromARGB(255, 185, 175, 40),
+        backgroundColor: Colors.green,
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
-
-
-
   final items = ['Single leave', 'Multiple leave'];
 
   @override
@@ -197,127 +196,156 @@ class _LeaveListState extends State<LeaveList> {
       appBar: AppBar(
         title: Text("Leave Request"),
       ),
-      body: Column(
-        children: [
-          Center(
-            child: DropdownButton(
-                value: selectedValue,
-                icon: Icon(Icons.keyboard_arrow_down),
-                items: items.map((String items) {
-                  return DropdownMenuItem<String>(
-                    child: Text(items),
-                    value: items,
-                  );
-                }).toList(),
-                hint: Text(
-                  "Please choose leave",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500),
-                ),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedValue = newValue!;
-                    print(selectedValue + 'leave Vlaue');
-                  });
-                }),
-          ),
-          Container(
-            padding: EdgeInsets.all(20),
-            child: Column(
-              children: [
-                (selectedValue == singleLeave)
-                    ? Column(
-                      children: [
-                        RaisedButton(child: Text('Select Date'),onPressed: () => pickDateTime(context)),
-                        Text(firstDate==null ? 'Please Select a Date' : getDate()),
-                        TextField(
-                          decoration: InputDecoration(labelText: 'Enter Reason'),
-                          controller: reasonController,
-                          keyboardType: TextInputType.multiline,
-                          maxLines: null,
-                          onSubmitted: (_) => onSubmitData(),
-                        ),
-                        RaisedButton(onPressed: () => onSubmitData(), child: Text('Submit'),)
-                      ],
-                    )
-                    : Column(
-                      children: [
-                        RaisedButton(child: Text('Start Date'),onPressed: () {
-                          pickDateTime(context);
-
-                        }),
-                        Text(firstDate==null ? 'Please Select Start Date' : getDate()),
-                        RaisedButton(child: Text('End Date'),onPressed: () {
-                          pickLastDateTime(context);
-                        }),
-                        Text(lastDate==null ? 'Please Select Last Date' : getLastDate()),
-                        TextField(
-                          decoration: InputDecoration(labelText: 'Enter Reason'),
-                          controller: reasonController,
-                          keyboardType: TextInputType.multiline,
-                          maxLines: null,
-                          onSubmitted: (_) => onSubmitDataMultiple(),
-                        ),
-                        SizedBox(height: 20,),
-                        RaisedButton(onPressed: () => onSubmitDataMultiple(), child: Text('Submit', style: TextStyle(fontSize: 16),),)
-                      ],
-                    ),
-                SizedBox(height: 20),
-                SingleChildScrollView(
-                  child: SizedBox(
-                    height: 300,
-                    child: ListView.builder(
-                     itemCount: leaveRequests.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Card(
-
-                          color: Colors.orangeAccent,
-                          elevation: 5,
-                          child: ListTile(
-                            leading: Icon(Icons.person),
-                            title: Text(
-                              '${leaveRequests[index]["Status"]} ',
-                              style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
-                            ),
-                            subtitle: Text(
-                                '${leaveRequests[index]["Date"]["Day"]}/'
-                                    '${leaveRequests[index]["Date"]["Month"]}/'
-                                    '${leaveRequests[index]["Date"]["Year"]}',
-                                style: TextStyle(color: Colors.white, fontSize: 15),
-                            ),
-                          ),
-                        );
-                      },
-                      shrinkWrap: true,
-                    ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Center(
+              child: DropdownButton(
+                  value: selectedValue,
+                  icon: Icon(Icons.keyboard_arrow_down),
+                  items: items.map((String items) {
+                    return DropdownMenuItem<String>(
+                      child: Text(items),
+                      value: items,
+                    );
+                  }).toList(),
+                  hint: Text(
+                    "Please choose leave",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500),
                   ),
-                  //  SizedBox(
-                  //
-                  //   child: ListView.builder(
-                  //     // itemCount: Users.length,
-                  //     itemBuilder: (BuildContext context, int index) {
-                  //       return Card(
-                  //         color: Colors.purple,
-                  //         elevation: 5,
-                  //         child: ListTile(
-                  //           leading: Icon(Icons.person),
-                  //           title: Text(
-                  //             '${Users[index]["UserName"]}',
-                  //             style: TextStyle(color: Colors.white, fontSize: 17),
-                  //           ),
-                  //         ),
-                  //       );
-                  //     },
-                  //     shrinkWrap: true,
-                  //   // ),
-                  //   ),
-                  // ),
-                )],
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedValue = newValue!;
+                      print(selectedValue + 'leave Vlaue');
+                    });
+                  }),
             ),
-          )
-        ],
+            Container(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  (selectedValue == singleLeave)
+                      ? Column(
+                        children: [
+                          RaisedButton(
+                              color: Theme.of(context).primaryColor,
+                              textColor: Colors.white,
+                              child: Text('Select Date'),onPressed: () => pickDateTime(context)),
+                          Text(firstDate==null ? 'Please Select a Date' : getDate()),
+                          TextField(
+                            decoration: InputDecoration(labelText: 'Enter Reason'),
+                            controller: reasonController,
+                            keyboardType: TextInputType.multiline,
+                            maxLines: null,
+                            onSubmitted: (_) => onSubmitData(),
+                          ),
+                          RaisedButton(
+                            color: Theme.of(context).primaryColor,
+                            textColor: Colors.white,
+                            onPressed: () => onSubmitData(), child: Text('Submit'),)
+                        ],
+                      )
+                      : Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              RaisedButton(
+                                  color: Theme.of(context).primaryColor,
+                                  textColor: Colors.white,
+                                  child: Text('Start Date'),onPressed: () {
+                                pickDateTime(context);
+                              }),
+                              RaisedButton(
+                                  color: Theme.of(context).primaryColor,
+                                  textColor: Colors.white,
+                                  child: Text('End Date'),onPressed: () {
+                                pickLastDateTime(context);
+                              }),
+
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+
+                              Text(firstDate==null ? 'Please Select Start Date' : getDate()),
+                              Text(lastDate==null ? 'Please Select Last Date' : getLastDate()),
+                            ],
+                          ),
+
+
+                          TextField(
+                            decoration: InputDecoration(labelText: 'Enter Reason'),
+                            controller: reasonController,
+                            keyboardType: TextInputType.multiline,
+                            maxLines: null,
+                            onSubmitted: (_) => onSubmitDataMultiple(),
+                          ),
+                          SizedBox(height: 20,),
+                          RaisedButton(
+                            color: Theme.of(context).primaryColor,
+                            textColor: Colors.white,
+                            onPressed: () => onSubmitDataMultiple(), child: Text('Submit', style: TextStyle(fontSize: 16),),)
+                        ],
+                      ),
+                  SizedBox(height: 20),
+                  SingleChildScrollView(
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * .5,
+                      child: ListView.builder(
+                       itemCount: leaveRequests.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Card(
+                            color: Colors.blueGrey,
+                            elevation: 5,
+                            child: ListTile(
+                              leading: Icon(Icons.person),
+                              title: Text(
+                                '${leaveRequests[index]["Status"]}',
+                                style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Text(
+                                  '${leaveRequests[index]["Date"]["Day"]}/'
+                                      '${leaveRequests[index]["Date"]["Month"]}/'
+                                      '${leaveRequests[index]["Date"]["Year"]}',
+                                  style: TextStyle(color: Colors.white, fontSize: 15),
+                              ),
+                            ),
+                          );
+                        },
+                        shrinkWrap: true,
+                      ),
+                    ),
+                    //  SizedBox(
+                    //
+                    //   child: ListView.builder(
+                    //     // itemCount: Users.length,
+                    //     itemBuilder: (BuildContext context, int index) {
+                    //       return Card(
+                    //         color: Colors.purple,
+                    //         elevation: 5,
+                    //         child: ListTile(
+                    //           leading: Icon(Icons.person),
+                    //           title: Text(
+                    //             '${Users[index]["UserName"]}',
+                    //             style: TextStyle(color: Colors.white, fontSize: 17),
+                    //           ),
+                    //         ),
+                    //       );
+                    //     },
+                    //     shrinkWrap: true,
+                    //   // ),
+                    //   ),
+                    // ),
+                  )],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
