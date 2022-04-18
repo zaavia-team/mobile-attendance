@@ -3,11 +3,13 @@ import '../model/menu_item.dart';
 
 class MenuItems {
   static const  List<MenuItem> itemsFirst = [
+    itemPending,
     itemLeave,
-    itemPending
+    itemLogout
   ];
 
   static const  List<MenuItem> itemsSecond = [
+    itemLeave,
     itemLogout
   ];
 
