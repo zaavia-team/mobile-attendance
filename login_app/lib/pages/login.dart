@@ -43,6 +43,7 @@ class _LoginState extends State<Login> {
             },
             body: jsonEncode(
                 {"Login_ID": email.text, "Password": password.text}));
+          print(response.body);
 
         if (response.statusCode == 200 &&
             jsonDecode(response.body)["status"] == false) {
@@ -54,7 +55,6 @@ class _LoginState extends State<Login> {
             ),
             backgroundColor: Colors.red,
           );
-          // print(response.body);
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         } else {
           var data = jsonDecode(response.body);
