@@ -15,7 +15,7 @@ const UserSchema = new Schema({
   LastName: String,
   MiddleName: String,
   EmployeeID: String,
-  NationalID: String,
+  // NationalID: String,
   Designation: { type: String},
   Address: { type: String},
   Login_ID: {type: String , required: true},
@@ -26,7 +26,7 @@ const UserSchema = new Schema({
   Password: { type: String, required: true },
   StatusCode: {type: Number, default: 1}, // 0 for pending , 1 for active , 2 for delete
   LastUpdatedOn: Date,
-  IsMaster: {type: Boolean, default: false},
+  // IsMaster: {type: Boolean, default: false},
   DeletionDetails: ActionDetails,
   ForgotPasswordEmailSentTimeStamp: Date,
   Password_ResetToken: String,
