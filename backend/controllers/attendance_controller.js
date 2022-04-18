@@ -313,6 +313,7 @@ module.exports.approvedLeave = async (req, res) => {
         ActionTakenOn: new Date(),
         ActionTakenByLoginID: req.user.Login_ID,
     };
+    console.log(req.params.id + 'hello params id');
     attendance_repo.updateOne(
         { _id: req.params.id },
         {
