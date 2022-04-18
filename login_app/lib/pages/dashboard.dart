@@ -321,10 +321,15 @@ class _DashboardState extends State<Dashboard> {
         break;
 
       case MenuItems.itemPending:
-        if (box1.get('Rightstitle') != null) {
-          List rightsTitle = jsonDecode(box1.get('Rightstitle'));
-          rightsTitle.indexOf("Approved Leave");
-        }
+        // if (box1.get('Rightstitle') != null) {
+        //   List rightsTitle = jsonDecode(box1.get('Rightstitle'));
+        //   rightsTitle.indexOf("Approved Leave");
+
+          Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ApprovalList())
+        );
+        // }
         break;
 
       case MenuItems.itemLogout:
