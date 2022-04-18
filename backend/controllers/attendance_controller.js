@@ -1,5 +1,6 @@
 const attendance_repo = require('../repository/attendance_repo');
 const user_repo = require('../repository/user_repo');
+const excelJs = require("excelJs");
 
 
 module.exports.attendance = async (req, res) => {
@@ -85,7 +86,7 @@ module.exports.gettodayattendance = (req, res) => {
         "Date.Day": CurrentDate.getDate(),
         "Date.Year": CurrentDate.getFullYear()
     };
-    attendance_repo.find(query, false, null, "UserName UserID")
+    attendance_repo.find(query, false, null, "UserName UserID TakeIn")
         .then(attendance => {
             res.send({ Status: true, data: attendance })
         })
@@ -346,3 +347,4 @@ module.exports.rejectedLeave = async (req, res) => {
             res.send({ Status: false, message: error.message })
         })
 }
+
