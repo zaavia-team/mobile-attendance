@@ -24,6 +24,8 @@ class _DashboardState extends State<Dashboard> {
   var token;
   var Users = [];
   String msg = "";
+  var rightsTitle = "";
+
   // final
 
   late Box box1;
@@ -53,6 +55,9 @@ class _DashboardState extends State<Dashboard> {
   void getData() async {
     if (box1.get('token') != null) {
       token = box1.get('token');
+      print(rightsTitle);
+      print(box1.get('LeaveAccess'));
+      rightsTitle = box1.get('LeaveAccess') ?? "";
       getUsers();
     }
   }
@@ -217,13 +222,10 @@ class _DashboardState extends State<Dashboard> {
         title: const Text("Main Screen"),
         actions: [
           PopupMenuButton<MenuItem>(
-            onSelected: (item) => onSelected(context, item),
-            itemBuilder: (context) => [
-              ...MenuItems.itemsFirst.map(buildItem).toList(),
-              PopupMenuDivider(),
-              ...MenuItems.itemsSecond.map(buildItem).toList(),
-            ],
-          ),
+              onSelected: (item) => onSelected(context, item),
+              itemBuilder: (context) => rightsTitle == "Approved Leave"
+                  ? MenuItems.itemsFirst.map(buildItem).toList()
+                  : MenuItems.itemsSecond.map(buildItem).toList()),
         ],
       ),
       body: Container(
@@ -237,7 +239,7 @@ class _DashboardState extends State<Dashboard> {
                 itemCount: Users.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Card(
-                    color: Colors.purple,
+                    color: Color.fromARGB(255, 174, 165, 38),
                     elevation: 5,
                     child: ListTile(
                       leading: Icon(Icons.person),
@@ -318,10 +320,24 @@ class _DashboardState extends State<Dashboard> {
         );
         break;
 
+      case MenuItems.itemPending:
+        // if (box1.get('Rightstitle') != null) {
+        //   List rightsTitle = jsonDecode(box1.get('Rightstitle'));
+        //   rightsTitle.indexOf("Approved Leave");
+
+          Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ApprovalList())
+        );
+        // }
+        break;
+
       case MenuItems.itemLogout:
         box1.delete('token');
         box1.delete('email');
         box1.delete('Name');
+        box1.delete('LeaveAccess');
+
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => Login()),

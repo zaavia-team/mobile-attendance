@@ -82,6 +82,7 @@ module.exports.gettodayattendance = (req, res) => {
     let CurrentDate = new Date()
     let query = {
         TakenIn: { $exists: true },
+        TakenOut: { $exists: false },
         "Date.Month": CurrentDate.getMonth(),
         "Date.Day": CurrentDate.getDate(),
         "Date.Year": CurrentDate.getFullYear()
@@ -313,6 +314,7 @@ module.exports.approvedLeave = async (req, res) => {
         ActionTakenOn: new Date(),
         ActionTakenByLoginID: req.user.Login_ID,
     };
+    console.log(req.params.id + 'hello params id');
     attendance_repo.updateOne(
         { _id: req.params.id },
         {
