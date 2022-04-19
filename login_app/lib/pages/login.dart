@@ -43,6 +43,7 @@ class _LoginState extends State<Login> {
             },
             body: jsonEncode(
                 {"Login_ID": email.text, "Password": password.text}));
+          print(response.body);
 
         if (response.statusCode == 200 &&
             jsonDecode(response.body)["status"] == false) {
@@ -54,20 +55,24 @@ class _LoginState extends State<Login> {
             ),
             backgroundColor: Colors.red,
           );
-
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         } else {
           var data = jsonDecode(response.body);
+          box1.put('token', data["token"]);
+          List title = data["data"]["RightsTitle"] as List;
           box1.put('email', data["data"]["Login_ID"]);
           box1.put('Name',
-              data["data"]["FirstName"] + " " + data["data"]["LastName"]);
-          box1.put('token', data["token"]);
-          print(box1.get("email"));
+            data["data"]["FirstName"] + " " + data["data"]["LastName"]);
+          print(title.length);
+          if(title.length > 0){
+            box1.put('LeaveAccess', title[0]);
+          }
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => Dashboard()),
           );
         }
+     
       } catch (e) {
         print(e);
         msg = dotenv.env['API_URL'] ?? "Url null catch";
