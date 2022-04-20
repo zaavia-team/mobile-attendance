@@ -104,6 +104,7 @@ class _DashboardState extends State<Dashboard> {
               _dateTime?.toIso8601String() ?? DateTime.now().toIso8601String(),
           'ManualEntry': _dateTime?.toIso8601String() != null ? true : false
         }));
+    print(response.body);
 
     if (response.statusCode == 200 &&
         jsonDecode(response.body)["status"] == false) {
@@ -245,8 +246,11 @@ class _DashboardState extends State<Dashboard> {
                       leading: Icon(Icons.person),
                       title: Text(
                         '${Users[index]["UserName"]}',
-                        style: TextStyle(color: Colors.white, fontSize: 17),
+                        style: TextStyle(color: Colors.white, fontSize: 18)
                       ),
+                      subtitle: Text(
+                          '${DateFormat('dd-MM-yyyy HH:mm').format(DateTime.parse(Users[index]["TakenIn"]).toLocal())}',
+                          style: TextStyle(color: Colors.white, fontSize: 17)),
                     ),
                   );
                 },
@@ -325,10 +329,8 @@ class _DashboardState extends State<Dashboard> {
         //   List rightsTitle = jsonDecode(box1.get('Rightstitle'));
         //   rightsTitle.indexOf("Approved Leave");
 
-          Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ApprovalList())
-        );
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => ApprovalList()));
         // }
         break;
 

@@ -127,6 +127,7 @@ class _LeaveListState extends State<LeaveList> {
     print(enteredReason);
     print(firstDate);
     leaveRequest();
+    getRequests();
   }
   void onSubmitDataMultiple(){
     enteredReason = reasonController.text;
@@ -134,6 +135,7 @@ class _LeaveListState extends State<LeaveList> {
       return;
     }
     leaveRequest();
+    getRequests();
   }
 
   Future<DateTime> pickDate(BuildContext context) async {
@@ -233,8 +235,10 @@ class _LeaveListState extends State<LeaveList> {
                           RaisedButton(
                               color: Theme.of(context).primaryColor,
                               textColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0)),
                               child: Text('Select Date'),onPressed: () => pickDateTime(context)),
-                          Text(firstDate==null ? 'Please Select a Date' : getDate()),
+                          Text(firstDate==null ? 'Select a Date' : getDate()),
                           TextField(
                             decoration: InputDecoration(labelText: 'Enter Reason'),
                             controller: reasonController,
@@ -245,6 +249,8 @@ class _LeaveListState extends State<LeaveList> {
                           RaisedButton(
                             color: Theme.of(context).primaryColor,
                             textColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0)),
                             onPressed: () => onSubmitData(), child: Text('Submit'),)
                         ],
                       )
@@ -256,12 +262,16 @@ class _LeaveListState extends State<LeaveList> {
                               RaisedButton(
                                   color: Theme.of(context).primaryColor,
                                   textColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20.0)),
                                   child: Text('Start Date'),onPressed: () {
                                 pickDateTime(context);
                               }),
                               RaisedButton(
                                   color: Theme.of(context).primaryColor,
                                   textColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20.0)),
                                   child: Text('End Date'),onPressed: () {
                                 pickLastDateTime(context);
                               }),
@@ -272,8 +282,8 @@ class _LeaveListState extends State<LeaveList> {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
 
-                              Text(firstDate==null ? 'Please Select Start Date' : getDate()),
-                              Text(lastDate==null ? 'Please Select Last Date' : getLastDate()),
+                              Text(firstDate==null ? 'Select Start Date' : getDate()),
+                              Text(lastDate==null ? 'Select Last Date' : getLastDate()),
                             ],
                           ),
 
@@ -289,6 +299,8 @@ class _LeaveListState extends State<LeaveList> {
                           RaisedButton(
                             color: Theme.of(context).primaryColor,
                             textColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0)),
                             onPressed: () => onSubmitDataMultiple(), child: Text('Submit', style: TextStyle(fontSize: 16),),)
                         ],
                       ),
