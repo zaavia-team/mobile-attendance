@@ -19,6 +19,7 @@ routes.post('/getUsershowLeave',auth.authMiddleware,attendance_controller.getUse
 routes.post('/getlisPendLeave',auth.authMiddleware,attendance_controller.getlisPendLeave)
 routes.put('/approvalLeave/:id',auth.authMiddleware,attendance_controller.approvedLeave)
 routes.put('/rejectedLeave/:id',auth.authMiddleware,attendance_controller.rejectedLeave)
+routes.post('/postExcelReport',auth.authMiddleware,attendance_controller.postExcelReport)
 routes.get ('/getalltitles', auth.authMiddleware,titlesDictionary.getAllTitles)
 
 
