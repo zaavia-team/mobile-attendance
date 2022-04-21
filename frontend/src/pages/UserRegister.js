@@ -336,7 +336,11 @@ console.log(data)
     width: 600,
     bgcolor: 'background.paper',
     boxShadow: 24,
+    overflow:'scroll',
+    height:'100%',
     p: 4,
+    zIndex: 10,
+    
   };
 
 
@@ -377,8 +381,9 @@ console.log(data)
         onClose={handleclose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
+        style={{ overflow: 'scroll' }}
       >
-        <Box sx={style}>
+        <Box sx={style} >
           {holiday === false && <Container component="main" maxWidth="xs">
             <Box
               sx={{
@@ -388,9 +393,7 @@ console.log(data)
                 alignItems: 'center',
               }}
             >
-              <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                <LockOutlinedIcon />
-              </Avatar>
+              
               <Typography component="h1" variant="h5">
                 Employee Registration
               </Typography>

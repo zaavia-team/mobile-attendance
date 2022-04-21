@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:login_app/pages/approval_List.dart';
+import 'package:login_app/pages/change_Password.dart';
 import './leavelist.dart';
 import 'package:login_app/data/menu_items.dart';
 import 'package:login_app/model/menu_item.dart';
@@ -332,6 +333,13 @@ class _DashboardState extends State<Dashboard> {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => ApprovalList()));
         // }
+        break;
+
+      case MenuItems.changePassword:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ChangePassword()),
+        );
         break;
 
       case MenuItems.itemLogout:
