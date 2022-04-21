@@ -451,19 +451,4 @@ module.exports.postExcelReport = async (req, res) => {
     }
 };
 
-    // let CurrentDate = new Date()
-    // let query = {
-    //     TakenIn: { $exists: true },
-    //     "Date.Month": CurrentDate.getMonth(),
-    //     "Date.Day": CurrentDate.getDate(),
-    //     "Date.Year": CurrentDate.getFullYear()
-    // };
-//     attendance_repo.find(query, false, null, "UserName UserID")
-    
-//         .then(attendance => {
-//             res.send({ Status: true, data: attendance })
-//         })
-//         .catch(error => {
-//             res.send({ Status: false, message: error.message })
-//         })
-// }
+
