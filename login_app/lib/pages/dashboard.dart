@@ -75,12 +75,9 @@ class _DashboardState extends State<Dashboard> {
       print(response.body);
       setState(() {
         Users = jsonDecode(response.body)["data"];
-        print("currentUsedfsghr");
 
         var currentUser =
             Users.any((user) => user["UserName"] == box1.get('email'));
-        print("currentUser");
-        print(currentUser);
         if (currentUser) {
           transactionType = "i am Out";
         }
@@ -346,11 +343,12 @@ class _DashboardState extends State<Dashboard> {
         box1.delete('token');
         box1.delete('email');
         box1.delete('Name');
+        box1.delete('_id');
         box1.delete('LeaveAccess');
 
-        Navigator.push(
-          context,
+        Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => Login()),
+              (Route<dynamic> route) => false,
         );
         break;
     }

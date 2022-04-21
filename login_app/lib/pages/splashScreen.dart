@@ -20,15 +20,15 @@ class _SplashScreenState extends State<SplashScreen> {
 
     void getData() async {
     if (box1.get('token') != null) {
-      Navigator.push(
-        context,
+      Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => Dashboard()),
+            (Route<dynamic> route) => false,
       );
     }
     else {
-      Navigator.push(
-        context,
+      Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => Login()),
+            (Route<dynamic> route) => false,
       );
     }
   }
