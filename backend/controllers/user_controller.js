@@ -20,7 +20,7 @@ module.exports.login = async (req, res) => {
         else {
 
             const token = uuid();
-            const assignJwt = jwt.sign({UID: token, expiresIn: "4h"}, process.env.JWT_SECRET);
+            const assignJwt = jwt.sign({ UID: token, expiresIn: "4h" }, process.env.JWT_SECRET);
             user_repo.updateOne({ _id: user._id }, { $set: { Login_JWT_Token_ID: token } }).then(upd => {
             });
             //   res.('token_zsup', fastify.jwt.sign(token));
@@ -28,7 +28,7 @@ module.exports.login = async (req, res) => {
             res.send({ data: user_to_send, status: true, token: assignJwt, message: 'User Login Successfully!' });
         }
     } catch (e) {
-        res.send({status : false , message : e.message});
+        res.send({ status: false, message: e.message });
     }
 }
 
@@ -55,10 +55,10 @@ module.exports.getUsers = (req, res) => {
 }
 
 module.exports.editUser = async (req, res) => {
-   
+
     try {
         _id = req.params.id
-        FirstName= req.body.FirstName
+        FirstName = req.body.FirstName
         LastName = req.body.LastName
         Email = req.body.Email
         Designation = req.body.Designation
@@ -66,10 +66,10 @@ module.exports.editUser = async (req, res) => {
         WorkingHours = req.body.WorkingHours
         DateOfJoining = req.body.DateOfJoining
         PhoneNumber = req.body.PhoneNumber
-        NIC= req.body.NIC
+        NIC = req.body.NIC
         StatusCode = req.body.StatusCode
         RightsTitle = [];
-        if(req.body.RightsTitle){
+        if (req.body.RightsTitle) {
             RightsTitle = req.body.RightsTitle;
         }
 
@@ -80,11 +80,58 @@ module.exports.editUser = async (req, res) => {
             res.send({ status: false, message: `User doesn't exists!` });
         }
         else {
-            const updUsr = await user_repo.updateOne({ _id: _id }, { $set: { FirstName, LastName, Email, Designation, WorkingHours, DateOfBirth, DateOfJoining, PhoneNumber, NIC, StatusCode, RightsTitle} })
+            const updUsr = await user_repo.updateOne({ _id: _id }, { $set: { FirstName, LastName, Email, Designation, WorkingHours, DateOfBirth, DateOfJoining, PhoneNumber, NIC, StatusCode, RightsTitle } })
 
             res.send({ data: updUsr, status: true, message: 'User Updates Successfully!' });
         }
     } catch (e) {
-        res.send({status : false , message : e.message});
+        res.send({ status: false, message: e.message });
     }
+}
+
+module.exports.ChangePassword = (req, res) => {
+    user_repo.find({ _id:req.body?._id }, true, true, {})
+        .then(user => {
+            if (!user) {
+                console.log("User not found!");
+                return res.send({
+                    message: "This login ID is not registered.",
+                    status: false
+                });
+            }
+            else {
+                user.authenticate(req.body.oldPassword, function (
+                    authError,
+                    authenticated
+                ) {
+                    if (authError) {
+                        console.log("authError->", authError);
+                        return res.send(authError);
+                    }
+                    if (!authenticated) {
+                        console.log("!authenticated");
+                        return res.send({
+                            message: "This password is not correct.",
+                            status: false
+                        });
+                    } else {
+                        console.log("Auth Successfull!!!");
+                        user.Password = req.body.newPassword
+                        user.save().then((success) => {
+                            console.log('Password Changed Successfully!');
+                            res.send({ status: true, message: 'Password changed!' })
+                        }).catch(err => {
+                            res.send(err);
+
+                        })
+
+                    }
+                });
+            }
+        })
+        .catch(err => {
+            console.log("Error in Finding User: ", err);
+            res.send(err);
+        });
+
 }
