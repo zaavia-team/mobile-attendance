@@ -87,7 +87,7 @@ module.exports.gettodayattendance = (req, res) => {
         "Date.Day": CurrentDate.getDate(),
         "Date.Year": CurrentDate.getFullYear()
     };
-    attendance_repo.find(query, false, null, "UserName UserID TakeIn")
+    attendance_repo.find(query, false, null, "UserName UserID TakenIn")
         .then(attendance => {
             res.send({ Status: true, data: attendance })
         })
