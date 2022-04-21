@@ -16,6 +16,14 @@ class _LoginState extends State<Login> {
   TextEditingController password = TextEditingController();
   var token;
   String msg = "";
+  bool _isHidden = true;
+  String _displayText = 'Please enter a password';
+  late String _password;
+  double _strength = 0;
+
+  RegExp numReg = RegExp(r".*[0-9].*");
+  RegExp letterReg = RegExp(r".*[A-Za-z].*");
+  RegExp specialReg = RegExp(r'[!@#$%^&*(),.?":{}|<>]');
   late Box box1;
 
   @override
@@ -43,6 +51,7 @@ class _LoginState extends State<Login> {
             },
             body: jsonEncode(
                 {"Login_ID": email.text, "Password": password.text}));
+          print(response.body);
 
         if (response.statusCode == 200 &&
             jsonDecode(response.body)["status"] == false) {
@@ -54,20 +63,26 @@ class _LoginState extends State<Login> {
             ),
             backgroundColor: Colors.red,
           );
-
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         } else {
           var data = jsonDecode(response.body);
+          _checkPassword(password.text);
+          box1.put('token', data["token"]);
+          List title = data["data"]["RightsTitle"] as List;
           box1.put('email', data["data"]["Login_ID"]);
           box1.put('Name',
-              data["data"]["FirstName"] + " " + data["data"]["LastName"]);
-          box1.put('token', data["token"]);
-          print(box1.get("email"));
+            data["data"]["FirstName"] + " " + data["data"]["LastName"]);
+          print(title.length);
+          print(_displayText);
+          if(title.length > 0){
+            box1.put('LeaveAccess', title[0]);
+          }
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => Dashboard()),
           );
         }
+     
       } catch (e) {
         print(e);
         msg = dotenv.env['API_URL'] ?? "Url null catch";
@@ -97,6 +112,50 @@ class _LoginState extends State<Login> {
       );
     }
   }
+
+  void _checkPassword(String value) {
+    _password = value.trim();
+
+    if (_password.isEmpty) {
+      setState(() {
+        _strength = 0;
+        _displayText = 'Please enter you password';
+      });
+    } else if (_password.length < 8) {
+      setState(() {
+        _strength = 1 / 4;
+        _displayText = 'Your password is too short';
+      });
+    } else if (!letterReg.hasMatch(_password) || !numReg.hasMatch(_password)) {
+      setState(() {
+        _strength = 2 / 4;
+        _displayText = 'Your password is weak';
+      });
+    } else {
+      if (!specialReg.hasMatch(_password)) {
+        setState(() {
+          // Password length >= 8
+          // But doesn't contain both letter and digit characters
+          _strength = 3 / 4;
+          _displayText = 'Your password is medium';
+        });
+      } else {
+        // Password length >= 8
+        // Password contains both letter and digit characters
+        setState(() {
+          _strength = 1;
+          _displayText = 'Your password is strong';
+        });
+      }
+    }
+  }
+
+  void _togglePasswordView() {
+    setState(() {
+      _isHidden = !_isHidden;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -134,17 +193,26 @@ class _LoginState extends State<Login> {
                 height: 10,
               ),
               TextField(
-                decoration: const InputDecoration(
+                obscureText: _isHidden,
+                decoration: InputDecoration(
                     hintText: 'Password',
                     prefixIcon: Icon(Icons.lock),
+                    suffix: InkWell(
+                      onTap: _togglePasswordView,
+                      child: Icon(
+                        _isHidden
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                    ),
                     border: OutlineInputBorder(
                         borderSide: BorderSide(width: 2),
                         borderRadius: BorderRadius.all(Radius.circular(27.0)))),
                 controller: password,
-                obscureText: true,
+
               ),
               const SizedBox(
-                height: 8,
+                height: 10,
               ),
               ButtonTheme(
                 minWidth: 400,
@@ -168,6 +236,7 @@ class _LoginState extends State<Login> {
                 height: 120,
               ),
               Text('Copyrights by Zaavia! © 2022'),
+              Text('Version 1.0.1'),
             ],
           ),
         ),

@@ -1,5 +1,7 @@
 const attendance_repo = require('../repository/attendance_repo');
 const user_repo = require('../repository/user_repo');
+const excelJs = require("excelJs");
+const fs = require("fs");
 
 
 module.exports.attendance = async (req, res) => {
@@ -85,7 +87,7 @@ module.exports.gettodayattendance = (req, res) => {
         "Date.Day": CurrentDate.getDate(),
         "Date.Year": CurrentDate.getFullYear()
     };
-    attendance_repo.find(query, false, null, "UserName UserID")
+    attendance_repo.find(query, false, null, "UserName UserID TakeIn")
         .then(attendance => {
             res.send({ Status: true, data: attendance })
         })
@@ -312,7 +314,6 @@ module.exports.approvedLeave = async (req, res) => {
         ActionTakenOn: new Date(),
         ActionTakenByLoginID: req.user.Login_ID,
     };
-    console.log(req.params.id + 'hello params id');
     attendance_repo.updateOne(
         { _id: req.params.id },
         {
@@ -347,3 +348,107 @@ module.exports.rejectedLeave = async (req, res) => {
             res.send({ Status: false, message: error.message })
         })
 }
+
+module.exports.postExcelReport = async (req, res) => {
+    const aggr = [
+        {
+            $match: {
+                'TakenIn': {
+                    '$gte': new Date(req.body.StartDate),
+                    '$lte': new Date(new Date(req.body.EndDate).setHours(23, 59, 59))
+                }
+            }
+        },
+        {
+            '$addFields': {
+                'HOUR': {
+                    '$divide': [
+                        {
+                            '$subtract': [
+                                '$TakenOut', '$TakenIn'
+                            ]
+                        }, 3600000
+                    ]
+                }
+            }
+        },
+        {
+            '$group': {
+                '_id': '$UserID',
+                'Details': {
+                    '$push': '$$ROOT'
+                },
+                'TotalHours': {
+                    '$sum': '$HOUR'
+                },
+                'WorkingHours': {
+                    '$sum': '$WorkingHours'
+                },
+                'ManualAttendance': {
+                    '$sum': {
+                        $cond: [{ $eq: ['$WorkingHours', true] }, 1, 0]
+                    }
+                },
+                'TotalHolidays': {
+                    '$sum': {
+                        $cond: [{ $eq: ['$Title', "Holiday"] }, 1, 0]
+                    }
+                },
+                'Leave': {
+                    '$sum': {
+                        $cond: [{ $eq: ['$Title', "Leave"] }, 1, 0]
+                    }
+                },
+            }
+        }
+    ]
+    if (req.body.userIds && req.body.userIds.length) {
+        aggr[0].$match['UserName'] = { $in: req.body.userIds }
+    }
+    const attendance = await attendance_repo.aggregate(aggr);
+
+    // Create a new worksheet
+    const workbook = new excelJs.Workbook(); 
+    // New Worksheet
+    const worksheet = workbook.addWorksheet("Attendance_Sheet");
+    // Path to downlaod excel
+    const path = __dirname + "/attendance.csv";
+    //column for data in excel.key must match data key0
+    worksheet.columns =[
+        { header: "S no.", key: "s_no", width: 10},
+        { header: "Name", key: "Name", width: 10},
+        { header: "Total Hours", key: "TotalHours", width: 10},
+        { header: "Total Working Hours", key: "TotalWorkingHours", width: 10},
+        { header: "Leave", key: "Leave", width: 10},
+    ];
+    
+    let counter = 1;
+
+    attendance.forEach((attend)=>{
+        attend.s_no = counter;
+        attend.Name = attend.Details[0].UserName;
+        attend.TotalHours = attend.TotalHours;
+        attend.TotalWorkingHours = attend.WorkingHours;
+        attend.Leave = attend.Leave;
+        worksheet.addRow(attend);
+        counter++;
+    });
+    worksheet.getRow(1).eachCell((cell) => {
+        cell.font = {bold : true };
+    });
+
+    try{
+        const data = await workbook.csv.writeFile(path)
+        .then(() =>{
+           const stream = fs.createReadStream(path)
+            res.download(path)
+        });
+    } catch(err) {
+        res.send({ 
+            Status: "error",
+            message: "Something went wrong",
+        })
+    }
+};
+
+

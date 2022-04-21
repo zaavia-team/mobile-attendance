@@ -2,6 +2,7 @@
 let express = require('express');
 const req = require('express/lib/request');
 let mongoose = require('mongoose');
+const path = require("path");
 let app = express();
 let routes = require('./routes/routes');
 
@@ -14,6 +15,14 @@ if (process.env.NODE_ENV !== "production") {
 app.use(express.json());
 app.use(express.urlencoded());
 app.use('/api', routes);
+
+app.use(express.static(path.join(__dirname, "build")));
+app.use(express.static("build/static"));
+
+app.get('/', function (req, res) {
+  console.log(path.join(__dirname, "build", "index.html"))
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
 
 // Change the 404 message modifing the middleware
 app.use(function(req, res, next) {
