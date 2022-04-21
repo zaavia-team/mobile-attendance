@@ -2,7 +2,7 @@
     package="com.example.login_app">
     <uses-permission android:name="android.permission.INTERNET"/> <!-- Add this -->
    <application
-        android:label="login_app"
+        android:label="AttendanceApp"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
