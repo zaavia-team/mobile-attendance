@@ -17,6 +17,11 @@ export const mainListItems = (
       text: 'Admin Report',
       icon: <AssessmentIcon />,
       path: '/adminreport'
+    },
+    {
+      text: 'Change Password',
+      icon: <AssessmentIcon />,
+      path: '/changepassword'
     }
   ]
 );
