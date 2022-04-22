@@ -6,8 +6,9 @@ module.exports.login = async (req, res) => {
     try {
         const login_id = req.body.Login_ID;
         const password = req.body.Password;
+        console.log("__")
 
-        const user = await user_repo.find({ Login_ID: login_id }, true, true, {});
+        const user = await user_repo.find({ Login_ID: login_id, StatusCode: 1 }, true, true, {});
 
         if (!user) {
 
@@ -18,7 +19,7 @@ module.exports.login = async (req, res) => {
             res.send({ status: false, message: 'User id or password does not match!' });
         }
         else if (req.body.IsWeb) {
-            const checkAdmin = user.RightsTitle.find((title) => title === 'Admin' )
+            const checkAdmin = user_repo.find({RightsTitle:{$in:["Admin"]}})
             console.log(checkAdmin,"------")
             if(!checkAdmin) {
                 
