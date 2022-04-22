@@ -17,15 +17,23 @@ module.exports.login = async (req, res) => {
 
             res.send({ status: false, message: 'User id or password does not match!' });
         }
-        else {
-
-            const token = uuid();
-            const assignJwt = jwt.sign({ UID: token, expiresIn: "4h" }, process.env.JWT_SECRET);
-            user_repo.updateOne({ _id: user._id }, { $set: { Login_JWT_Token_ID: token } }).then(upd => {
-            });
-            //   res.('token_zsup', fastify.jwt.sign(token));
-            let user_to_send = user.toObject();
-            res.send({ data: user_to_send, status: true, token: assignJwt, message: 'User Login Successfully!' });
+        else if (req.body.IsWeb) {
+            const checkAdmin = user.RightsTitle.find((title) => title === 'Admin' )
+            console.log(checkAdmin,"------")
+            if(!checkAdmin) {
+                
+                res.send({ status: false, message: 'No rights to Access!' });
+            }
+            else {
+    
+                const token = uuid();
+                const assignJwt = jwt.sign({ UID: token, expiresIn: "4h" }, process.env.JWT_SECRET);
+                user_repo.updateOne({ _id: user._id }, { $set: { Login_JWT_Token_ID: token } }).then(upd => {
+                });
+                //   res.('token_zsup', fastify.jwt.sign(token));
+                let user_to_send = user.toObject();
+                res.send({ data: user_to_send, status: true, token: assignJwt, message: 'User Login Successfully!' });
+            }
         }
     } catch (e) {
         res.send({ status: false, message: e.message });

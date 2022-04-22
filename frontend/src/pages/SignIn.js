@@ -58,6 +58,7 @@ export default function SignIn({setLoggedin}) {
     axios.post('/api/login', {
       Login_ID: data.get('email'),
       Password: data.get('password'),
+      IsWeb: true,
     })
     .then(function (response) {
       console.log(response);

@@ -2,29 +2,29 @@ let routes = {
     //General Settings
     "/api/alltitles/get" : {
         RightTitles : [{
-            Title:"Common",
-            ModuleName: "Common"
+            Title:"Admin",
+            ModuleName : "Setup"
         }],
         Methods : ["get"]
     },
     "/api/users" : {
         RightTitles : [{
-            Title:"Common",
-            ModuleName: "Common"
+            Title:"Admin",
+            ModuleName : "Setup"
         }],
         Methods : ["get"]
     },
     "/api/user/:id" : {
         RightTitles : [{
-            Title:"Common",
-            ModuleName: "Common"
+            Title:"Admin",
+            ModuleName : "Setup"
         }],
         Methods : ["post"]
     },
     "/api/register" : {
         RightTitles : [{
-            Title:"Common",
-            ModuleName: "Common"
+            Title:"Admin",
+            ModuleName : "Setup"
         }],
         Methods : ["post"]
     },
@@ -44,15 +44,15 @@ let routes = {
     },
     "/api/getreportattendance" : {
         RightTitles : [{
-            Title:"Common",
-            ModuleName: "Common"
+            Title:"Admin",
+            ModuleName : "Setup"
         }],
         Methods : ["post"]
     },
     "/api/holiday" : {
         RightTitles : [{
-            Title:"Common",
-            ModuleName: "Common"
+            Title:"Admin",
+            ModuleName : "Setup"
         }],
         Methods : ["post"]
     },
