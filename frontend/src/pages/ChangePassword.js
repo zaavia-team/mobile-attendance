@@ -28,7 +28,6 @@ const ChangePassword = () => {
     const userDa = localStorage.getItem("data") && JSON.parse(localStorage.getItem("data"));
     console.log(userDa.data.data._id, "USERDATA")
     
-    
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
           return;
@@ -54,6 +53,9 @@ const ChangePassword = () => {
         const api = "/api/ChangePassword"
         const token = localStorage.getItem('token');
         setOpen(true)
+        console.log(userDa.data.data._id,"userDa.data.data._id")
+        setForm({...form, _id: userDa.data.data._id })
+        console.log(form,"form")
         
         e.preventDefault();
         if (form.new_password && form.confirm_password && form.old_password) {
@@ -61,10 +63,17 @@ const ChangePassword = () => {
                 if (validatePassword(form.new_password) && validatePassword(form.confirm_password)) {
                     if (form.new_password === form.confirm_password) {
                         
-                        axios.post(api,
+                        const data ={
+                            oldPassword: form.old_password,
+                            newPassword: form.new_password,
+                            _id: userDa.data.data._id
+                          }
+
+
+                        axios.post(api, data,
                             { headers: { "Authorization": `${token}` } })
                             .then(res => {
-                                setForm({ ...form, _id: userDa.data.data._id })
+                                setForm(form )
                             }
                             )
                             .catch(err => {
@@ -74,7 +83,9 @@ const ChangePassword = () => {
                             
                             
                             setForm({ ...form, old_password: '', new_password: '', confirm_password: '' })
-                            console.log(form);
+                            SetMessage({value: "Successfuly Changed", type:"success"})
+
+
                     }
                     else {
                      SetMessage({value: "Password does not match", type:"error"})
