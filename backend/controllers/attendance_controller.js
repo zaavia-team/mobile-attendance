@@ -203,7 +203,7 @@ module.exports.holiday = async (req, res) => {
                 ActionDetails: ActionDetails
             };
             Docs.push(newDocObj)
-            var newDate = loop.setDate(loop.getDate() + 1);
+            var newDate = loop.setDate(loop.getDate() + 1); 
             loop = new Date(newDate);
         }
 
@@ -452,3 +452,13 @@ module.exports.postExcelReport = async (req, res) => {
 };
 
 
+module.exports.getreportholiday = (req, res) => {
+    attendance_repo.find({Title: 'Holiday'})
+        .then(holiday => {
+            console.log(holiday)
+            res.send({ Status: true, data: holiday })
+        })
+        .catch(error => {
+            res.send({ Status: false, message: error.message })
+        })
+}
