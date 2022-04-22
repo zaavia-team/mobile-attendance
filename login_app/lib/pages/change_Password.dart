@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
+import 'package:login_app/pages/login.dart';
 class ChangePassword extends StatefulWidget {
   const ChangePassword({Key? key}) : super(key: key);
 
@@ -22,6 +27,77 @@ class _ChangePasswordState extends State<ChangePassword> {
   bool _isHiddenOld = true;
   bool _isHiddenNew = true;
   bool _isHiddenConfirm = true;
+
+  var token;
+  late Box box1;
+  var _id;
+
+  @override
+  void initState() {
+    super.initState();
+    createBox();
+  }
+  void createBox() async {
+    box1 = await Hive.openBox('loginData');
+    getData();
+  }
+  void getData() async {
+    if (box1.get('token') != null) {
+      token = box1.get('token');
+      _id = box1.get('_id');
+    }
+  }
+  void getChangePassword() async {
+    print(password.text);
+    try {
+      var response = await http.post(
+        Uri.parse(dotenv.env['API_URL']! + "/api/ChangePassword"),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': token
+        },
+          body: jsonEncode({
+            '_id': _id,
+            'oldPassword': password.text,
+            'newPassword': newPassword.text,
+          }),
+      );
+      if (response.statusCode == 200 &&
+          jsonDecode(response.body)["status"] == false) {
+        msg = jsonDecode(response.body)["message"];
+        var snackBar = SnackBar(
+          content: Text(
+            msg,
+            style: TextStyle(fontSize: 16.5),
+          ),
+          backgroundColor: Colors.red,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      } else {
+        msg = jsonDecode(response.body)["message"];
+        var snackBar = SnackBar(
+          content: Text(
+            msg,
+            style: TextStyle(fontSize: 16.5),
+          ),
+          backgroundColor: Colors.green,
+        );
+        box1.delete('token');
+        box1.delete('email');
+        box1.delete('Name');
+        box1.delete('_id');
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => Login()),
+              (Route<dynamic> route) => false,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+
+    } catch (e) {
+      print(e);
+    }
+  }
+
 
   void _toggleOldPasswordView() {
     setState(() {
@@ -179,6 +255,10 @@ class _ChangePasswordState extends State<ChangePassword> {
               const SizedBox(
                 height: 10,
               ),
+              const Text('Password must contain atleast 8 characters, alpha numeric and 1 special character'),
+              const SizedBox(
+                height: 10,
+              ),
               ButtonTheme(
                 minWidth: 400,
                 height: 50,
@@ -212,18 +292,9 @@ class _ChangePasswordState extends State<ChangePassword> {
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }
                       else{
-                        msg = "Password changed Successfully";
-                        var snackBar = SnackBar(
-                          content: Text(
-                              msg,
-                              style: TextStyle(fontSize: 16.5)
-                          ),
-                          backgroundColor: Colors.green,
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        getChangePassword();
                       }
                     }
-
                   },
                   child: const Text(
                     'Change Password',

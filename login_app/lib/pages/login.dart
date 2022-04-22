@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:login_app/pages/change_Password.dart';
 import './dashboard.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -68,19 +69,26 @@ class _LoginState extends State<Login> {
           var data = jsonDecode(response.body);
           _checkPassword(password.text);
           box1.put('token', data["token"]);
-          List title = data["data"]["RightsTitle"] as List;
-          box1.put('email', data["data"]["Login_ID"]);
-          box1.put('Name',
-            data["data"]["FirstName"] + " " + data["data"]["LastName"]);
-          print(title.length);
-          print(_displayText);
-          if(title.length > 0){
-            box1.put('LeaveAccess', title[0]);
+          box1.put('_id', data["data"]["_id"]);
+          if(_strength < 1){
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ChangePassword()),
+            );
+          } else {
+            List title = data["data"]["RightsTitle"] as List;
+            box1.put('email', data["data"]["Login_ID"]);
+            box1.put('Name',
+                data["data"]["FirstName"] + " " + data["data"]["LastName"]);
+            if(title.length > 0){
+              box1.put('LeaveAccess', title[0]);
+            }
+
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => Dashboard()),
+                  (Route<dynamic> route) => false,
+            );
           }
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Dashboard()),
-          );
         }
      
       } catch (e) {
@@ -236,7 +244,7 @@ class _LoginState extends State<Login> {
                 height: 120,
               ),
               Text('Copyrights by Zaavia! © 2022'),
-              Text('Version 1.0.1'),
+              Text('Version 1.0.2'),
             ],
           ),
         ),
