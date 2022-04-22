@@ -1,6 +1,6 @@
 const attendance_repo = require('../repository/attendance_repo');
 const user_repo = require('../repository/user_repo');
-const excelJs = require("excelJs");
+const excelJs = require("exceljs");
 const fs = require("fs");
 
 
