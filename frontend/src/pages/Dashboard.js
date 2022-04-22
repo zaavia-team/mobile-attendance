@@ -23,6 +23,7 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { useNavigate  } from 'react-router-dom';
 import ChangePassword from './ChangePassword';
+import HolidayResister from './HolidayRegister'
 
 
 
@@ -176,6 +177,8 @@ function DashboardContent({setLoggedin}) {
                 <Route exact path = "/" element = {<UserRegister />} />
                 <Route exact path = "/adminreport" element = {<AdminReport />} />
                 <Route exact path = "/changepassword" element = {<ChangePassword />} />
+                <Route exact path = "/holidayRegistration" element = {<HolidayResister />} />
+
                 </Routes>
             </Grid>
           </Container>

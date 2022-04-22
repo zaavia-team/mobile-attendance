@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Grid, TextField } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Box, Container, Card, CardHeader, CardContent } from '@material-ui/core';
+import { Box, Container } from '@material-ui/core';
 import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import MuiAlert from '@mui/material/Alert';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 
 
 
@@ -73,17 +75,18 @@ const ChangePassword = () => {
                         axios.post(api, data,
                             { headers: { "Authorization": `${token}` } })
                             .then(res => {
-                                setForm(form )
-                            }
-                            )
-                            .catch(err => {
-                                console.log(err, "err")
-                            })
+                                    
+                                 SetMessage({value: "Successfuly Changed", type:"success"})
+                                 setForm({ ...form, old_password: '', new_password: '', confirm_password: '' })
+
+                                }
+                                )
+                                .catch(err => {
+                                    console.log(err, "err")
+                                })
                             
                             
                             
-                            setForm({ ...form, old_password: '', new_password: '', confirm_password: '' })
-                            SetMessage({value: "Successfuly Changed", type:"success"})
 
 
                     }
@@ -93,7 +96,7 @@ const ChangePassword = () => {
                       
                     }
                 }
-                SetMessage({value: "Invalid password", type:"error"})
+                SetMessage({value: "Password criteria does not match", type:"error"})
 
                 
             } else {
@@ -111,26 +114,30 @@ const ChangePassword = () => {
 
 
     return (
-        <ThemeProvider theme={theme}>
-        <Container>
+        <ThemeProvider theme={theme}>   
+                <Container component="main" maxWidth="xs" >
+            <Box  sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}>
+      
             <h1>Change Password</h1>
-
-            <Grid container spacing={3} justifyContent="center" alignItems="center"
-            >
-                <Grid item xs={12} sm={12} md={12} lg={12} >
+         
                     <TextField
-
+                        margin="normal"
+                        variant="outlined"
                         label="Old Password"
                         name="old_password"
                         value={form.old_password}
                         onChange={handleChange}
-                        sx={{ mr: 2, mt: 1 }}
+                        sx={{ mr: 2, mt: 1, mb:1 }}
                         
                     />
-                </Grid>
-                <Grid item xs={12} sm={12} md={12} lg={12} >
-
                     <TextField
+                        margin="normal" 
+                        variant="outlined"
                         label="New Password"
                         name="new_password"
                         value={form.new_password}
@@ -138,11 +145,9 @@ const ChangePassword = () => {
                         sx={{ mr: 2, mt: 1 }}
                         
                     />
-
-                </Grid>
-                <Grid item xs={12} sm={12} md={12} lg={12} >
-
                     <TextField
+                        margin="normal"
+                        variant="outlined"
                         label="Confirm Password"
                         name="confirm_password"
                         value={form.confirm_password}
@@ -151,10 +156,6 @@ const ChangePassword = () => {
                         sx={{ mr: 2, mt: 1 }}
                         
                     />
-
-                </Grid>
-
-                <Grid item xs={12} sm={12} md={12} lg={12} >
 
                     <Button 
                     type="submit"
@@ -166,11 +167,6 @@ const ChangePassword = () => {
                         
                     >Change Password</Button>
 
-                </Grid>
-
-
-
-            </Grid>
 
         <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
         <Alert onClose={handleClose} severity={message.type} sx={{ width: '100%' }}>
@@ -179,6 +175,7 @@ const ChangePassword = () => {
        </Snackbar>
 
 
+        </Box>
         </Container>
        </ThemeProvider>
 
