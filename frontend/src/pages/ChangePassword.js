@@ -121,12 +121,14 @@ const ChangePassword = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+           
           }}>
       
             <h1>Change Password</h1>
          
                     <TextField
                         margin="normal"
+                        fullWidth
                         variant="outlined"
                         label="Old Password"
                         name="old_password"
@@ -137,6 +139,7 @@ const ChangePassword = () => {
                     />
                     <TextField
                         margin="normal" 
+                        fullWidth
                         variant="outlined"
                         label="New Password"
                         name="new_password"
@@ -147,6 +150,7 @@ const ChangePassword = () => {
                     />
                     <TextField
                         margin="normal"
+                        fullWidth
                         variant="outlined"
                         label="Confirm Password"
                         name="confirm_password"
@@ -159,7 +163,7 @@ const ChangePassword = () => {
 
                     <Button 
                     type="submit"
-                   
+                    fullWidth
                     variant="contained"
                     color="secondary"
                     onClick={submitHandler}

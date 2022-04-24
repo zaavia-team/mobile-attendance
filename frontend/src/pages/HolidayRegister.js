@@ -1,5 +1,4 @@
 import React from 'react'
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -22,12 +21,27 @@ import CircularProgress from '@mui/material/CircularProgress';
 export default function HolidayRegister() {
 
     const [form, setForm] = useState({StartDate:"", EndDate:"", Type:"" })
-    const [open, setOpen] = React.useState(false);
-    const [openBackdrop, setopenBackdrop] = React.useState(false);
-    const [message, SetMessage] = React.useState({ value: "", type: "" });
+    const [open, setOpen] = useState(false);
+    const [openBackdrop, setopenBackdrop] = useState(false);
+    const [message, SetMessage] = useState({ value: "", type: "" });
+    const [holiday, setHoliday] = useState();
 
 
 
+
+    const useStyles = makeStyles({
+      table: {
+        width: "100%",
+        margin: ' 50px 0 0 50px'
+      },
+      thead: {
+        '& > *': {
+          background: 'rgb(156 39 176)',
+          color: '#fff',
+          fontsize: 20
+        }
+      }
+    })
 
     const token = localStorage.getItem('token');
 
@@ -55,6 +69,34 @@ export default function HolidayRegister() {
   };
 
  
+  useEffect(() => {
+    const token = localStorage.getItem("token")
+    setopenBackdrop(!openBackdrop);
+    axios.get('/api/getreportholiday',
+    {headers: {"Authorization": `${token}`}}
+    )
+      .then(function (response) {
+        handleCloseBackdrop();
+        console.log(response, "response")
+        // response.data.filter((Users) => Users.Login_ID === "admin01")
+        setHoliday(response.data)
+      })
+      .catch(function (error) {
+        // handle error
+        handleCloseBackdrop();
+        console.log(error);
+      })
+      .then(function () {
+        handleCloseBackdrop();
+        // always executed
+      });
+  }, [])
+
+  console.log(holiday, "Holiday")
+
+
+
+
 
       
   const handleHolidaySubmit = () => {
@@ -66,9 +108,10 @@ export default function HolidayRegister() {
       const data ={
         Datestart: StartDate,
         Dateend: EndDate,
-        TransactionType: Type
+        TransactionType: Type,
+        Title:"Holiday"
       }
-      axios.post('api/holiday', data ,  
+      axios.post('/api/holiday', data ,  
       { headers: { "Authorization": `${token}` } })
       .then(function(response){
         SetMessage({ value: "Successfuly Registered", type: "success" })
@@ -77,6 +120,25 @@ export default function HolidayRegister() {
           DateOfBirth: "", WorkingHours: "", DateOfJoining: "", PhoneNumber: "", NIC: "",
           StartDate: "", EndDate: "", Type: "",RightsTitle:[]
         })
+
+        axios.get('/api/getreportholiday',
+    {headers: {"Authorization": `${token}`}}
+    )
+      .then(function (response) {
+        handleCloseBackdrop();
+        console.log(response, "response")
+        // response.data.filter((Users) => Users.Login_ID === "admin01")
+        setHoliday(response.data)
+      })
+      .catch(function (error) {
+        // handle error
+        handleCloseBackdrop();
+        console.log(error);
+      })
+      .then(function () {
+        handleCloseBackdrop();
+        // always executed
+      });
         
         handleCloseBackdrop();
         
@@ -92,6 +154,7 @@ export default function HolidayRegister() {
         SetMessage({ value: "Please Enter Required fields", type: "error" })
       }
   }
+  const classes = useStyles();
 
 
   return (
@@ -159,6 +222,31 @@ export default function HolidayRegister() {
                   </Grid>
 
                 </Grid>
+
+
+
+                {/* ---------------------- All Holidays----------------------- */}
+       <Table className={classes.table}>
+        <TableHead>
+          <TableRow className={classes.thead}>
+            <TableCell>Type</TableCell>
+            <TableCell>Date</TableCell>
+            <TableCell>User Name</TableCell>
+           
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {
+            holiday?.data?.map(holi => (
+              <TableRow key={holi._id}>
+                <TableCell>{holi?.TransactionType}</TableCell>
+                <TableCell>{`${holi.Date.Day} / ${holi.Date.Month} / ${holi.Date.Year}`}</TableCell>
+                <TableCell>{holi.UserName}</TableCell>
+              </TableRow>
+            ))
+          }
+        </TableBody>
+      </Table>
              
            
 
@@ -175,6 +263,8 @@ export default function HolidayRegister() {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
+
+
 
           </Container>
   )

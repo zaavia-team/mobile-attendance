@@ -132,9 +132,11 @@ export default function UserRegister() {
       })
       .catch(function (error) {
         // handle error
+        handleCloseBackdrop();
         console.log(error);
       })
       .then(function () {
+        handleCloseBackdrop();
         // always executed
       });
   }, [])
@@ -208,7 +210,7 @@ export default function UserRegister() {
 
           axios.get('/api/users')
             .then(function (response) {
-              setUsers(response.data)
+              setUsers(response)
             })
             .catch(function (error) {
               // handle error
@@ -321,10 +323,6 @@ export default function UserRegister() {
     handleOpen();
   }
 
-  const handleOpenHoliday = () => {
-    setHoliday(true);
-    setOpenModal(true);
-  }
 
   return (
     <ThemeProvider theme={theme} >
