@@ -19,6 +19,7 @@ const AttendanceSchema = new Schema({
     ManualEntry: Boolean,
     Title: String,
     Reason : String,
+    EarlyReason: String,
     Status : String,
     Date: { 
       Month: Number,

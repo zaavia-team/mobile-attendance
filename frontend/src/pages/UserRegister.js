@@ -5,7 +5,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -14,7 +13,7 @@ import MuiAlert from '@mui/material/Alert';
 import Modal from '@mui/material/Modal';
 import Backdrop from '@mui/material/Backdrop';
 import axios from 'axios';
-import { Table, TableBody, TableCell, TableHead, TableRow, makeStyles, InputLabel, MenuItem, FormControl,Select, ListItem     } from "@material-ui/core";
+import { Table, TableBody, TableCell, TableHead, TableRow, makeStyles, InputLabel, MenuItem, FormControl,Select, ListItem } from "@material-ui/core";
 import { useState, useEffect } from 'react';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Checkbox from '@mui/material/Checkbox';
@@ -133,57 +132,21 @@ export default function UserRegister() {
       })
       .catch(function (error) {
         // handle error
+        handleCloseBackdrop();
         console.log(error);
       })
       .then(function () {
+        handleCloseBackdrop();
         // always executed
       });
   }, [])
 
 
 
-  const handleHolidaySubmit = () => {
-    setOpen(true)
-    setopenBackdrop(!openBackdrop);
-    const { Type, StartDate, EndDate } = form
-    if (Type && StartDate && EndDate) {
-      if(StartDate <= EndDate){
-      const data ={
-        Datestart: StartDate,
-        Dateend: EndDate,
-        TransactionType: Type
-      }
-      axios.post('api/holiday', data ,  
-      { headers: { "Authorization": `${token}` } })
-      .then(function(response){
-        SetMessage({ value: "Successfuly Registered", type: "success" })
-        setForm({
-          FirstName: "", LastName: "", Password: "", Email: "", Login_ID: "", Designation: "",
-          DateOfBirth: "", WorkingHours: "", DateOfJoining: "", PhoneNumber: "", NIC: "",
-          StartDate: "", EndDate: "", Type: "",RightsTitle:[]
-        })
-        handleclose();
-        handleCloseBackdrop();
-        
-      }).catch(function(error){
-        console.log(error)
-      });
-    }else{
-      SetMessage({ value: "Please Enter correct date", type: "error" })
-
-    }
-
-      }else{
-        SetMessage({ value: "Please Enter Required fields", type: "error" })
-
-      }
-  }
 
   const handleactivate = (userObj) => {
 
     const data = {...userObj};
-
-console.log(data)
     if(data.StatusCode === 1 ){
       data.StatusCode = 0
     }
@@ -197,7 +160,7 @@ console.log(data)
       .then(response => {
         SetMessage({ value: "Successfuly Updated", type: "success" })
         setForm({ FirstName: "", LastName: "", Password: "", Email: "", Login_ID: "", Designation: "", DateOfBirth: "", 
-        WorkingHours: "", DateOfJoining: "", PhoneNumber: "", NIC: "", StartDate: "", EndDate: "", Type: "",RightsTitle:[] })
+        WorkingHours: "", DateOfJoining: "", PhoneNumber: "", NIC: "",RightsTitle:[] })
 
         axios.get('/api/users')
           .then(function (response) {
@@ -210,8 +173,6 @@ console.log(data)
           handleclose();
           handleCloseBackdrop();
         });
-
-
     }
 
 
@@ -249,7 +210,7 @@ console.log(data)
 
           axios.get('/api/users')
             .then(function (response) {
-              setUsers(response.data)
+              setUsers(response)
             })
             .catch(function (error) {
               // handle error
@@ -345,12 +306,14 @@ console.log(data)
 
 
   const handleOpen = () => setOpenModal(true);
+
   const handleclose = () => {
     setHoliday(false)
     setForm({RightsTitle:[]})
     setOpenModal(false);
     
   }
+  
   const openModaledit = (userObj) => {
     
     setForm({
@@ -360,18 +323,14 @@ console.log(data)
     handleOpen();
   }
 
-  const handleOpenHoliday = () => {
-    setHoliday(true);
-    setOpenModal(true);
-  }
 
   return (
     <ThemeProvider theme={theme} >
       <CssBaseline />
+      <Grid container justifyContent="center" alignItems="center" >
+      <h1 >User Registration</h1>
+      </Grid>
       <Grid container justifyContent="flex-end"  >
-        <Box sx={{ marginTop: 3, mr: 2 }}>
-          <Button variant="contained" color="inherit" onClick={handleOpenHoliday}>Holiday Registration</Button>
-        </Box>
         <Box sx={{ marginTop: 3 }}>
           <Button variant="contained" color="secondary" onClick={handleOpen}>Employee Registration</Button>
         </Box>
@@ -591,79 +550,7 @@ console.log(data)
             </Box>
           </Container>}
 
-          {holiday === true && <Container component="main" maxWidth="xs">
-            <Box
-              sx={{
-
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-              }}
-            >
-              <Typography component="h1" variant="h5">
-                Holiday Registration
-              </Typography>
-              <Box sx={{ mt: 3 }}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      id="date"
-                      label="Start Date"
-                      type="date"
-                      name="StartDate"
-                      value={form.StartDate}
-                      onChange={handleClick}
-                      sx={{ width: 190 }}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      id="date"
-                      label="End Date"
-                      type="date"
-                      name="EndDate"
-                      value={form.EndDate}
-                      onChange={handleClick}
-                      display
-                      sx={{ width: 190 }}
-                      InputLabelProps={{
-                        shrink: true,
-                        required: true
-                      }}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      id="Type"
-                      label="Type"
-                      name="Type"
-                      value={form.Type}
-                      onChange={handleClick}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Button
-                      type="submit"
-                      fullWidth
-                      variant="contained"
-                      color="secondary"
-                      onClick={handleHolidaySubmit}
-                      sx={{ mt: 3, mb: 2 }}
-                    >
-                      Register
-                    </Button>
-                  </Grid>
-
-                </Grid>
-              </Box>
-            </Box>
-          </Container>}
+          
 
 
         </Box>

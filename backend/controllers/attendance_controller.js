@@ -1,6 +1,6 @@
 const attendance_repo = require('../repository/attendance_repo');
 const user_repo = require('../repository/user_repo');
-const excelJs = require("excelJs");
+const excelJs = require("exceljs");
 const fs = require("fs");
 
 
@@ -56,7 +56,8 @@ module.exports.attendance = async (req, res) => {
             let updatequery = {
                 $set: {
                     TakenOut: DateStr,
-                    ManualEntry: req.body.ManualEntry
+                    ManualEntry: req.body.ManualEntry,
+                    EarlyReason: req.body.EarlyReason
                 }
             }
             attendance_repo.updateOne(query, updatequery)
@@ -180,7 +181,9 @@ module.exports.holiday = async (req, res) => {
         ActionTakenOn: new Date(),
         ActionTakenByLoginID: req.user.Login_ID,
     };
-    const TransactionType = req.body.TransactionType;
+    let TransactionType;
+    if(req.body.OtherType) TransactionType = req.body.OtherType
+    else TransactionType = req.body.TransactionType;
     const Users = await user_repo.find({
         StatusCode: 1,
     }, false, false);
@@ -203,7 +206,7 @@ module.exports.holiday = async (req, res) => {
                 ActionDetails: ActionDetails
             };
             Docs.push(newDocObj)
-            var newDate = loop.setDate(loop.getDate() + 1);
+            var newDate = loop.setDate(loop.getDate() + 1); 
             loop = new Date(newDate);
         }
 
@@ -452,3 +455,34 @@ module.exports.postExcelReport = async (req, res) => {
 };
 
 
+module.exports.getreportholiday = (req, res) => {
+    const aggr = [
+        {
+          '$match': {
+            'Title': 'Holiday'
+          }
+        }, {
+          '$group': {
+            '_id': {
+              'Date': {
+                'Day': '$Date.Day', 
+                'Month': '$Date.Month', 
+                'Year': '$Date.Year'
+              }, 
+              'Title': '$Title'
+            }, 
+            'Details': {
+              '$first': '$TransactionType'
+            }
+          }
+        }
+      ]; 
+    attendance_repo.aggregate(aggr)
+        .then(holiday => {
+            console.log(holiday)
+            res.send({ Status: true, data: holiday })
+        })
+        .catch(error => {
+            res.send({ Status: false, message: error.message })
+        })
+}

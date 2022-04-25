@@ -75,7 +75,9 @@ export default function AdminReport() {
 
   return (
   <Container >
-    <h1>Admin Report</h1>
+    <Grid container justifyContent="center" alignItems="center" sx={{ mb: 3, mt:1 }}>
+    <h1 >Admin Report</h1>
+    </Grid>
         <Grid container justifyContent="center" alignItems="center" sx={{ mb: 3, mt:1 }}>
     
           

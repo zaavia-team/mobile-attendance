@@ -9,6 +9,10 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import axios from 'axios';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+
+
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -21,6 +25,8 @@ export default function SignIn({setLoggedin}) {
   // const navigate = useNavigate()
   const [open, setOpen] = React.useState(false);
   const [message, SetMessage ] = React.useState({value: "", type:""});
+  const [openBackdrop, setopenBackdrop] = React.useState(false);
+
 
   const handleClick = () => {
     setOpen(true);
@@ -35,6 +41,11 @@ export default function SignIn({setLoggedin}) {
     SetMessage({})
   };
   
+  const handleCloseBackdrop = () => {
+    setopenBackdrop(false);
+  };
+
+ 
   
   React.useEffect(()=>{
     const userData = localStorage.getItem("data") && JSON.parse(localStorage.getItem("data"))
@@ -55,11 +66,15 @@ export default function SignIn({setLoggedin}) {
     });
 
     if(data.get('email') && data.get('password')){
+      setopenBackdrop(!openBackdrop);
+
     axios.post('/api/login', {
       Login_ID: data.get('email'),
       Password: data.get('password'),
+      IsWeb: true
     })
     .then(function (response) {
+      handleCloseBackdrop();
       console.log(response);
       if(response.data.status ){
         response.data.token ? localStorage.setItem("token", response.data.token) :  console.log(response)
@@ -68,12 +83,17 @@ export default function SignIn({setLoggedin}) {
         console.log("token", token )
         setLoggedin(true);
         SetMessage({value: "Login Success", type:"success"})
+        handleCloseBackdrop();
       }else{
         SetMessage({value: response.data.message, type:"error"})
+        handleCloseBackdrop();
+
       }
     })
     .catch(function (error) {
       console.log(error);
+      handleCloseBackdrop();
+
     });
   }else{
     SetMessage({value: "Please Enter Some values", type:"warning"})
@@ -137,6 +157,14 @@ export default function SignIn({setLoggedin}) {
           {message.value}
         </Alert>
        </Snackbar>
+
+       <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openBackdrop}
+        onClick={handleCloseBackdrop}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </ThemeProvider>
   );
 }

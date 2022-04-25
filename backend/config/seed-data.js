@@ -7,7 +7,7 @@ const user = {
     EmployeeID: "Admin01",
     Login_ID: "admin01",
     Email: "admin",
-    RoleTitle: "Admin",
+    RightsTitle: ["Admin"],
     WorkingHours: 8,
     CreationDetails: {
         ActionTakenByName: "System",
