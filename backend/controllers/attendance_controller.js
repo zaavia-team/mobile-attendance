@@ -56,7 +56,8 @@ module.exports.attendance = async (req, res) => {
             let updatequery = {
                 $set: {
                     TakenOut: DateStr,
-                    ManualEntry: req.body.ManualEntry
+                    ManualEntry: req.body.ManualEntry,
+                    EarlyReason: req.body.EarlyReason
                 }
             }
             attendance_repo.updateOne(query, updatequery)
@@ -180,7 +181,9 @@ module.exports.holiday = async (req, res) => {
         ActionTakenOn: new Date(),
         ActionTakenByLoginID: req.user.Login_ID,
     };
-    const TransactionType = req.body.TransactionType;
+    let TransactionType;
+    if(req.body.OtherType) TransactionType = req.body.OtherType
+    else TransactionType = req.body.TransactionType;
     const Users = await user_repo.find({
         StatusCode: 1,
     }, false, false);
@@ -453,7 +456,28 @@ module.exports.postExcelReport = async (req, res) => {
 
 
 module.exports.getreportholiday = (req, res) => {
-    attendance_repo.find({Title: 'Holiday'})
+    const aggr = [
+        {
+          '$match': {
+            'Title': 'Holiday'
+          }
+        }, {
+          '$group': {
+            '_id': {
+              'Date': {
+                'Day': '$Date.Day', 
+                'Month': '$Date.Month', 
+                'Year': '$Date.Year'
+              }, 
+              'Title': '$Title'
+            }, 
+            'Details': {
+              '$first': '$TransactionType'
+            }
+          }
+        }
+      ]; 
+    attendance_repo.aggregate(aggr)
         .then(holiday => {
             console.log(holiday)
             res.send({ Status: true, data: holiday })
