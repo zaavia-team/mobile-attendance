@@ -94,19 +94,19 @@ class _DashboardState extends State<Dashboard> {
 
   void attendanceDetails() async {
     var obj = {};
-    if(transactionType == "i am Out" && diff_hr < 8){
-        obj = {
-          'TransactionType': transactionType,
-          'EarlyReason': earlyReason.text,
-          'Date':
-          _dateTime?.toIso8601String() ?? DateTime.now().toIso8601String(),
-          'ManualEntry': _dateTime?.toIso8601String() != null ? true : false
-        };
+    if (transactionType == "i am Out" && diff_hr < 8) {
+      obj = {
+        'TransactionType': transactionType,
+        'EarlyReason': earlyReason.text,
+        'Date':
+            _dateTime?.toIso8601String() ?? DateTime.now().toIso8601String(),
+        'ManualEntry': _dateTime?.toIso8601String() != null ? true : false
+      };
     } else {
       obj = {
         'TransactionType': transactionType,
         'Date':
-        _dateTime?.toIso8601String() ?? DateTime.now().toIso8601String(),
+            _dateTime?.toIso8601String() ?? DateTime.now().toIso8601String(),
         'ManualEntry': _dateTime?.toIso8601String() != null ? true : false
       };
     }
@@ -116,16 +116,13 @@ class _DashboardState extends State<Dashboard> {
           'Content-Type': 'application/json',
           'Authorization': token
         },
-        body: jsonEncode(obj)
-    );
+        body: jsonEncode(obj));
     print(response.body);
     print(Users);
 
     if (response.statusCode == 200 &&
         jsonDecode(response.body)["status"] == false) {
       msg = jsonDecode(response.body)["message"];
-
-
 
       var snackBar = SnackBar(
         content: Text(msg, style: TextStyle(fontSize: 16.5)),
@@ -136,7 +133,7 @@ class _DashboardState extends State<Dashboard> {
     } else {
       setState(() {
         var data = jsonDecode(response.body)["Data"];
-        if(data != null){
+        if (data != null) {
           box2.put('TakenIn', data["TakenIn"]);
         }
         transactionType =
@@ -152,62 +149,65 @@ class _DashboardState extends State<Dashboard> {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
+
   String durationToString(int minutes) {
-    var d = Duration(minutes:minutes);
+    var d = Duration(minutes: minutes);
     List<String> parts = d.toString().split(':');
     return '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}';
   }
-  void hoursAlertDialog(BuildContext context){
-    showDialog(context: context,
+
+  void hoursAlertDialog(BuildContext context) {
+    showDialog(
+        context: context,
         builder: (context) => AlertDialog(
-          title: const Text("Your 8 Hours of work is not completed yet",
-          textAlign: TextAlign.center),
-          actions: [
-            TextField(
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-              decoration: const InputDecoration(
-                  hintText: 'Enter Reason',
-                  prefixIcon: Icon(Icons.email),
-                  border: OutlineInputBorder(
-                      borderSide: BorderSide(width: 2),
-                      borderRadius: BorderRadius.all(Radius.circular(27.0)))),
-              controller: earlyReason,
-            ),
-            SizedBox(height: 10,),
-            ButtonTheme(
-              minWidth: 400,
-              height: 50,
-              child: RaisedButton(
-                elevation: 5,
-                onPressed: () {
-                  print(earlyReason.text);
-                  attendanceDetails();
-                  //Navigator.pop(context, true);
-                  Navigator.of(context, rootNavigator: true).pop();
-                },
-                child: const Text(
-                  'Submit',
-                  style: TextStyle(fontSize: 17),
+              title: const Text("Your 8 Hours of work is not completed yet",
+                  textAlign: TextAlign.center),
+              actions: [
+                TextField(
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  decoration: const InputDecoration(
+                      hintText: 'Enter Reason',
+                      prefixIcon: Icon(Icons.email),
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(width: 2),
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(27.0)))),
+                  controller: earlyReason,
                 ),
-                color: Colors.purple,
-                textColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24.0)),
-              ),
-            ),
-
-
-          ],
-        ));
+                SizedBox(
+                  height: 10,
+                ),
+                ButtonTheme(
+                  minWidth: 400,
+                  height: 50,
+                  child: RaisedButton(
+                    elevation: 5,
+                    onPressed: () {
+                      print(earlyReason.text);
+                      attendanceDetails();
+                      //Navigator.pop(context, true);
+                      Navigator.of(context, rootNavigator: true).pop();
+                    },
+                    child: const Text(
+                      'Submit',
+                      style: TextStyle(fontSize: 17),
+                    ),
+                    color: Colors.purple,
+                    textColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24.0)),
+                  ),
+                ),
+              ],
+            ));
   }
-  void reasonController(){
-    if(diff_hr < 8){
+
+  void reasonController() {
+    if (diff_hr < 8) {
       hoursAlertDialog(context);
-      //attendanceDetails();
-      //Navigator.pop(context);
-      //Navigator.of(context, rootNavigator: true).pop();
-    }else{
+    
+    } else {
       attendanceDetails();
       Navigator.pop(context);
     }
@@ -227,13 +227,9 @@ class _DashboardState extends State<Dashboard> {
                       RaisedButton(
                         onPressed: () {
                           print('datetime for signout');
-                          //print('${DateTime.now().hour}:${DateTime.now().minute}');
-                         // var signOut = '${DateTime.now().hour}:${DateTime.now().minute}';
                           DateTime signOut = DateTime.now();
                           print(box2.get("TakenIn"));
                           DateTime signin = DateTime.parse(box2.get("TakenIn"));
-                          //DateTime signin = DateFormat('dd-MM-yyyy HH:mm').format(box2.get("TakenIn"));
-                         // var signin = DateTime.parse(box2.get("TakenIn").toLocal());
                           print(signin);
                           print('signin');
                           diff_hr = signOut.difference(signin).inMinutes;
@@ -337,115 +333,97 @@ class _DashboardState extends State<Dashboard> {
         ],
       ),
       body: Container(
-        padding: EdgeInsets.all(10),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(12),
-          child: SizedBox(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: Users.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Card(
-                      color: Color.fromARGB(255, 174, 165, 38),
-                      elevation: 5,
-                      child: ListTile(
-                        leading: Icon(Icons.person),
-                        title: Text(
-                          '${Users[index]["UserName"]}',
-                          style: TextStyle(color: Colors.white, fontSize: 18)
-                        ),
-                        subtitle: Text(
-                            '${DateFormat('dd-MM-yyyy HH:mm').format(DateTime.parse(Users[index]["TakenIn"]).toLocal())}',
-                            style: TextStyle(color: Colors.white, fontSize: 17)),
-                      ),
-                    );
-                  },
-                  shrinkWrap: true,
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  _dateTime == null
-                      ? '${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}, ${DateTime.now().hour}:${DateTime.now().minute}'
-                      : getDate(),
-                  style: TextStyle(fontSize: 20),
-                ),
-                FlatButton(
-                  onPressed: () {
-                    pickDateTime(context);
-                  },
-                  child: Text('Pick a date', style: TextStyle(fontSize: 15)),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    RaisedButton(
-                      elevation: 5,
-                      child: Text(
-                        transactionType,
-                        style: TextStyle(fontSize: 15),
-                      ),
-                      color: Theme.of(context).primaryColor,
-                      textColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0)),
-                      onPressed: () {
-                        if(transactionType == "i am In"){
-                          //signIn = '${DateTime.now().hour}:${DateTime.now().minute}';
-                          signIn = DateTime.now();
-                          print(signIn);
-                          print('sign in for work');
-                          attendanceDetails();
-                        }else{
-                          DateTime signOut = DateTime.now();
-                          print(box2.get("TakenIn"));
-                          DateTime signin = DateTime.parse(box2.get("TakenIn"));print(signin);
-                          print('signin');
-                          diff_hr = signOut.difference(signin).inMinutes;
-                          print(signOut);
-                          print('Signout from work');
-                          print(diff_hr);
-                          print('time difference for signin ');
-                          var diff = diff_hr / 60;
-                          print(diff);
-                          print('time in hours');
-                          print(durationToString(100));
-                          print('duration of 100');
-                          print(durationToString(diff_hr));
-                          print('difference in minutes and hours');
-                          print(earlyReason.text);
-                          print('reson for early sign out');
-                          if(diff_hr < 8){
-                            hoursAlertDialog(context);
-                            //alertDialog(context);
-                            //Navigator.pop(context);
-                            //attendanceDetails();
-                            //Navigator.pop(context);
-                            //Navigator.of(context, rootNavigator: true).pop();
-                          }else{
-                            attendanceDetails();
-                            Navigator.pop(context);
-                          }
-                          // if(diff_hr < 08){
-                          //   hoursAlertDialog(context);
-                          // }
-                          //alertDialog(context);
-                          //hoursAlertDialog(context);
-                        }
-                        // transactionType == "i am In"
-                        //     ? attendanceDetails()
-                        //     : alertDialog(context);
-                      },
+        padding: EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Flexible(
+              child: ListView.builder(
+                itemCount: Users.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Card(
+                    color: Color.fromARGB(255, 1, 183, 156),
+                    elevation: 5,
+                    child: ListTile(
+                      leading: Icon(Icons.person),
+                      title: Text('${Users[index]["UserName"]}',
+                          style: TextStyle(color: Colors.white, fontSize: 18)),
+                      subtitle: Text(
+                          '${DateFormat('dd-MM-yyyy HH:mm').format(DateTime.parse(Users[index]["TakenIn"]).toLocal())}',
+                          style: TextStyle(color: Colors.white, fontSize: 17)),
                     ),
-                  ],
+                  );
+                },
+                shrinkWrap: true,
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Text(
+              _dateTime == null
+                  ? '${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}, ${DateTime.now().hour}:${DateTime.now().minute}'
+                  : getDate(),
+              style: TextStyle(fontSize: 20),
+            ),
+            FlatButton(
+              onPressed: () {
+                pickDateTime(context);
+              },
+              child: Text('Pick a date', style: TextStyle(fontSize: 15)),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                RaisedButton(
+                  elevation: 5,
+                  child: Text(
+                    transactionType,
+                    style: TextStyle(fontSize: 15),
+                  ),
+                  color: Theme.of(context).primaryColor,
+                  textColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0)),
+                  onPressed: () {
+                    if (transactionType == "i am In") {
+                      signIn = DateTime.now();
+                      print(signIn);
+                      print('sign in for work');
+                      attendanceDetails();
+                    } else {
+                      DateTime signOut = DateTime.now();
+                      print(box2.get("TakenIn"));
+                      DateTime signin = DateTime.parse(box2.get("TakenIn"));
+                      print(signin);
+                      print('signin');
+                      diff_hr = signOut.difference(signin).inMinutes;
+                      print(signOut);
+                      print('Signout from work');
+                      print(diff_hr);
+                      print('time difference for signin ');
+                      var diff = diff_hr / 60;
+                      print(diff);
+                      print('time in hours');
+                      print(durationToString(100));
+                      print('duration of 100');
+                      print(durationToString(diff_hr));
+                      print('difference in minutes and hours');
+                      print(earlyReason.text);
+                      print('reson for early sign out');
+                      if (diff_hr < 8) {
+                        hoursAlertDialog(context);
+                       
+                      } else {
+                        attendanceDetails();
+                        Navigator.pop(context);
+                      }
+                    }   
+                  },
                 ),
               ],
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -477,10 +455,6 @@ class _DashboardState extends State<Dashboard> {
         break;
 
       case MenuItems.itemPending:
-        // if (box1.get('Rightstitle') != null) {
-        //   List rightsTitle = jsonDecode(box1.get('Rightstitle'));
-        //   rightsTitle.indexOf("Approved Leave");
-
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => ApprovalList()));
         // }
@@ -502,7 +476,7 @@ class _DashboardState extends State<Dashboard> {
 
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => Login()),
-              (Route<dynamic> route) => false,
+          (Route<dynamic> route) => false,
         );
         break;
     }

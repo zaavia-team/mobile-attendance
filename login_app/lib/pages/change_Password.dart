@@ -155,7 +155,7 @@ class _ChangePasswordState extends State<ChangePassword> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Change Password'),
-        backgroundColor: Colors.purple,
+        backgroundColor: Theme.of(context).primaryColor,
       ),
       body: Container(
         padding: const EdgeInsets.all(10),
@@ -300,7 +300,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                     'Change Password',
                     style: TextStyle(fontSize: 17),
                   ),
-                  color: Colors.purple,
+                  color: Theme.of(context).primaryColor,
                   textColor: Colors.white,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24.0)),

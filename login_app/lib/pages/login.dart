@@ -171,7 +171,6 @@ class _LoginState extends State<Login> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text('Attendance App'),
-        backgroundColor: Colors.purple,
       ),
       body: Container(
         padding: const EdgeInsets.all(10),
@@ -234,7 +233,7 @@ class _LoginState extends State<Login> {
                     'Log in',
                     style: TextStyle(fontSize: 17),
                   ),
-                  color: Colors.purple,
+                  color: Theme.of(context).primaryColor,
                   textColor: Colors.white,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24.0)),
