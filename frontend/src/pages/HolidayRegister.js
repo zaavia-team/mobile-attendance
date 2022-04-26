@@ -203,7 +203,8 @@ export default function HolidayRegister() {
        
            <Grid item xs={12} sm={2}>
           <Select
-            sx={{ mr: 2 , mt:3}}  
+           
+            sx={{ mr: 2 , mt:3, width:150}}  
             labelId="demo-simple-select-helper-label"
             id="demo-simple-select-helper"
             value={type}
@@ -212,9 +213,7 @@ export default function HolidayRegister() {
             // label="Type"
             onChange={handleClick}
           >
-            {/* <MenuItem value="">
-              <em>None</em>
-            </MenuItem> */}
+          
             <MenuItem value={"Type"}></MenuItem>
             <MenuItem value={"Eid Ul Fitr"}>Eid Ul Fitr </MenuItem>
             <MenuItem value={"Eid Ul Adha"}>Eid Ul Adha</MenuItem>
@@ -232,7 +231,7 @@ export default function HolidayRegister() {
           <TextField
             fullWidth
             id="OtherType"
-            label="OtherType"
+            label="Type"
             name="OtherType"
             sx={{ mr: 3 }}
             value={form.OtherType}
@@ -264,7 +263,7 @@ export default function HolidayRegister() {
           <TableRow className={classes.thead}>
             <TableCell>Type</TableCell>
             <TableCell>Date</TableCell>
-            <TableCell>User Name</TableCell>
+            
 
           </TableRow>
         </TableHead>
@@ -272,9 +271,9 @@ export default function HolidayRegister() {
           {
             holiday?.data?.map(holi => (
               <TableRow key={holi._id}>
-                <TableCell>{holi?.TransactionType}</TableCell>
-                <TableCell>{`${holi.Date.Day} / ${holi.Date.Month} / ${holi.Date.Year}`}</TableCell>
-                <TableCell>{holi.UserName}</TableCell>
+                <TableCell>{holi?.Details }</TableCell>
+                <TableCell>{`${holi._id.Date.Day} / ${holi._id.Date.Month} / ${holi._id.Date.Year}`}</TableCell>
+               
               </TableRow>
             ))
           }
