@@ -24,10 +24,12 @@ class _DashboardState extends State<Dashboard> {
   var transactionType = 'i am In';
 
   var token;
+  var workingHours;
   var Users = [];
   String msg = "";
   var rightsTitle = "";
   var diff_hr;
+  var _isLoading = true;
   DateTime signIn = DateTime.now();
 
   // final
@@ -61,6 +63,7 @@ class _DashboardState extends State<Dashboard> {
   void getData() async {
     if (box1.get('token') != null) {
       token = box1.get('token');
+      workingHours = box1.get('WorkingHours');
       rightsTitle = box1.get('LeaveAccess') ?? "";
       getUsers();
     }
@@ -84,9 +87,12 @@ class _DashboardState extends State<Dashboard> {
         if (currentUser) {
           transactionType = "i am Out";
         }
+        _isLoading = false;
       });
       print("Users");
       print(Users);
+      print(workingHours);
+      print('WorkingHOurss');
     } catch (e) {
       print(e);
     }
@@ -136,6 +142,7 @@ class _DashboardState extends State<Dashboard> {
         if (data != null) {
           box2.put('TakenIn', data["TakenIn"]);
         }
+        earlyReason.text = "";
         transactionType =
             transactionType == 'i am Out' ? "i am In" : 'i am Out';
       });
@@ -160,7 +167,7 @@ class _DashboardState extends State<Dashboard> {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
-              title: const Text("Your 8 Hours of work is not completed yet",
+              title: Text("Your {$workingHours} Hours of work is not completed yet",
                   textAlign: TextAlign.center),
               actions: [
                 TextField(
@@ -185,6 +192,9 @@ class _DashboardState extends State<Dashboard> {
                     elevation: 5,
                     onPressed: () {
                       print(earlyReason.text);
+                      if(earlyReason.text.isEmpty){
+                        return;
+                      }
                       attendanceDetails();
                       //Navigator.pop(context, true);
                       Navigator.of(context, rootNavigator: true).pop();
@@ -193,7 +203,7 @@ class _DashboardState extends State<Dashboard> {
                       'Submit',
                       style: TextStyle(fontSize: 17),
                     ),
-                    color: Colors.purple,
+                    color: Theme.of(context).primaryColor,
                     textColor: Colors.white,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24.0)),
@@ -204,7 +214,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void reasonController() {
-    if (diff_hr < 8) {
+    if (diff_hr < workingHours) {
       hoursAlertDialog(context);
     
     } else {
@@ -332,7 +342,8 @@ class _DashboardState extends State<Dashboard> {
                   : MenuItems.itemsSecond.map(buildItem).toList()),
         ],
       ),
-      body: Container(
+      body: !_isLoading ?
+      Container(
         padding: EdgeInsets.all(20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -349,7 +360,7 @@ class _DashboardState extends State<Dashboard> {
                       title: Text('${Users[index]["UserName"]}',
                           style: TextStyle(color: Colors.white, fontSize: 18)),
                       subtitle: Text(
-                          '${DateFormat('dd-MM-yyyy HH:mm').format(DateTime.parse(Users[index]["TakenIn"]).toLocal())}',
+                          '${DateFormat('dd-MM-yyyy h:mma').format(DateTime.parse(Users[index]["TakenIn"]))}',
                           style: TextStyle(color: Colors.white, fontSize: 17)),
                     ),
                   );
@@ -411,20 +422,24 @@ class _DashboardState extends State<Dashboard> {
                       print('difference in minutes and hours');
                       print(earlyReason.text);
                       print('reson for early sign out');
-                      if (diff_hr < 8) {
+                      if (diff_hr < workingHours) {
                         hoursAlertDialog(context);
-                       
+
                       } else {
                         attendanceDetails();
                         Navigator.pop(context);
                       }
-                    }   
+                    }
                   },
                 ),
               ],
             ),
           ],
         ),
+      )
+          : Center(
+
+          child: CircularProgressIndicator(),
       ),
     );
   }

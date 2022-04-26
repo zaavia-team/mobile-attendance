@@ -145,7 +145,7 @@ class _ApprovalListState extends State<ApprovalList> {
                     child: Column(
                       children: [
                         ListTile(
-                          leading: Icon(Icons.person),
+                          //leading: Icon(Icons.person),
                           title: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
