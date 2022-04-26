@@ -336,7 +336,7 @@ class _LeaveListState extends State<LeaveList> {
                               ),
                               subtitle: Text(
                                   '${leaveRequests[index]["Date"]["Day"]}/'
-                                      '${leaveRequests[index]["Date"]["Month"]}/'
+                                      '${leaveRequests[index]["Date"]["Month"] + 1}/'
                                       '${leaveRequests[index]["Date"]["Year"]}',
                                   style: TextStyle(color: Colors.white, fontSize: 15),
                               ),

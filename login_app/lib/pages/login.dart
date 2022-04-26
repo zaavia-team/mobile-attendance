@@ -209,8 +209,8 @@ class _LoginState extends State<Login> {
                       onTap: _togglePasswordView,
                       child: Icon(
                         _isHidden
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                     ),
                     border: OutlineInputBorder(
@@ -244,7 +244,7 @@ class _LoginState extends State<Login> {
                 height: 120,
               ),
               Text('Copyrights by Zaavia! © 2022'),
-              Text('Version 1.0.2'),
+              Text('Version 1.0.4'),
             ],
           ),
         ),

@@ -100,7 +100,7 @@ class _DashboardState extends State<Dashboard> {
 
   void attendanceDetails() async {
     var obj = {};
-    if (transactionType == "i am Out" && diff_hr < 8) {
+    if (transactionType == "i am Out" && diff_hr < workingHours) {
       obj = {
         'TransactionType': transactionType,
         'EarlyReason': earlyReason.text,
