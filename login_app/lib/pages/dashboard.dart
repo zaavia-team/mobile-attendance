@@ -422,7 +422,7 @@ class _DashboardState extends State<Dashboard> {
                       print('difference in minutes and hours');
                       print(earlyReason.text);
                       print('reson for early sign out');
-                      if (diff_hr < 8) {
+                      if (diff_hr < workingHours) {
                         hoursAlertDialog(context);
 
                       } else {
