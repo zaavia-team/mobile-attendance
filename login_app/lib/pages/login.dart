@@ -70,6 +70,7 @@ class _LoginState extends State<Login> {
           _checkPassword(password.text);
           box1.put('token', data["token"]);
           box1.put('_id', data["data"]["_id"]);
+          box1.put('WorkingHours', data["data"]["WorkingHours"]);
           if(_strength < 1){
             Navigator.push(
               context,
@@ -171,7 +172,6 @@ class _LoginState extends State<Login> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text('Attendance App'),
-        backgroundColor: Colors.purple,
       ),
       body: Container(
         padding: const EdgeInsets.all(10),
@@ -209,8 +209,8 @@ class _LoginState extends State<Login> {
                       onTap: _togglePasswordView,
                       child: Icon(
                         _isHidden
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                     ),
                     border: OutlineInputBorder(
@@ -234,7 +234,7 @@ class _LoginState extends State<Login> {
                     'Log in',
                     style: TextStyle(fontSize: 17),
                   ),
-                  color: Colors.purple,
+                  color: Theme.of(context).primaryColor,
                   textColor: Colors.white,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24.0)),
@@ -244,7 +244,7 @@ class _LoginState extends State<Login> {
                 height: 120,
               ),
               Text('Copyrights by Zaavia! © 2022'),
-              Text('Version 1.0.2'),
+              Text('Version 1.0.4'),
             ],
           ),
         ),

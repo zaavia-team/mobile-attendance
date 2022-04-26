@@ -16,6 +16,7 @@ class _ApprovalListState extends State<ApprovalList> {
   late Box box1;
   var token;
   var approvalList = [];
+  var _isLoading = true;
   String msg = "";
   void createBox() async {
     box1 = await Hive.openBox('loginData');
@@ -49,6 +50,7 @@ class _ApprovalListState extends State<ApprovalList> {
       print(response.body);
       setState(() {
         approvalList = jsonDecode(response.body)["data"];
+        _isLoading = false;
       });
 
     } catch (e) {
@@ -115,9 +117,10 @@ class _ApprovalListState extends State<ApprovalList> {
       appBar: AppBar(
         title: Text("Approvals List"),
       ),
-      body: SingleChildScrollView(
+      body: !_isLoading ?
+      SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(10.0),
           child: SizedBox(
             height: MediaQuery.of(context).size.height * .8,
               child: approvalList.isEmpty ?
@@ -145,7 +148,7 @@ class _ApprovalListState extends State<ApprovalList> {
                     child: Column(
                       children: [
                         ListTile(
-                          leading: Icon(Icons.person),
+                          //leading: Icon(Icons.person),
                           title: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -155,7 +158,7 @@ class _ApprovalListState extends State<ApprovalList> {
                                 style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
                               ),
                               Text('${approvalList[index]["Date"]["Day"]}/'
-                                  '${approvalList[index]["Date"]["Month"]}/'
+                                  '${approvalList[index]["Date"]["Month"] + 1}/'
                                   '${approvalList[index]["Date"]["Year"]}',
                                 style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.normal),)
 
@@ -204,7 +207,11 @@ class _ApprovalListState extends State<ApprovalList> {
               ),
             ),
           ),
-        ),
+        )
+          : Center(
+
+        child: CircularProgressIndicator(),
+      ),
     );
   }
 }
