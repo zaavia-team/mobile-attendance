@@ -70,6 +70,7 @@ class _LoginState extends State<Login> {
           _checkPassword(password.text);
           box1.put('token', data["token"]);
           box1.put('_id', data["data"]["_id"]);
+          box1.put('WorkingHours', data["data"]["WorkingHours"]);
           if(_strength < 1){
             Navigator.push(
               context,

@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:login_app/pages/dashboard.dart';
 
 class LeaveList extends StatefulWidget {
   @override
@@ -188,6 +189,9 @@ class _LeaveListState extends State<LeaveList> {
         backgroundColor: Colors.green,
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => Dashboard()),
+      (Route<dynamic> route) => false);
     }
   }
   final items = ['Single leave', 'Multiple leave'];
@@ -201,58 +205,65 @@ class _LeaveListState extends State<LeaveList> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Center(
-              child: DropdownButton(
-                  value: selectedValue,
-                  icon: Icon(Icons.keyboard_arrow_down),
-                  items: items.map((String items) {
-                    return DropdownMenuItem<String>(
-                      child: Text(items),
-                      value: items,
-                    );
-                  }).toList(),
-                  hint: Text(
-                    "Please choose leave",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500),
-                  ),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedValue = newValue!;
-                      print(selectedValue + 'leave Vlaue');
-                    });
-                  }),
+            Padding(
+              padding: const EdgeInsets.only(top: 15.0),
+              child: Center(
+                child: DropdownButton(
+                    value: selectedValue,
+                    icon: Icon(Icons.keyboard_arrow_down),
+                    items: items.map((String items) {
+                      return DropdownMenuItem<String>(
+                        child: Text(items),
+                        value: items,
+                      );
+                    }).toList(),
+                    hint: Text(
+                      "Please choose leave",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500),
+                    ),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedValue = newValue!;
+                        print(selectedValue + 'leave Vlaue');
+                      });
+                    }),
+              ),
             ),
             Container(
               padding: EdgeInsets.all(10),
               child: Column(
                 children: [
                   (selectedValue == singleLeave)
-                      ? Column(
-                        children: [
-                          RaisedButton(
+                      ? Padding(
+                        padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                        child: Column(
+                          children: [
+                            RaisedButton(
+                                color: Theme.of(context).primaryColor,
+                                textColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0)),
+                                child: Text('Select Date'),onPressed: () => pickDateTime(context)),
+                            Text(firstDate==null ? 'Select a Date' : getDate()),
+                            TextField(
+                              decoration: InputDecoration(labelText: 'Enter Reason'),
+                              controller: reasonController,
+                              keyboardType: TextInputType.multiline,
+                              maxLines: null,
+                              onSubmitted: (_) => onSubmitData(),
+                            ),
+                            SizedBox(height: 30,),
+                            RaisedButton(
                               color: Theme.of(context).primaryColor,
                               textColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20.0)),
-                              child: Text('Select Date'),onPressed: () => pickDateTime(context)),
-                          Text(firstDate==null ? 'Select a Date' : getDate()),
-                          TextField(
-                            decoration: InputDecoration(labelText: 'Enter Reason'),
-                            controller: reasonController,
-                            keyboardType: TextInputType.multiline,
-                            maxLines: null,
-                            onSubmitted: (_) => onSubmitData(),
-                          ),
-                          RaisedButton(
-                            color: Theme.of(context).primaryColor,
-                            textColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0)),
-                            onPressed: () => onSubmitData(), child: Text('Submit'),)
-                        ],
+                              onPressed: () => onSubmitData(), child: Text('Submit'),)
+                          ],
+                        ),
                       )
                       : Column(
                         children: [
@@ -288,14 +299,17 @@ class _LeaveListState extends State<LeaveList> {
                           ),
 
 
-                          TextField(
-                            decoration: InputDecoration(labelText: 'Enter Reason'),
-                            controller: reasonController,
-                            keyboardType: TextInputType.multiline,
-                            maxLines: null,
-                            onSubmitted: (_) => onSubmitDataMultiple(),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                            child: TextField(
+                              decoration: InputDecoration(labelText: 'Enter Reason'),
+                              controller: reasonController,
+                              keyboardType: TextInputType.multiline,
+                              maxLines: null,
+                              onSubmitted: (_) => onSubmitDataMultiple(),
+                            ),
                           ),
-                          SizedBox(height: 20,),
+                          SizedBox(height: 30,),
                           RaisedButton(
                             color: Theme.of(context).primaryColor,
                             textColor: Colors.white,
