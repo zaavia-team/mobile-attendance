@@ -135,11 +135,14 @@ console.log(users, "users")
         }
         )
         .catch(err =>{
+          handleCloseBackdrop();
+
             console.log(err, "err")
         })
       }
       else{
         SetMessage({ value: "Please Enter correct date", type: "error" })
+        handleCloseBackdrop();
         
       }
   }
