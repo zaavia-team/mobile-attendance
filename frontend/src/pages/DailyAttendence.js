@@ -260,10 +260,9 @@ console.log(users, "users")
 
               <TableRow key={user._id}>
                 <TableCell>{user.UserName}</TableCell>
-                <TableCell>{user.TakenIn.slice(0,22)}</TableCell>
-                <TableCell>{user.TakenOut.slice(11,22)}</TableCell>
+                <TableCell>{new Date(user.TakenIn).toLocaleString() }</TableCell>
+                <TableCell>{new Date(user.TakenOut).toLocaleString()}</TableCell>
                 <TableCell>{user.HOUR?.toFixed(2)}</TableCell>
-
               </TableRow>
             ))
           }
