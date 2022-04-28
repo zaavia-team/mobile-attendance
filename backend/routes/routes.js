@@ -10,8 +10,8 @@ routes.post('/login', controller.login);
 routes.post('/user/:id',auth.authMiddleware, controller.editUser);
 routes.post('/register',auth.authMiddleware,controller.register);
 routes.post('/ChangePassword',auth.authMiddleware,controller.ChangePassword)
-routes.post('/ResetPassword',controller.ResetPassword)
 routes.post('/ForgotPassword',controller.ForgotPassword )
+routes.post('/ResetPassword',controller.ResetPassword)
 routes.post('/attendance_transaction',auth.authMiddleware,attendance_controller.attendance)
 routes.post('/getreportattendance',auth.authMiddleware,attendance_controller.report)
 routes.post('/holiday',auth.authMiddleware,attendance_controller.holiday)
