@@ -62,10 +62,13 @@ export default function AdminReport() {
         )
         .catch(err =>{
             console.log(err, "err")
+        handleCloseBackdrop();
+
         })
       }
       else{
         SetMessage({ value: "Please Enter correct date", type: "error" })
+        handleCloseBackdrop();
         
       }
       

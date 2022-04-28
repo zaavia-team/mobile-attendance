@@ -182,7 +182,7 @@ module.exports.holiday = async (req, res) => {
         ActionTakenByLoginID: req.user.Login_ID,
     };
     let TransactionType;
-    if(req.body.OtherType) TransactionType = req.body.OtherType
+    if (req.body.OtherType) TransactionType = req.body.OtherType
     else TransactionType = req.body.TransactionType;
     const Users = await user_repo.find({
         StatusCode: 1,
@@ -206,7 +206,7 @@ module.exports.holiday = async (req, res) => {
                 ActionDetails: ActionDetails
             };
             Docs.push(newDocObj)
-            var newDate = loop.setDate(loop.getDate() + 1); 
+            var newDate = loop.setDate(loop.getDate() + 1);
             loop = new Date(newDate);
         }
 
@@ -274,7 +274,7 @@ module.exports.getUsershowLeave = async (req, res) => {
     const usershow = await attendance_repo.find({
         UserID: req.user._id,
         TransactionType: 'Leave',
-        Status: { $in: ['Pending', 'Approved','Rejected'] },
+        Status: { $in: ['Pending', 'Approved', 'Rejected'] },
         'Date.Month': new Date().getMonth()
 
     }, false, false)
@@ -288,25 +288,26 @@ module.exports.getUsershowLeave = async (req, res) => {
 
 module.exports.getlisPendLeave = async (req, res) => {
     const user = await user_repo.find({
-        _id : req.user._id
-    },true)
+        _id: req.user._id
+    }, true)
     const approvedRight = user.RightsTitle.find((right) => {
-        return right === 'Approved Leave'})
-    if(approvedRight){
-            console.log(user)
+        return right === 'Approved Leave'
+    })
+    if (approvedRight) {
+        console.log(user)
         const pendList = await attendance_repo.find({
             TransactionType: 'Leave',
             Status: 'Pending',
         }, false)
-        .then(list => {
-            res.send({ Status: true, data: list })
-        })
-        .catch(error => {
-            res.send({ Status: false, message: error.message })
-        })
+            .then(list => {
+                res.send({ Status: true, data: list })
+            })
+            .catch(error => {
+                res.send({ Status: false, message: error.message })
+            })
     }
-    else{
-        res.send({ Status: true,message:"Not Authorized" })
+    else {
+        res.send({ Status: true, message: "Not Authorized" })
     }
 }
 
@@ -411,23 +412,23 @@ module.exports.postExcelReport = async (req, res) => {
     const attendance = await attendance_repo.aggregate(aggr);
 
     // Create a new worksheet
-    const workbook = new excelJs.Workbook(); 
+    const workbook = new excelJs.Workbook();
     // New Worksheet
     const worksheet = workbook.addWorksheet("Attendance_Sheet");
     // Path to downlaod excel
     const path = __dirname + "/attendance.csv";
     //column for data in excel.key must match data key0
-    worksheet.columns =[
-        { header: "S no.", key: "s_no", width: 10},
-        { header: "Name", key: "Name", width: 10},
-        { header: "Total Hours", key: "TotalHours", width: 10},
-        { header: "Total Working Hours", key: "TotalWorkingHours", width: 10},
-        { header: "Leave", key: "Leave", width: 10},
+    worksheet.columns = [
+        { header: "S no.", key: "s_no", width: 10 },
+        { header: "Name", key: "Name", width: 10 },
+        { header: "Total Hours", key: "TotalHours", width: 10 },
+        { header: "Total Working Hours", key: "TotalWorkingHours", width: 10 },
+        { header: "Leave", key: "Leave", width: 10 },
     ];
-    
+
     let counter = 1;
 
-    attendance.forEach((attend)=>{
+    attendance.forEach((attend) => {
         attend.s_no = counter;
         attend.Name = attend.Details[0].UserName;
         attend.TotalHours = attend.TotalHours;
@@ -437,17 +438,17 @@ module.exports.postExcelReport = async (req, res) => {
         counter++;
     });
     worksheet.getRow(1).eachCell((cell) => {
-        cell.font = {bold : true };
+        cell.font = { bold: true };
     });
 
-    try{
+    try {
         const data = await workbook.csv.writeFile(path)
-        .then(() =>{
-           const stream = fs.createReadStream(path)
-            res.download(path)
-        });
-    } catch(err) {
-        res.send({ 
+            .then(() => {
+                const stream = fs.createReadStream(path)
+                res.download(path)
+            });
+    } catch (err) {
+        res.send({
             Status: "error",
             message: "Something went wrong",
         })
@@ -458,25 +459,25 @@ module.exports.postExcelReport = async (req, res) => {
 module.exports.getreportholiday = (req, res) => {
     const aggr = [
         {
-          '$match': {
-            'Title': 'Holiday'
-          }
-        }, {
-          '$group': {
-            '_id': {
-              'Date': {
-                'Day': '$Date.Day', 
-                'Month': '$Date.Month', 
-                'Year': '$Date.Year'
-              }, 
-              'Title': '$Title'
-            }, 
-            'Details': {
-              '$first': '$TransactionType'
+            '$match': {
+                'Title': 'Holiday'
             }
-          }
+        }, {
+            '$group': {
+                '_id': {
+                    'Date': {
+                        'Day': '$Date.Day',
+                        'Month': '$Date.Month',
+                        'Year': '$Date.Year'
+                    },
+                    'Title': '$Title'
+                },
+                'Details': {
+                    '$first': '$TransactionType'
+                }
+            }
         }
-      ]; 
+    ];
     attendance_repo.aggregate(aggr)
         .then(holiday => {
             console.log(holiday)
@@ -486,3 +487,55 @@ module.exports.getreportholiday = (req, res) => {
             res.send({ Status: false, message: error.message })
         })
 }
+
+
+module.exports.GetReportDailyAtt = async (req, res) => {
+    const agg = [
+        {
+            $match: {
+                'TakenIn': {
+                    '$gte': new Date(req.body.StartDate),
+                    '$lte': new Date(new Date(req.body.EndDate).setHours(23, 59, 59))
+                }
+            }
+        },
+        {
+            '$addFields': {
+                'HOUR': {
+                    '$divide': [
+                        {
+                            '$subtract': [
+                                '$TakenOut', '$TakenIn'
+                            ]
+                        }, 3600000
+                    ]
+                }
+            }
+        },
+        {
+            '$group': {
+                '_id': '$UserID',
+                'Details': {
+                    '$push': '$$ROOT'
+                },
+                'TotalHours': {
+                    '$sum': '$HOUR'
+                },
+                'WorkingHours': {
+                    '$sum': '$WorkingHours'
+                },
+
+            }
+        }
+    ]
+
+    const reportattend = await attendance_repo.aggregate(agg)
+
+        .then(daliyattendance => {
+            res.send({ Status: true, data: daliyattendance })
+        })
+        .catch(error => {
+            res.send({ Status: false, message: error.message })
+        })
+}
+

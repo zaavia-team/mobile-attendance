@@ -22,6 +22,7 @@ routes.put('/approvalLeave/:id',auth.authMiddleware,attendance_controller.approv
 routes.put('/rejectedLeave/:id',auth.authMiddleware,attendance_controller.rejectedLeave)
 routes.post('/postExcelReport',auth.authMiddleware,attendance_controller.postExcelReport)
 routes.get('/getreportholiday',auth.authMiddleware,attendance_controller.getreportholiday)
+routes.get('/GetReportDailyAtt',auth.authMiddleware,attendance_controller.GetReportDailyAtt)
 routes.get ('/getalltitles', auth.authMiddleware,titlesDictionary.getAllTitles)
 
 

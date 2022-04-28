@@ -511,12 +511,13 @@ export default function UserRegister() {
                     />
                   </Grid>}
 
-                  <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={6}>
                   <InputLabel id="demo-multiple-checkbox-label">Assign Role</InputLabel>
                   <Select
                     labelId="demo-multiple-checkbox-label"
                     id="demo-multiple-checkbox"
                     multiple
+                    sx={{width:150, mt:1}}
                     value={form?.RightsTitle}
                     onChange={handleChange}
                     input={<OutlinedInput label="Role" />}
@@ -532,7 +533,7 @@ export default function UserRegister() {
                     ))}
                   
                   </Select>
-                  </Grid>
+                </Grid>
 
                 </Grid>
                 <Button
