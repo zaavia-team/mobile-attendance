@@ -175,7 +175,6 @@ class _DashboardState extends State<Dashboard> {
                   maxLines: null,
                   decoration: const InputDecoration(
                       hintText: 'Enter Reason',
-                      prefixIcon: Icon(Icons.email),
                       border: OutlineInputBorder(
                           borderSide: BorderSide(width: 2),
                           borderRadius:
@@ -213,16 +212,6 @@ class _DashboardState extends State<Dashboard> {
             ));
   }
 
-  void reasonController() {
-    if (diff_hr < workingHours) {
-      hoursAlertDialog(context);
-    
-    } else {
-      attendanceDetails();
-      Navigator.pop(context);
-    }
-  }
-
   void alertDialog(BuildContext context) {
     showDialog(
         context: context,
@@ -236,28 +225,6 @@ class _DashboardState extends State<Dashboard> {
                     children: [
                       RaisedButton(
                         onPressed: () {
-                          print('datetime for signout');
-                          DateTime signOut = DateTime.now();
-                          print(box2.get("TakenIn"));
-                          DateTime signin = DateTime.parse(box2.get("TakenIn"));
-                          print(signin);
-                          print('signin');
-                          diff_hr = signOut.difference(signin).inMinutes;
-                          print(signOut);
-                          print('Signout from work');
-                          print(diff_hr);
-                          print('time difference for signin ');
-                          var diff = diff_hr / 60;
-                          print(diff);
-                          print('time in hours');
-                          print(durationToString(100));
-                          print('duration of 100');
-                          print(durationToString(diff_hr));
-                          print('difference in minutes and hours');
-                          print(earlyReason.text);
-                          print('reson for early sign out');
-                          //earlyReasonController();
-
                           attendanceDetails();
                           Navigator.pop(context, true);
                         },
@@ -403,32 +370,46 @@ class _DashboardState extends State<Dashboard> {
                       print('sign in for work');
                       attendanceDetails();
                     } else {
-                      DateTime signOut = DateTime.now();
-                      print(box2.get("TakenIn"));
-                      DateTime signin = DateTime.parse(box2.get("TakenIn"));
-                      print(signin);
-                      print('signin');
-                      diff_hr = signOut.difference(signin).inMinutes;
-                      print(signOut);
-                      print('Signout from work');
-                      print(diff_hr);
-                      print('time difference for signin ');
-                      var diff = diff_hr / 60;
-                      print(diff);
-                      print('time in hours');
-                      print(durationToString(100));
-                      print('duration of 100');
-                      print(durationToString(diff_hr));
-                      print('difference in minutes and hours');
-                      print(earlyReason.text);
-                      print('reson for early sign out');
-                      if (diff_hr < workingHours) {
-                        hoursAlertDialog(context);
+                      print('In Loop');
+                      for(var i = 0; i < Users.length; i++){
+                        print(Users[i]["UserID"]);
+                        if(Users[i]["UserID"] == box1.get("_id")){
+                          print("Found");
+                          print(Users[i]["TakenIn"]);
+                          DateTime signOut = DateTime.now();
+                          print(box2.get("TakenIn"));
+                          DateTime signin = DateTime.parse(Users[i]["TakenIn"]);
+                          print(signin);
+                          print('signin');
+                          var diff_mins = signOut.difference(signin).inMinutes;
+                          print(signOut);
+                          print('Signout from work');
+                          print(diff_mins);
+                          print('time difference for signin ');
+                          diff_hr = diff_mins / 60;
+                          print(diff_hr);
+                          print('time in hours');
+                          print(durationToString(100));
+                          print('duration of 100');
+                          //print(durationToString(diff_hr));
+                          print('difference in minutes and hours');
+                          print(earlyReason.text);
+                          print('reson for early sign out');
+                          if (diff_hr < workingHours) {
+                            //alertDialog(context);
+                            //Navigator.pop(context);
+                            hoursAlertDialog(context);
 
-                      } else {
-                        attendanceDetails();
-                        Navigator.pop(context);
+                          } else {
+                            //hoursAlertDialog(context);
+                            alertDialog(context);
+                            // Navigator.pop(context);
+                          }
+                          break;
+                        }
                       }
+                      print('In Loop');
+
                     }
                   },
                 ),

@@ -244,7 +244,7 @@ class _LoginState extends State<Login> {
                 height: 120,
               ),
               Text('Copyrights by Zaavia! © 2022'),
-              Text('Version 1.0.4'),
+              Text('Version 1.0.6'),
             ],
           ),
         ),
