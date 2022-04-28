@@ -175,8 +175,8 @@ class _ChangePasswordState extends State<ChangePassword> {
                       onTap: _toggleOldPasswordView,
                       child: Icon(
                         _isHiddenOld
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                     ),
                     border: const OutlineInputBorder(
@@ -198,8 +198,8 @@ class _ChangePasswordState extends State<ChangePassword> {
                       onTap: _toggleNewPasswordView,
                       child: Icon(
                         _isHiddenNew
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                     ),
                     border: const OutlineInputBorder(
@@ -242,8 +242,8 @@ class _ChangePasswordState extends State<ChangePassword> {
                       onTap: _toggleConfirmPasswordView,
                       child: Icon(
                         _isHiddenConfirm
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                     ),
                     border: const OutlineInputBorder(
