@@ -1,7 +1,8 @@
 import { useState } from "react";
 import SignIn from "./pages/SignIn";
 import Dashboard from "./pages/Dashboard";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import ResetPassword from "./pages/ResetPassword";
 
 
 
@@ -13,11 +14,9 @@ function App() {
   return (
   <>
       <BrowserRouter>
-
-    {
-      loggedin ? <Dashboard setLoggedin={setLoggedin} /> : <SignIn setLoggedin={setLoggedin} />  
-    }
-    
+        {
+          loggedin ? <Dashboard setLoggedin={setLoggedin} /> : <SignIn setLoggedin={setLoggedin} />  
+        } 
     </BrowserRouter>
   </>
   );

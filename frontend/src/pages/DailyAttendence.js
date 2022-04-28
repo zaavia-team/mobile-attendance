@@ -135,11 +135,14 @@ console.log(users, "users")
         }
         )
         .catch(err =>{
+          handleCloseBackdrop();
+
             console.log(err, "err")
         })
       }
       else{
         SetMessage({ value: "Please Enter correct date", type: "error" })
+        handleCloseBackdrop();
         
       }
   }
@@ -186,7 +189,7 @@ console.log(users, "users")
                     labelId="demo-multiple-checkbox-label"
                     id="demo-multiple-checkbox"
                     multiple
-                    sx={{width:150, mt:1}}
+                    sx={{width:150}}
                     value={form?.UserID}
                     onChange={handleChangeName}
                     input={<OutlinedInput label="Role" />}

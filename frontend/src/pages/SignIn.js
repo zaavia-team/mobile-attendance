@@ -11,6 +11,9 @@ import MuiAlert from '@mui/material/Alert';
 import axios from 'axios';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import { Grid,  Avatar } from '@mui/material';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { Link, NavLink } from 'react-router-dom';
 
 
 
@@ -26,11 +29,16 @@ export default function SignIn({setLoggedin}) {
   const [open, setOpen] = React.useState(false);
   const [message, SetMessage ] = React.useState({value: "", type:""});
   const [openBackdrop, setopenBackdrop] = React.useState(false);
+  const [forgot, setForgot] = React.useState(false);
 
 
   const handleClick = () => {
     setOpen(true);
   };
+
+  const handleForgotClick = () =>{
+    setForgot(true)
+  }
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -103,7 +111,7 @@ export default function SignIn({setLoggedin}) {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
+     {forgot===false && <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
           sx={{
@@ -113,6 +121,10 @@ export default function SignIn({setLoggedin}) {
             alignItems: 'center',
           }}
         >
+
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <LockOutlinedIcon />
+          </Avatar>
       
           <Typography component="h1" variant="h5">
             Sign in
@@ -144,14 +156,86 @@ export default function SignIn({setLoggedin}) {
               variant="contained"
               color="secondary"
               onClick={handleClick}
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, }}
             >
               Sign In
             </Button>
+
+            <Button
+              fullWidth
+              variant="contained"
+              color="inherit"
+              onClick={handleForgotClick}
+              sx={{ mt: 2, mb: 2 }}
+            >
+              Forgot Password?
+            </Button>
           </Box>
         </Box>
-        
       </Container>
+}
+
+
+  { forgot &&   <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <Box
+          sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <LockOutlinedIcon />
+          </Avatar>
+      
+          <Typography component="h1" variant="h5">
+            Reset Password
+          </Typography>
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="New Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+            />
+           
+            <Button
+              
+              fullWidth
+              variant="contained"
+              color="inherit"
+              onClick={handleForgotClick}
+              sx={{ mt: 2, mb: 2 }}
+            >
+              Change Password
+            </Button>
+          </Box>
+        </Box>
+      </Container>
+      
+      }
+
+
+
+
+
       <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
         <Alert onClose={handleClose} severity={message.type} sx={{ width: '100%' }}>
           {message.value}

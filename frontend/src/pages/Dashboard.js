@@ -25,6 +25,7 @@ import { useNavigate  } from 'react-router-dom';
 import ChangePassword from './ChangePassword';
 import HolidayResister from './HolidayRegister'
 import DailyAttendence from './DailyAttendence';
+import ResetPassword from "./ResetPassword";
 
 
 
@@ -179,7 +180,7 @@ function DashboardContent({setLoggedin}) {
                 <Route exact path = "/changepassword" element = {<ChangePassword />} />
                 <Route exact path = "/holidayRegistration" element = {<HolidayResister />} />
                 <Route exact path = "/dailyattendence" element = {<DailyAttendence />} />
-
+                <Route exact path = "/resetpassword" element = {<ResetPassword />} />
                 </Routes>
             </Grid>
           </Container>
