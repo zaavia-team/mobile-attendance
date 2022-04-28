@@ -11,9 +11,9 @@ import MuiAlert from '@mui/material/Alert';
 import axios from 'axios';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-import { Grid,  Avatar } from '@mui/material';
+import {  Avatar } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Link, NavLink } from 'react-router-dom';
+import { FormHelperText } from '@mui/material';
 
 
 
@@ -30,6 +30,9 @@ export default function SignIn({setLoggedin}) {
   const [message, SetMessage ] = React.useState({value: "", type:""});
   const [openBackdrop, setopenBackdrop] = React.useState(false);
   const [forgot, setForgot] = React.useState(false);
+  const [form, setForm] = React.useState({email:"", NewPassword:"",ConfirmPassword:""});
+  const paramsString1 = '';
+
 
 
   const handleClick = () => {
@@ -37,6 +40,8 @@ export default function SignIn({setLoggedin}) {
   };
 
   const handleForgotClick = () =>{
+
+    
     setForgot(true)
   }
 
@@ -52,6 +57,10 @@ export default function SignIn({setLoggedin}) {
   const handleCloseBackdrop = () => {
     setopenBackdrop(false);
   };
+
+  const handleChange = (e) =>{
+    setForm({...form,[ e.target.name] : e.target.vale })
+  }
 
  
   
@@ -194,27 +203,21 @@ export default function SignIn({setLoggedin}) {
           <Typography component="h1" variant="h5">
             Reset Password
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            <TextField
+          <Box  sx={{ mt: 1 }}>
+
+            <FormHelperText >Enter Your Email </FormHelperText>
+          <TextField
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
               name="email"
+              id="email"
+              value={form.email}
+              onChange={handleChange}
               autoComplete="email"
-              autoFocus
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="New Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
+           
+          
            
             <Button
               
@@ -224,7 +227,79 @@ export default function SignIn({setLoggedin}) {
               onClick={handleForgotClick}
               sx={{ mt: 2, mb: 2 }}
             >
-              Change Password
+              Send Mail
+            </Button>
+          </Box>
+        </Box>
+      </Container>
+      
+      }
+
+
+{ token &&   <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <Box
+          sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <LockOutlinedIcon />
+          </Avatar>
+      
+          <Typography component="h1" variant="h5">
+            Reset Password
+          </Typography>
+          <Box  sx={{ mt: 1 }}>
+
+            
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="NewPassword"
+              label="New Password"
+              name="NewPassword"
+              value={form.NewPassword}
+              onChange= {handleChange}
+              autoComplete="NewPassword"
+              type="password"
+              autoFocus
+              shrink="false"
+              
+            />
+
+
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="ConfirmPassword"
+              label="Confirm Password"
+              type="password"
+              id="password"
+              onChange= {handleChange}
+              value={form.ConfirmPassword}
+              autoComplete="current-password"
+              autoFocus
+              shrink="false"
+            />
+           
+          
+           
+            <Button
+              
+              fullWidth
+              variant="contained"
+              color="inherit"
+              onClick={handleForgotClick}
+              sx={{ mt: 2, mb: 2 }}
+            >
+              Reset Password
             </Button>
           </Box>
         </Box>
