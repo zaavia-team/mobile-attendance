@@ -15,6 +15,7 @@ import {  Avatar } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { FormHelperText } from '@mui/material';
 
+import { useLocation } from 'react-router-dom';
 
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -31,16 +32,39 @@ export default function SignIn({setLoggedin}) {
   const [openBackdrop, setopenBackdrop] = React.useState(false);
   const [forgot, setForgot] = React.useState(false);
   const [form, setForm] = React.useState({email:"", NewPassword:"",ConfirmPassword:""});
-  const paramsString1 = '';
+  // const [token,]
 
 
-
+  const location = useLocation().search;
+  const searchParams1 = new URLSearchParams(location).get("token");
+  
   const handleClick = () => {
     setOpen(true);
   };
 
   const handleForgotClick = () =>{
+    
+    const {email} = form
+    console.log(form)
+    if(email){
+      setopenBackdrop(!openBackdrop);
+      const data = {
+        resetEmail: email
+      }
+      axios.post('/api/ForgotPassword', data)
+      .then(function (response) {
+       
+        handleCloseBackdrop();
+      })
+      .catch(function (error) {
+        console.log(error);
+        handleCloseBackdrop();
+        
+      });
+      
+    }
 
+    
     
     setForgot(true)
   }
@@ -59,7 +83,8 @@ export default function SignIn({setLoggedin}) {
   };
 
   const handleChange = (e) =>{
-    setForm({...form,[ e.target.name] : e.target.vale })
+    setForm({...form,[ e.target.name] : e.target.value })
+    console.log(form, "asdasd")
   }
 
  
@@ -120,7 +145,7 @@ export default function SignIn({setLoggedin}) {
 
   return (
     <ThemeProvider theme={theme}>
-     {forgot===false && <Container component="main" maxWidth="xs">
+     {!forgot && !searchParams1 && <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
           sx={{
@@ -236,7 +261,7 @@ export default function SignIn({setLoggedin}) {
       }
 
 
-{ token &&   <Container component="main" maxWidth="xs">
+{ searchParams1 && !forgot &&   <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
           sx={{
