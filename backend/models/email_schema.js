@@ -21,4 +21,4 @@ const MailSchema = new Schema({
     Password : String,
 })
 
-exports.getMailSetupModel = mongoose.model("MailSetup", MailSchema);
+module.exports = mongoose.model("MailSetup", MailSchema);
