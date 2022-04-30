@@ -31,7 +31,7 @@ export default function SignIn({setLoggedin}) {
   const [message, SetMessage ] = React.useState({value: "", type:""});
   const [openBackdrop, setopenBackdrop] = React.useState(false);
   const [forgot, setForgot] = React.useState(false);
-  const [form, setForm] = React.useState({email:"", NewPassword:"",ConfirmPassword:""});
+  const [form, setForm] = React.useState({email:"", NewPassword:"", ConfirmPassword:""});
   // const [token,]
 
 
@@ -43,7 +43,6 @@ export default function SignIn({setLoggedin}) {
   };
 
   const handleForgotClick = () =>{
-    
     const {email} = form
     console.log(form)
     if(email){
@@ -53,8 +52,10 @@ export default function SignIn({setLoggedin}) {
       }
       axios.post('/api/ForgotPassword', data)
       .then(function (response) {
-       
+        setOpen(true);
         handleCloseBackdrop();
+        console.log(response,"response")
+        SetMessage({value: response.data.message, type:"success"})
       })
       .catch(function (error) {
         console.log(error);
@@ -64,10 +65,38 @@ export default function SignIn({setLoggedin}) {
       
     }
 
-    
-    
     setForgot(true)
   }
+
+
+  const handlResetClick = () =>{
+    const {NewPassword} = form
+    setOpen(true);
+    if(NewPassword && searchParams1){
+      setopenBackdrop(!openBackdrop);
+      const data = {
+        new_password: NewPassword,
+        token: searchParams1
+
+      }
+      axios.post('/api/ResetPassword', data)
+      .then(function (response) {
+        
+        handleCloseBackdrop();
+        SetMessage({value: response.data.message, type:"success"})
+        if(response.data.message==="Your Token is Expire or Not valid."){
+          SetMessage({value: response.data.message, type:"error"})
+        }
+        setForm({NewPassword:"", ConfirmPassword:""})
+      })
+      .catch(function (error) {
+        console.log(error);
+        handleCloseBackdrop();
+        
+      });
+  }
+
+}
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -321,7 +350,7 @@ export default function SignIn({setLoggedin}) {
               fullWidth
               variant="contained"
               color="inherit"
-              onClick={handleForgotClick}
+              onClick={handlResetClick}
               sx={{ mt: 2, mb: 2 }}
             >
               Reset Password
