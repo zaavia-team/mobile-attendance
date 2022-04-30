@@ -29,6 +29,11 @@ export const mainListItems = (
       path: '/dailyattendence'
     },
     {
+      text: 'Mail Setup',
+      icon: <AssessmentIcon />,
+      path: '/mailsetup'
+    },
+    {
       text: 'Change Password',
       icon: <LockOutlinedIcon />,
       path: '/changepassword'
