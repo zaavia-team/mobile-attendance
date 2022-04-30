@@ -1,7 +1,8 @@
 let express = require('express');
 let routes = express.Router();
 let controller = require('../controllers/user_controller');
-let attendance_controller =require('../controllers/attendance_controller');
+let attendance_controller = require('../controllers/attendance_controller');
+let email_controller = require('../controllers/email_controller');
 let titlesDictionary =require('../utils/routes_dictionary');
 let auth = require('../services/auth');
 
@@ -10,6 +11,8 @@ routes.post('/login', controller.login);
 routes.post('/user/:id',auth.authMiddleware, controller.editUser);
 routes.post('/register',auth.authMiddleware,controller.register);
 routes.post('/ChangePassword',auth.authMiddleware,controller.ChangePassword)
+routes.post('/UpdateMailSetup',auth.authMiddleware,email_controller.UpdateMailSetup)
+routes.post('/CreateMailSetup',auth.authMiddleware,email_controller.CreateMailSetup)
 routes.post('/ForgotPassword',controller.ForgotPassword )
 routes.post('/ResetPassword',controller.ResetPassword)
 routes.post('/attendance_transaction',auth.authMiddleware,attendance_controller.attendance)
@@ -20,6 +23,7 @@ routes.post('/getUsershowLeave',auth.authMiddleware,attendance_controller.getUse
 routes.post('/getlisPendLeave',auth.authMiddleware,attendance_controller.getlisPendLeave)
 routes.post('/postExcelReport',auth.authMiddleware,attendance_controller.postExcelReport)
 routes.post('/GetReportDailyAtt',auth.authMiddleware,attendance_controller.GetReportDailyAtt)
+routes.get('/GetMailSetup',auth.authMiddleware,email_controller.GetMailSetup)
 routes.get('/users', controller.getUsers);
 routes.get('/gettodayattendance',auth.authMiddleware,attendance_controller.gettodayattendance)                    
 routes.get('/getreportholiday',auth.authMiddleware,attendance_controller.getreportholiday)

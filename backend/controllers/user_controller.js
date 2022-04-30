@@ -162,27 +162,27 @@ module.exports.ForgotPassword = async (req, res) => {
     try {
         let emailID = req.body.resetEmail;
         console.log("object", req.body)
-        let user = await user_repo.find({ Email: emailID },true);
+        let user = await user_repo.find({ Email: emailID }, true);
         if (user) {
             console.log(user, "------")
             const token = uuid();
             let EmailMessage =
-            "Dear &nbsp;<u>" +
-            user.FirstName +
-            " " +
-            user.LastName +
-            "</u><br> We are sending this email to your request for reset the password in Attendance App" +
-            "<br>" +
-            "Please find below the link to reset your password!" +
-            '<br><a href="';
-            console.log(EmailMessage,"sgshgs")
+                "Dear &nbsp;<u>" +
+                user.FirstName +
+                " " +
+                user.LastName +
+                "</u><br> We are sending this email to your request for reset the password in Attendance App" +
+                "<br>" +
+                "Please find below the link to reset your password!" +
+                '<br><a href="';
+            console.log(EmailMessage, "sgshgs")
             EmailMessage +=
                 process.env.NODE_ENV === 'production' ? req.protocol + '://' + req.hostname + '/auth/change-password?token=' + token :
                     req.protocol + '://localhost:3001' + '/auth/change-password?token=' + token +
                     '">' +
                     'Reset Password' +
                     "</a>"
-            console.log(EmailMessage,'some info')
+            console.log(EmailMessage, 'some info')
             await user_repo.updateOne({ Email: emailID }, { $set: { Password_ResetToken: token, ForgotPasswordEmailSentTimeStamp: new Date() } })
             let email_to_send_for_reset = {
                 To: emailID,
