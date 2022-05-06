@@ -11,34 +11,35 @@ import MuiAlert from '@mui/material/Alert';
 
 
 function MailSetup(props) {
-    const [formData, setFormData] = React.useState({ HOST: 'Gmail', USERID: '', Password: '', senderName: '' , PORT:""});
+    const [formData, setFormData] = React.useState({ HOST: 'Gmail', USERID: '', Password: '', senderName: '', PORT: "" });
     const [bool, SetBool] = React.useState(false);
     const [mailID, setMailID] = React.useState();
     const [userData, setUserData] = React.useState({})
     const [mailSetup, setMailSetup] = React.useState({})
     const [openBackdrop, setopenBackdrop] = React.useState(false);
     const [open, setOpen] = React.useState(false);
-    const [message, SetMessage ] = React.useState({value: "", type:""});
+    const [message, SetMessage] = React.useState({ value: "", type: "" });
 
 
 
-    useEffect(()=>{
-        const token = localStorage.getItem("token") 
+    useEffect(() => {
+        const token = localStorage.getItem("token")
 
-        axios.get('/api/GetMailSetup',{ headers: { "Authorization": `${token}` } } )
+        axios.get('/api/GetMailSetup', { headers: { "Authorization": `${token}` } })
             .then(function (response) {
                 handleCloseBackdrop();
-                if(response?.data?.data && response.data.data?._id)
-                setFormData({senderName: response.data.data.SenderName,
-                    HOST: response.data.data.HOST,
-                    USERID:  response.data.data.Email,
-                    Password: response.data.data.Password,
-                    PORT: response.data.data.PORT,
-                    _id : response.data.data._id
-                
-                })
+                if (response?.data?.data && response.data.data?._id)
+                    setFormData({
+                        senderName: response.data.data.SenderName,
+                        HOST: response.data.data.HOST,
+                        USERID: response.data.data.Email,
+                        Password: response.data.data.Password,
+                        PORT: response.data.data.PORT,
+                        _id: response.data.data._id
+
+                    })
                 console.log(response, "response")
-                
+
                 SetMessage({ value: "Successfully get", type: "success" })
             })
             .catch(function (error) {
@@ -46,11 +47,11 @@ function MailSetup(props) {
                 handleCloseBackdrop();
 
             });
-    },[])
+    }, [])
 
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
-          return;
+            return;
         }
         setOpen(false);
         SetMessage({})
@@ -58,21 +59,21 @@ function MailSetup(props) {
 
     const Alert = React.forwardRef(function Alert(props, ref) {
         return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-      });
-      
+    });
+
 
     const handleCloseBackdrop = () => {
         setopenBackdrop(false);
-      };
+    };
 
     const changeHandler = (event, name) => {
         setFormData({ ...formData, [name]: event.target.value })
     }
 
     const onSave = () => {
-        
+
         // console.log(formData);
-        const token = localStorage.getItem("token") 
+        const token = localStorage.getItem("token")
         if (!formData.HOST || !formData.Password || !formData.USERID || !formData.senderName) {
             props.openSnackbar("Please Enter Details", 'error')
             return;
@@ -91,25 +92,34 @@ function MailSetup(props) {
         }
 
         setOpen(true);
-        console.log(mailID,"mailID")
-        if(!formData._id && !mailID && formData.senderName && formData.HOST && formData.USERID && formData.Password)
-        {
+        console.log(mailID, "mailID")
+        if (!formData._id && !mailID && formData.senderName && formData.HOST && formData.USERID && formData.Password) {
             const data = {
                 senderName: formData.senderName,
                 HOST: formData.HOST,
                 USERID: formData.USERID,
-                PORT : formData.PORT || null, 
+                PORT: formData.PORT || null,
                 Password: formData.Password
             }
 
             axios.post('/api/CreateMailSetup', data,
-            { headers: { "Authorization": `${token}` } }
+                { headers: { "Authorization": `${token}` } }
             )
                 .then(function (response) {
                     handleCloseBackdrop();
                     setMailID(response.data.data?._id)
                     console.log(response, "response")
                     SetMessage({ value: "Successfully saved", type: "success" })
+                    if (response?.data?.data && response.data.data?._id)
+                        setFormData({
+                            senderName: response.data.data.SenderName,
+                            HOST: response.data.data.HOST,
+                            USERID: response.data.data.Email,
+                            Password: response.data.data.Password,
+                            PORT: response.data.data.PORT,
+                            _id: response.data.data._id
+
+                        })
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -118,19 +128,18 @@ function MailSetup(props) {
                 });
         }
 
-        if( formData._id ||  mailID && formData.senderName && formData.HOST && formData.USERID && formData.Password)
-        {
+        if (formData._id || mailID && formData.senderName && formData.HOST && formData.USERID && formData.Password) {
             const data = {
                 senderName: formData.senderName,
                 HOST: formData.HOST,
                 USERID: formData.USERID,
                 Password: formData.Password,
-                PORT : formData.PORT || null,
+                PORT: formData.PORT || null,
                 _id: formData._id
             }
 
             axios.post('/api/UpdateMailSetup', data,
-            {headers: { "Authorization": `${token}` }}
+                { headers: { "Authorization": `${token}` } }
             )
                 .then(function (response) {
                     handleCloseBackdrop();
@@ -144,11 +153,11 @@ function MailSetup(props) {
                     handleCloseBackdrop();
 
                 });
-        }else{
+        } else {
             SetMessage({ value: "Add some values", type: "error" })
         }
 
-        
+
 
     }
 
@@ -161,7 +170,7 @@ function MailSetup(props) {
             // console.log("props.mailSetup " , props.mailSetup)
             props.mailSetup.PORT && SetBool(true)
             setMailSetup(props.mailSetup)
-            setFormData({_id :  "", HOST: props.mailSetup.HOST, USERID: props.mailSetup.UserID, Password: props.mailSetup.Password, senderName: props.mailSetup.SenderName, PORT: props.mailSetup.PORT || '' })
+            setFormData({ _id: "", HOST: props.mailSetup.HOST, USERID: props.mailSetup.UserID, Password: props.mailSetup.Password, senderName: props.mailSetup.SenderName, PORT: props.mailSetup.PORT || '' })
         }
     }, [props.mailSetup])
     return (
@@ -185,11 +194,11 @@ function MailSetup(props) {
                     variant="outlined"
                 >
                     {[{ value: 'Gmail', label: 'Gmail' }, { value: 'Others', label: 'Others' }]
-                    .map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                        </MenuItem>
-                    ))
+                        .map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                            </MenuItem>
+                        ))
                     }
                 </TextField>
                 <Box mb="10px" />
