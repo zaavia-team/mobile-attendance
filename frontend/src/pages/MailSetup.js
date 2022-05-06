@@ -13,6 +13,7 @@ import MuiAlert from '@mui/material/Alert';
 function MailSetup(props) {
     const [formData, setFormData] = React.useState({ HOST: 'Gmail', USERID: '', Password: '', senderName: '' , PORT:""});
     const [bool, SetBool] = React.useState(false);
+    const [mailID, setMailID] = React.useState();
     const [userData, setUserData] = React.useState({})
     const [mailSetup, setMailSetup] = React.useState({})
     const [openBackdrop, setopenBackdrop] = React.useState(false);
@@ -37,6 +38,7 @@ function MailSetup(props) {
                 
                 })
                 console.log(response, "response")
+                
                 SetMessage({ value: "Successfully get", type: "success" })
             })
             .catch(function (error) {
@@ -89,12 +91,14 @@ function MailSetup(props) {
         }
 
         setOpen(true);
-        if(!formData._id && formData.senderName && formData.HOST && formData.USERID && formData.Password)
+        console.log(mailID,"mailID")
+        if(!formData._id && !mailID && formData.senderName && formData.HOST && formData.USERID && formData.Password)
         {
             const data = {
                 senderName: formData.senderName,
                 HOST: formData.HOST,
                 USERID: formData.USERID,
+                PORT : formData.PORT || null, 
                 Password: formData.Password
             }
 
@@ -103,6 +107,7 @@ function MailSetup(props) {
             )
                 .then(function (response) {
                     handleCloseBackdrop();
+                    setMailID(response.data.data?._id)
                     console.log(response, "response")
                     SetMessage({ value: "Successfully saved", type: "success" })
                 })
@@ -113,7 +118,7 @@ function MailSetup(props) {
                 });
         }
 
-        if( formData._id && formData.senderName && formData.HOST && formData.USERID && formData.Password)
+        if( formData._id ||  mailID && formData.senderName && formData.HOST && formData.USERID && formData.Password)
         {
             const data = {
                 senderName: formData.senderName,
@@ -188,7 +193,7 @@ function MailSetup(props) {
                     }
                 </TextField>
                 <Box mb="10px" />
-                {bool && (<><TextField value={formData.PORT || ''} id="PORT"
+                {formData.HOST !== "Gmail" && (<><TextField value={formData.PORT || ''} id="PORT"
                     onChange={event => setFormData({ ...formData, PORT: event.target.value })} label="PORT" variant="outlined" /><Box mb="10px" /></>)}
                 <TextField value={formData.USERID || ''} autoComplete="off" onChange={event => changeHandler(event, 'USERID')} id="USERID" label="User ID" variant="outlined" />
                 <Box mb="10px" />

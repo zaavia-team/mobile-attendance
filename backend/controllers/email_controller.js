@@ -39,7 +39,7 @@ exports.CreateMailSetup = (req, res) => {
             process.env.SenderName = mailSetup.SenderName
             
         }
-        res.status(200).json({status : true , success})
+        res.status(200).json({status : true , data:success})
     }).catch(err =>{
         res.status(500).json({status : false,error  :err})
     })
@@ -65,6 +65,7 @@ exports.UpdateMailSetup  = (req, res) => {
     if(update["$set"]["HOST"] === "Gmail"){
         update["$set"]['PORT'] = ""
     }
+    else update["$set"]["PORT"] = req.body.PORT
     console.log(update, "update<----")
     console.log(query, "querye<----")
     MailSetupRepo.updateOne(query, update).then((success) =>{
