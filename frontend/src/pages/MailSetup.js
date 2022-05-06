@@ -183,11 +183,13 @@ function MailSetup(props) {
                     })}
                     variant="outlined"
                 >
-                    {[{ value: 'Gmail', label: 'Gmail' }, { value: 'Others', label: 'Others' }].map((option) => (
+                    {[{ value: 'Gmail', label: 'Gmail' }, { value: 'Others', label: 'Others' }]
+                    .map((option) => (
                         <MenuItem key={option.value} value={option.value}>
                             {option.label}
                         </MenuItem>
-                    ))}
+                    ))
+                    }
                 </TextField>
                 <Box mb="10px" />
                 {bool && (<><TextField value={formData.PORT || ''} id="PORT"

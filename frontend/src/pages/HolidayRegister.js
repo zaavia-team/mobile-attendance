@@ -97,10 +97,6 @@ export default function HolidayRegister() {
   console.log(holiday, "Holiday")
 
 
-
-
-
-
   const handleHolidaySubmit = () => {
     setOpen(true)
     setopenBackdrop(!openBackdrop);
@@ -149,11 +145,13 @@ export default function HolidayRegister() {
             console.log(error)
           });
       } else {
+        handleCloseBackdrop();
         SetMessage({ value: "Please Enter correct date", type: "error" })
 
       }
 
     } else {
+      handleCloseBackdrop();
       SetMessage({ value: "Please Enter Required fields", type: "error" })
     }
   }
