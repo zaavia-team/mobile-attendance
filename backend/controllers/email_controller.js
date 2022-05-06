@@ -63,11 +63,14 @@ exports.UpdateMailSetup  = (req, res) => {
     delete update["$set"]["Email"]
     delete update["$set"]["_id"]
     if(update["$set"]["HOST"] === "Gmail"){
-        update["$unset"] = {PORT : ""}
+        update["$set"] = {PORT : ""}
     }
+    console.log(update, "update<----")
+    console.log(query, "querye<----")
     MailSetupRepo.updateOne(query, update).then((success) =>{
         res.status(200).json({status : true , success})
     }).catch(err =>{
+        console.log(err, "err")
         res.status(500).json({status : false,error  :err})
     })
     MailSetupRepo.find({}, true).then((success) =>{
