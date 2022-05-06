@@ -63,7 +63,7 @@ exports.UpdateMailSetup  = (req, res) => {
     delete update["$set"]["Email"]
     delete update["$set"]["_id"]
     if(update["$set"]["HOST"] === "Gmail"){
-        update["$set"] = {PORT : ""}
+        update["$set"]['PORT'] = ""
     }
     console.log(update, "update<----")
     console.log(query, "querye<----")

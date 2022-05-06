@@ -63,16 +63,12 @@ function MailSetup(props) {
         setopenBackdrop(false);
       };
 
-
     const changeHandler = (event, name) => {
         setFormData({ ...formData, [name]: event.target.value })
     }
 
-
-
-
     const onSave = () => {
-        debugger
+        
         // console.log(formData);
         const token = localStorage.getItem("token") 
         if (!formData.HOST || !formData.Password || !formData.USERID || !formData.senderName) {
