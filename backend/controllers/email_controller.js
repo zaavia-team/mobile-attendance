@@ -60,7 +60,7 @@ exports.UpdateMailSetup  = (req, res) => {
     let update = {$set : {...req.body}};
     update["$set"]["Email"] = req.body.USERID
     update["$set"]["SenderName"] = req.body.senderName
-    delete update["$set"]["Email"]
+    // delete update["$set"]["Email"]
     delete update["$set"]["_id"]
     if(update["$set"]["HOST"] === "Gmail"){
         update["$set"]['PORT'] = ""
