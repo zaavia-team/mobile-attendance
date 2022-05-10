@@ -6,6 +6,8 @@ const fs = require("fs");
 
 module.exports.attendance = async (req, res) => {
     const DateStr = new Date(req.body.Date);
+    console.log("Body Date ",req.body.Date);
+    console.log("Converted Date ",DateStr);
     const TransactionType = req.body.TransactionType;
     const ActionDetails = {
         ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
