@@ -26,7 +26,8 @@ app.get('/', function (req, res) {
 
 // Change the 404 message modifing the middleware
 app.use(function(req, res, next) {
-    res.status(404).send("Sorry, that route doesn't exist. Have a nice day :)");
+  console.log(path.join(__dirname, "build", "index.html"))
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 // start the server in the port 3000 !
