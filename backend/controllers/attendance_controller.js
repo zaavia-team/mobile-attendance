@@ -157,14 +157,23 @@ module.exports.report = (req, res) => {
                 },
                 'Leave': {
                     '$sum': {
-
-                        $cond: [{ $eq: ['$TransactionType', "Leave"] }, 1, 0],
-
-                        $cond: [{ $eq: ['$TransactionType', "Leave",'$ApprovedDetails', true
-                    ] }, 1, 0]
-
+                      '$cond': [
+                        {
+                          '$and': [
+                            {
+                              '$eq': [
+                                '$TransactionType', 'Leave'
+                              ]
+                            }, {
+                              '$eq': [
+                                '$ApprovedDetails.ActionTakenOn', true
+                              ]
+                            }
+                          ]
+                        }, 1, 0
+                      ]
                     }
-                },
+                  },
             }
         }
     ]
