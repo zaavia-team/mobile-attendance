@@ -166,7 +166,7 @@ module.exports.report = (req, res) => {
                               ]
                             }, {
                               '$eq': [
-                                '$ApprovedDetails.ActionTakenOn', true
+                                '$Status', 'Approved'
                               ]
                             }
                           ]
