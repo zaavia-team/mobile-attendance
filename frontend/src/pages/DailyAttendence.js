@@ -260,9 +260,9 @@ console.log(users, "users")
               user.Details?.map(detail => (
                 <TableRow key={detail._id}>
                   <TableCell>{detail.UserName}</TableCell>
-                  <TableCell>{new Date(detail.TakenIn).toLocaleString() }</TableCell>
-                  <TableCell>{new Date(detail.TakenOut).toLocaleString()}</TableCell>
-                  <TableCell>{detail.HOUR?.toFixed(2)}</TableCell>
+                  <TableCell>{detail.TakenIn ? (new Date(detail.TakenIn).toLocaleString()) : "--" }</TableCell>
+                  <TableCell>{detail.TakenOut ? (new Date(detail.TakenOut).toLocaleString()) : "--"}</TableCell>
+                  <TableCell>{detail.HOUR ? detail.HOUR?.toFixed(2) : "--"}</TableCell>
                 </TableRow>
               ))
             ))

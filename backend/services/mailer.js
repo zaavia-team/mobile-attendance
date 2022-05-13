@@ -37,7 +37,6 @@ exports.sendEmail = async function sendEmail(obj, To) {
         html: obj.message
 
     };
-    console.log('1111111')
     //obj.fromAddress = process.env.Email;
     if (obj.cc) {
         message.cc = obj.cc;
@@ -45,11 +44,9 @@ exports.sendEmail = async function sendEmail(obj, To) {
     if (obj.bcc) {
         message.bcc = obj.bcc;
     }
-    console.log('SMPTConfigObj-1: ', SMPTConfigObj)
 
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport(SMPTConfigObj);
-    console.log('SMPTConfigObj-2: ', SMPTConfigObj)
     // send mail with defined transport object
     return transporter.sendMail(message);
 }
