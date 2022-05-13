@@ -152,12 +152,12 @@ module.exports.report = (req, res) => {
                 },
                 'TotalHolidays': {
                     '$sum': {
-                        $cond: [{ $eq: ['$Title', "Holiday"] }, 1, 0]
+                        $cond: [{ $eq: ['$TransactionType', "Holiday"] }, 1, 0]
                     }
                 },
                 'Leave': {
                     '$sum': {
-                        $cond: [{ $eq: ['$Title', "Leave"] }, 1, 0]
+                        $cond: [{ $eq: ['$TransactionType', "Leave"] }, 1, 0]
                     }
                 },
             }
