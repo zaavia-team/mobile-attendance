@@ -114,7 +114,7 @@ module.exports.report = (req, res) => {
     const aggr = [
         {
             $match: {
-                'TakenIn': {
+                'ActionDetails.ActionTakenOn': {
                     '$gte': new Date(req.body.StartDate),
                     '$lte': new Date(new Date(req.body.EndDate).setHours(23, 59, 59))
                 }
@@ -157,7 +157,12 @@ module.exports.report = (req, res) => {
                 },
                 'Leave': {
                     '$sum': {
+
                         $cond: [{ $eq: ['$TransactionType', "Leave"] }, 1, 0]
+
+                        $cond: [{ $eq: ['$TransactionType', "Leave",'$ApprovedDetails', true
+                    ] }, 1, 0]
+
                     }
                 },
             }
