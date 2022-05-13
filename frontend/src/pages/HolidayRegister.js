@@ -102,13 +102,17 @@ export default function HolidayRegister() {
     setopenBackdrop(!openBackdrop);
     const { Type, StartDate, EndDate, OtherType } = form
     if (  StartDate && EndDate && Type || OtherType) {
+      console.log("Type", Type)
+      console.log("OtherType", OtherType)
       if (StartDate <= EndDate) {
-        const data = {
+        let data = {
           Datestart: StartDate,
           Dateend: EndDate,
-          TransactionType: Type,
-          Title: "Holiday",
-          OtherType: OtherType
+          TransactionType: "Holiday",
+          Title: Type,
+        }
+        if(Type == "Other"){
+          data["Title"] = OtherType;
         }
         axios.post('/api/holiday', data,
           { headers: { "Authorization": `${token}` } })
