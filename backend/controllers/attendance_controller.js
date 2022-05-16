@@ -150,9 +150,29 @@ module.exports.report = (req, res) => {
                         $cond: [{ $eq: ['$WorkingHours', true] }, 1, 0]
                     }
                 },
-                'TotalHolidays': {
+              
+            }
+        }
+    ]
+
+    const ShowLeaveagg = [
+        {
+          '$match': {
+            'Date.Month': req.body.Month, 
+            'Date.Day': req.body.Day, 
+            'Date.Year': req.body.Year
+          }
+        },
+        {
+            '$group': {
+                '_id': '$UserID',
+                'Details': {
+                    '$push': '$$ROOT'
+                },
+                
+                'ManualAttendance': {
                     '$sum': {
-                        $cond: [{ $eq: ['$TransactionType', "Holiday"] }, 1, 0]
+                        $cond: [{ $eq: ['$WorkingHours', true] }, 1, 0]
                     }
                 },
                 'Leave': {
@@ -174,13 +194,18 @@ module.exports.report = (req, res) => {
                       ]
                     }
                   },
+              
             }
+           
         }
-    ]
+      ] 
     if (req.body.userIds && req.body.userIds.length) {
         aggr[0].$match['UserName'] = { $in: req.body.userIds }
     }
-    attendance_repo.aggregate(aggr)
+    attendance_repo.aggregate(aggr);
+    attendance_repo.aggregate(ShowLeaveagg);
+    let attendance = [];
+    attendance.push(aggr.ShowLeaveagg)
         .then(attendance => {
             res.send({ Status: true, data: attendance })
         })
