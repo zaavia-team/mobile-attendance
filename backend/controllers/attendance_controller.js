@@ -170,9 +170,9 @@ module.exports.report = (req, res) => {
                     '$push': '$$ROOT'
                 },
                 
-                'ManualAttendance': {
+                'TotalHolidays': {
                     '$sum': {
-                        $cond: [{ $eq: ['$WorkingHours', true] }, 1, 0]
+                        $cond: [{ $eq: ['$TransactionType', "Holiday"] }, 1, 0]
                     }
                 },
                 'Leave': {
