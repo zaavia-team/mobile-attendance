@@ -165,6 +165,18 @@ module.exports.report = async (req, res) => {
                 ]
             }
         }, {
+            '$addFields': {
+                'HOUR': {
+                    '$divide': [
+                        {
+                            '$subtract': [
+                                '$TakenOut', '$TakenIn'
+                            ]
+                        }, 3600000
+                    ]
+                }
+            }
+        }, {
             '$group': {
                 '_id': '$UserID',
                 'Details': {
