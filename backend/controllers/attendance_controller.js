@@ -120,44 +120,49 @@ module.exports.report = async (req, res) => {
     // console.log(endDate.getDate())
     // console.log(endDate.getMonth())
     // console.log(endDate.getFullYear())
+
     const aggr = [
         {
-            // '$match': {
-            //     'ActionDetails.ActionTakenOn': {
-            //         '$gte': new Date(req.body.StartDate),
-            //         '$lte': new Date(new Date(req.body.EndDate).setHours(23, 59, 59))
-            //     },
             '$match': {
-                'Date.Day': {
-                  '$gte': startDate.getDate()
-                }, 
-                'Date.Month': {
-                  '$gte': startDate.getMonth()
-                }, 
-                'Date.Year': {
-                  '$gte': startDate.getFullYear()
-                },
-                'Date.Day': {
-                    '$lte': endDate.getDate()
-                  }, 
-                  'Date.Month': {
-                    '$lte': endDate.getMonth()
-                  }, 
-                  'Date.Year': {
-                    '$lte': endDate.getFullYear()
-                  }
-              }
-        }, {
-            '$addFields': {
-                'HOUR': {
-                    '$divide': [
-                        {
-                            '$subtract': [
-                                '$TakenOut', '$TakenIn'
-                            ]
-                        }, 3600000
-                    ]
-                }
+                '$and': [
+                    {
+                        '$and': [
+                            {
+                                'Date.Day': {
+                                    '$gte': startDate.getDate()
+                                }
+                            }, {
+                                'Date.Day': {
+                                    '$lte': endDate.getDate()
+                                }
+                            }
+                        ]
+                    }, {
+                        '$and': [
+                            {
+                                'Date.Month': {
+                                    '$gte': startDate.getMonth()
+                                }
+                            }, {
+                                'Date.Month': {
+                                    '$lte': endDate.getMonth()
+                                }
+                            }
+                        ]
+                    }, {
+                        '$and': [
+                            {
+                                'Date.Year': {
+                                    '$gte': startDate.getFullYear()
+                                }
+                            }, {
+                                'Date.Year': {
+                                    '$lte': endDate.getFullYear()
+                                }
+                            }
+                        ]
+                    }
+                ]
             }
         }, {
             '$group': {
@@ -184,38 +189,138 @@ module.exports.report = async (req, res) => {
                 },
                 'TotalHolidays': {
                     '$sum': {
-                      '$cond': [
-                        {
-                          '$eq': [
-                            '$TransactionType', 'Holiday'
-                          ]
-                        }, 1, 0
-                      ]
-                    }
-                  }, 
-                  'Leave': {
-                    '$sum': {
-                      '$cond': [
-                        {
-                          '$and': [
+                        '$cond': [
                             {
-                              '$eq': [
-                                '$TransactionType', 'Leave'
-                              ]
-                            }, {
-                              '$eq': [
-                                '$Status', 'Approved'
-                              ]
-                            }
-                          ]
-                        }, 1, 0
-                      ]
+                                '$eq': [
+                                    '$TransactionType', 'Holiday'
+                                ]
+                            }, 1, 0
+                        ]
                     }
-                  }
-
+                },
+                'Leave': {
+                    '$sum': {
+                        '$cond': [
+                            {
+                                '$and': [
+                                    {
+                                        '$eq': [
+                                            '$TransactionType', 'Leave'
+                                        ]
+                                    }, {
+                                        '$eq': [
+                                            '$Status', 'Approved'
+                                        ]
+                                    }
+                                ]
+                            }, 1, 0
+                        ]
+                    }
+                }
             }
         }
     ]
+
+    //====================================//
+    // const aggr = [
+    //     {
+    //         // '$match': {
+    //         //     'ActionDetails.ActionTakenOn': {
+    //         //         '$gte': new Date(req.body.StartDate),
+    //         //         '$lte': new Date(new Date(req.body.EndDate).setHours(23, 59, 59))
+    //         //     },
+    //         '$match': {
+    //             'Date.Day': {
+    //               '$gte': startDate.getDate()
+    //             }, 
+    //             'Date.Month': {
+    //               '$gte': startDate.getMonth()
+    //             }, 
+    //             'Date.Year': {
+    //               '$gte': startDate.getFullYear()
+    //             },
+    //             'Date.Day': {
+    //                 '$lte': endDate.getDate()
+    //               }, 
+    //               'Date.Month': {
+    //                 '$lte': endDate.getMonth()
+    //               }, 
+    //               'Date.Year': {
+    //                 '$lte': endDate.getFullYear()
+    //               }
+    //           }
+    //     }, {
+    //         '$addFields': {
+    //             'HOUR': {
+    //                 '$divide': [
+    //                     {
+    //                         '$subtract': [
+    //                             '$TakenOut', '$TakenIn'
+    //                         ]
+    //                     }, 3600000
+    //                 ]
+    //             }
+    //         }
+    //     }, {
+    //         '$group': {
+    //             '_id': '$UserID',
+    //             'Details': {
+    //                 '$push': '$$ROOT'
+    //             },
+    //             'TotalHours': {
+    //                 '$sum': '$HOUR'
+    //             },
+    //             'WorkingHours': {
+    //                 '$sum': '$WorkingHours'
+    //             },
+    //             'ManualAttendance': {
+    //                 '$sum': {
+    //                     '$cond': [
+    //                         {
+    //                             '$eq': [
+    //                                 '$WorkingHours', true
+    //                             ]
+    //                         }, 1, 0
+    //                     ]
+    //                 }
+    //             },
+    //             'TotalHolidays': {
+    //                 '$sum': {
+    //                   '$cond': [
+    //                     {
+    //                       '$eq': [
+    //                         '$TransactionType', 'Holiday'
+    //                       ]
+    //                     }, 1, 0
+    //                   ]
+    //                 }
+    //               }, 
+    //               'Leave': {
+    //                 '$sum': {
+    //                   '$cond': [
+    //                     {
+    //                       '$and': [
+    //                         {
+    //                           '$eq': [
+    //                             '$TransactionType', 'Leave'
+    //                           ]
+    //                         }, {
+    //                           '$eq': [
+    //                             '$Status', 'Approved'
+    //                           ]
+    //                         }
+    //                       ]
+    //                     }, 1, 0
+    //                   ]
+    //                 }
+    //               }
+
+    //         }
+    //     }
+    // ]
+
+    //======================================//
+
     // const LeaveShow =
     // [
     //     {
@@ -285,7 +390,7 @@ module.exports.report = async (req, res) => {
     attendance_repo.aggregate(aggr).then((attend) => {
         res.send({ Status: true, data: attend })
     }).catch(error => {
-        res.send({ Status: false, msg: "Msg "+error })
+        res.send({ Status: false, msg: "Msg " + error })
     })
     //const show = await attendance_repo.aggregate(LeaveShow)
     //console.log(show, 'show =======')
