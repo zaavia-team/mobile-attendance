@@ -256,16 +256,25 @@ console.log(users, "users")
         </TableHead>
         <TableBody>
           {
-            data[0]?.Details?.map(user => (
-
-              <TableRow key={user._id}>
-                <TableCell>{user.UserName}</TableCell>
-                <TableCell>{user.TakenIn.slice(0,22)}</TableCell>
-                <TableCell>{user.TakenOut.slice(11,22)}</TableCell>
-                <TableCell>{user.HOUR?.toFixed(2)}</TableCell>
-
-              </TableRow>
+            data?.map(user => (
+              user.Details?.map(detail => (
+                <TableRow key={detail._id}>
+                  <TableCell>{detail.UserName}</TableCell>
+                  <TableCell>{detail.TakenIn ? (new Date(detail.TakenIn).toLocaleString()) : "--" }</TableCell>
+                  <TableCell>{detail.TakenOut ? (new Date(detail.TakenOut).toLocaleString()) : "--"}</TableCell>
+                  <TableCell>{detail.HOUR ? detail.HOUR?.toFixed(2) : "--"}</TableCell>
+                </TableRow>
+              ))
             ))
+            // data[0].Details?.map(user => (
+
+            //   <TableRow key={user._id}>
+            //     <TableCell>{user.UserName}</TableCell>
+            //     <TableCell>{new Date(user.TakenIn).toLocaleString() }</TableCell>
+            //     <TableCell>{new Date(user.TakenOut).toLocaleString()}</TableCell>
+            //     <TableCell>{user.HOUR?.toFixed(2)}</TableCell>
+            //   </TableRow>
+            // ))
           }
         </TableBody>
       </Table> 

@@ -97,22 +97,22 @@ export default function HolidayRegister() {
   console.log(holiday, "Holiday")
 
 
-
-
-
-
   const handleHolidaySubmit = () => {
     setOpen(true)
     setopenBackdrop(!openBackdrop);
     const { Type, StartDate, EndDate, OtherType } = form
     if (  StartDate && EndDate && Type || OtherType) {
+      console.log("Type", Type)
+      console.log("OtherType", OtherType)
       if (StartDate <= EndDate) {
-        const data = {
+        let data = {
           Datestart: StartDate,
           Dateend: EndDate,
-          TransactionType: Type,
-          Title: "Holiday",
-          OtherType: OtherType
+          TransactionType: "Holiday",
+          Title: Type,
+        }
+        if(Type == "Other"){
+          data["Title"] = OtherType;
         }
         axios.post('/api/holiday', data,
           { headers: { "Authorization": `${token}` } })
@@ -149,11 +149,13 @@ export default function HolidayRegister() {
             console.log(error)
           });
       } else {
+        handleCloseBackdrop();
         SetMessage({ value: "Please Enter correct date", type: "error" })
 
       }
 
     } else {
+      handleCloseBackdrop();
       SetMessage({ value: "Please Enter Required fields", type: "error" })
     }
   }

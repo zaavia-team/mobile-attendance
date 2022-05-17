@@ -1,17 +1,12 @@
 import React, { useState } from 'react';
-import { Grid, TextField } from '@material-ui/core';
-import { Link } from 'react-router-dom';
+import {  TextField } from '@material-ui/core';
 import axios from 'axios';
 import { Box, Container } from '@material-ui/core';
 import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import MuiAlert from '@mui/material/Alert';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-
-
-
+import { FormHelperText } from '@mui/material';
 
 
 
@@ -137,6 +132,7 @@ const ChangePassword = () => {
                         sx={{ mr: 2, mt: 1, mb:1 }}
                         
                     />
+                <FormHelperText >Password must be 8-12 and contain capital letter and special character</FormHelperText>
                     <TextField
                         margin="normal" 
                         fullWidth

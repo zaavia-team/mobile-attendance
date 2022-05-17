@@ -2,7 +2,9 @@ import * as React from 'react';
 import PeopleIcon from '@mui/icons-material/People';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
 
 export const mainListItems = (
 
@@ -20,13 +22,18 @@ export const mainListItems = (
     },
     {
       text: 'Holiday Register',
-      icon: <AssessmentIcon />,
+      icon: <AppRegistrationIcon />,
       path: '/holidayRegistration'
     },
     {
       text: 'Daily Attendence',
-      icon: <AssessmentIcon />,
+      icon: <AssignmentTurnedInIcon />,
       path: '/dailyattendence'
+    },
+    {
+      text: 'Mail Setup',
+      icon: <MailOutlineIcon />,
+      path: '/mailsetup'
     },
     {
       text: 'Change Password',

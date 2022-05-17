@@ -25,8 +25,7 @@ import { useNavigate  } from 'react-router-dom';
 import ChangePassword from './ChangePassword';
 import HolidayResister from './HolidayRegister'
 import DailyAttendence from './DailyAttendence';
-import ResetPassword from "./ResetPassword";
-
+import MailSetup from './MailSetup';
 
 
 
@@ -174,14 +173,16 @@ function DashboardContent({setLoggedin}) {
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
+                <Grid item lg={12} md={12}>
                 <Routes>
                 <Route exact path = "/" element = {<UserRegister />} />
                 <Route exact path = "/adminreport" element = {<AdminReport />} />
                 <Route exact path = "/changepassword" element = {<ChangePassword />} />
                 <Route exact path = "/holidayRegistration" element = {<HolidayResister />} />
                 <Route exact path = "/dailyattendence" element = {<DailyAttendence />} />
-                <Route exact path = "/resetpassword" element = {<ResetPassword />} />
+                <Route exact path = "/mailsetup" element = {<MailSetup />} />
                 </Routes>
+                </Grid>
             </Grid>
           </Container>
         </Box>

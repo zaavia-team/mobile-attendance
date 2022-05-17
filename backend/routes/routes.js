@@ -1,29 +1,35 @@
 let express = require('express');
 let routes = express.Router();
 let controller = require('../controllers/user_controller');
-let attendance_controller =require('../controllers/attendance_controller');
+let attendance_controller = require('../controllers/attendance_controller');
+let email_controller = require('../controllers/email_controller');
 let titlesDictionary =require('../utils/routes_dictionary');
 let auth = require('../services/auth');
 
 
 routes.post('/login', controller.login);
-routes.get('/users', controller.getUsers);
 routes.post('/user/:id',auth.authMiddleware, controller.editUser);
 routes.post('/register',auth.authMiddleware,controller.register);
 routes.post('/ChangePassword',auth.authMiddleware,controller.ChangePassword)
+routes.post('/UpdateMailSetup',auth.authMiddleware,email_controller.UpdateMailSetup)
+routes.post('/CreateMailSetup',auth.authMiddleware,email_controller.CreateMailSetup)
+routes.post('/ForgotPassword',controller.ForgotPassword )
+routes.post('/ResetPassword',controller.ResetPassword)
 routes.post('/attendance_transaction',auth.authMiddleware,attendance_controller.attendance)
-routes.get('/gettodayattendance',auth.authMiddleware,attendance_controller.gettodayattendance)
 routes.post('/getreportattendance',auth.authMiddleware,attendance_controller.report)
 routes.post('/holiday',auth.authMiddleware,attendance_controller.holiday)
 routes.post('/LeaveReq',auth.authMiddleware,attendance_controller.LeaveReq)
 routes.post('/getUsershowLeave',auth.authMiddleware,attendance_controller.getUsershowLeave)
 routes.post('/getlisPendLeave',auth.authMiddleware,attendance_controller.getlisPendLeave)
-routes.put('/approvalLeave/:id',auth.authMiddleware,attendance_controller.approvedLeave)
-routes.put('/rejectedLeave/:id',auth.authMiddleware,attendance_controller.rejectedLeave)
 routes.post('/postExcelReport',auth.authMiddleware,attendance_controller.postExcelReport)
+routes.post('/GetReportDailyAtt',auth.authMiddleware,attendance_controller.GetReportDailyAtt)
+routes.get('/GetMailSetup',auth.authMiddleware,email_controller.GetMailSetup)
+routes.get('/users', controller.getUsers);
+routes.get('/gettodayattendance',auth.authMiddleware,attendance_controller.gettodayattendance)                    
 routes.get('/getreportholiday',auth.authMiddleware,attendance_controller.getreportholiday)
-routes.get('/GetReportDailyAtt',auth.authMiddleware,attendance_controller.GetReportDailyAtt)
 routes.get ('/getalltitles', auth.authMiddleware,titlesDictionary.getAllTitles)
+routes.put('/rejectedLeave/:id',auth.authMiddleware,attendance_controller.rejectedLeave)
+routes.put('/approvalLeave/:id',auth.authMiddleware,attendance_controller.approvedLeave)
 
 
 module.exports = routes;

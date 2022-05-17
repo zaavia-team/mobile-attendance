@@ -6,6 +6,8 @@ const fs = require("fs");
 
 module.exports.attendance = async (req, res) => {
     const DateStr = new Date(req.body.Date);
+    console.log("Body Date ",req.body.Date);
+    console.log("Converted Date ",DateStr);
     const TransactionType = req.body.TransactionType;
     const ActionDetails = {
         ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
@@ -112,7 +114,7 @@ module.exports.report = (req, res) => {
     const aggr = [
         {
             $match: {
-                'TakenIn': {
+                'ActionDetails.ActionTakenOn': {
                     '$gte': new Date(req.body.StartDate),
                     '$lte': new Date(new Date(req.body.EndDate).setHours(23, 59, 59))
                 }
@@ -148,23 +150,62 @@ module.exports.report = (req, res) => {
                         $cond: [{ $eq: ['$WorkingHours', true] }, 1, 0]
                     }
                 },
+              
+            }
+        }
+    ]
+
+    const ShowLeaveagg = [
+        {
+          '$match': {
+            'Date.Month': req.body.Month, 
+            'Date.Day': req.body.Day, 
+            'Date.Year': req.body.Year
+          }
+        },
+        {
+            '$group': {
+                '_id': '$UserID',
+                'Details': {
+                    '$push': '$$ROOT'
+                },
+                
                 'TotalHolidays': {
                     '$sum': {
-                        $cond: [{ $eq: ['$Title', "Holiday"] }, 1, 0]
+                        $cond: [{ $eq: ['$TransactionType', "Holiday"] }, 1, 0]
                     }
                 },
                 'Leave': {
                     '$sum': {
-                        $cond: [{ $eq: ['$Title', "Leave"] }, 1, 0]
+                      '$cond': [
+                        {
+                          '$and': [
+                            {
+                              '$eq': [
+                                '$TransactionType', 'Leave'
+                              ]
+                            }, {
+                              '$eq': [
+                                '$Status', 'Approved'
+                              ]
+                            }
+                          ]
+                        }, 1, 0
+                      ]
                     }
-                },
+                  },
+              
             }
+           
         }
-    ]
+      ] 
     if (req.body.userIds && req.body.userIds.length) {
         aggr[0].$match['UserName'] = { $in: req.body.userIds }
     }
-    attendance_repo.aggregate(aggr)
+    attendance_repo.aggregate(aggr);
+    attendance_repo.aggregate(ShowLeaveagg);
+    let attendance = [];
+    attendance.push(aggr.ShowLeaveagg)
         .then(attendance => {
             res.send({ Status: true, data: attendance })
         })
