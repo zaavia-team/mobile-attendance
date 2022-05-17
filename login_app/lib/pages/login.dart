@@ -15,6 +15,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
+  TextEditingController url = TextEditingController(text: dotenv.env['API_URL']);
   var token;
   String msg = "";
   bool _isHidden = true;
@@ -34,7 +35,8 @@ class _LoginState extends State<Login> {
   }
 
   void login() async {
-    if (email.text.isEmpty || password.text.isEmpty) {
+    var updateUrl = url.text;
+    if (email.text.isEmpty || password.text.isEmpty || url.text.isEmpty) {
       const snackBar = SnackBar(
         content: Text(
           'Kindly fill both the fields',
@@ -46,7 +48,7 @@ class _LoginState extends State<Login> {
     } else {
       try {
         var response = await http.post(
-            Uri.parse(dotenv.env['API_URL']! + "/api/login"),
+            Uri.parse(updateUrl + "/api/login"),
             headers: <String, String>{
               'Content-Type': 'application/json',
             },
@@ -70,6 +72,10 @@ class _LoginState extends State<Login> {
           _checkPassword(password.text);
           box1.put('token', data["token"]);
           box1.put('_id', data["data"]["_id"]);
+          box1.put('updateUrl', updateUrl);
+          print('URL FOR ');
+          print(updateUrl);
+          print('new urkl');
           box1.put('WorkingHours', data["data"]["WorkingHours"]);
           if(_strength < 1){
             Navigator.push(
@@ -82,7 +88,13 @@ class _LoginState extends State<Login> {
             box1.put('Name',
                 data["data"]["FirstName"] + " " + data["data"]["LastName"]);
             if(title.length > 0){
-              box1.put('LeaveAccess', title[0]);
+              for(var i=0; i<title.length; i++){
+                if(title[i] == "Approved Leave"){
+                  box1.put('LeaveAccess', title[i]);
+                }
+
+              }
+
             }
 
             Navigator.of(context).pushAndRemoveUntil(
@@ -94,7 +106,7 @@ class _LoginState extends State<Login> {
      
       } catch (e) {
         print(e);
-        msg = dotenv.env['API_URL'] ?? "Url null catch";
+        msg = url.text ?? "Url null catch";
         var snackBar = SnackBar(
           content: Text(msg),
         );
@@ -222,6 +234,20 @@ class _LoginState extends State<Login> {
               const SizedBox(
                 height: 10,
               ),
+              TextField(
+                keyboardType: TextInputType.url,
+                decoration: const InputDecoration(
+                    hintText: 'URL',
+
+                    prefixIcon: Icon(Icons.reply),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(width: 2),
+                        borderRadius: BorderRadius.all(Radius.circular(27.0)))),
+                controller: url,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
               ButtonTheme(
                 minWidth: 400,
                 height: 50,
@@ -244,7 +270,7 @@ class _LoginState extends State<Login> {
                 height: 120,
               ),
               Text('Copyrights by Zaavia! © 2022'),
-              Text('Version 1.0.6'),
+              Text('Version 1.0.7'),
             ],
           ),
         ),

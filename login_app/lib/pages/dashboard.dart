@@ -24,12 +24,14 @@ class _DashboardState extends State<Dashboard> {
   var transactionType = 'i am In';
 
   var token;
+  var url;
   var workingHours;
   var Users = [];
   String msg = "";
   var rightsTitle = "";
   var diff_hr;
   var _isLoading = true;
+  var _isSignInLoading = true;
   DateTime signIn = DateTime.now();
 
   // final
@@ -64,21 +66,25 @@ class _DashboardState extends State<Dashboard> {
     if (box1.get('token') != null) {
       token = box1.get('token');
       workingHours = box1.get('WorkingHours');
+      url = box1.get('updateUrl');
       rightsTitle = box1.get('LeaveAccess') ?? "";
       getUsers();
     }
   }
 
   void getUsers() async {
+    print(url);
+    print('url');
     try {
       var response = await http.get(
-        Uri.parse(dotenv.env['API_URL']! + "/api/gettodayattendance"),
+        Uri.parse(url + "/api/gettodayattendance"),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': token
         },
       );
       print(response.body);
+      print(rightsTitle);
       setState(() {
         Users = jsonDecode(response.body)["data"];
 
@@ -88,6 +94,7 @@ class _DashboardState extends State<Dashboard> {
           transactionType = "i am Out";
         }
         _isLoading = false;
+        _isSignInLoading = true;
       });
       print("Users");
       print(Users);
@@ -99,30 +106,33 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void attendanceDetails() async {
+
+    _isSignInLoading = false;
     var obj = {};
     if (transactionType == "i am Out" && diff_hr < workingHours) {
       obj = {
         'TransactionType': transactionType,
         'EarlyReason': earlyReason.text,
         'Date':
-            _dateTime?.toIso8601String() ?? DateTime.now().toIso8601String(),
-        'ManualEntry': _dateTime?.toIso8601String() != null ? true : false
+            _dateTime?.toUtc().toString() ?? DateTime.now().toUtc().toString(),
+        'ManualEntry': _dateTime?.toUtc().toString() != null ? true : false
       };
     } else {
       obj = {
         'TransactionType': transactionType,
         'Date':
-            _dateTime?.toIso8601String() ?? DateTime.now().toIso8601String(),
-        'ManualEntry': _dateTime?.toIso8601String() != null ? true : false
+            _dateTime?.toUtc().toString() ?? DateTime.now().toUtc().toString(),
+        'ManualEntry': _dateTime?.toUtc().toString() != null ? true : false
       };
     }
     var response = await http.post(
-        Uri.parse(dotenv.env['API_URL']! + "/api/attendance_transaction"),
+        Uri.parse(url + "/api/attendance_transaction"),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': token
         },
         body: jsonEncode(obj));
+
     print(response.body);
     print(Users);
 
@@ -146,6 +156,7 @@ class _DashboardState extends State<Dashboard> {
         transactionType =
             transactionType == 'i am Out' ? "i am In" : 'i am Out';
       });
+      //_isSignInLoading = true;
       getData();
       msg = jsonDecode(response.body)["message"];
       var snackBar = SnackBar(
@@ -167,8 +178,24 @@ class _DashboardState extends State<Dashboard> {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
-              title: Text("Your {$workingHours} Hours of work is not completed yet",
-                  textAlign: TextAlign.center),
+              title: RichText(
+                text: new TextSpan(
+                  // Note: Styles for TextSpans must be explicitly defined.
+                  // Child text spans will inherit styles from parent
+                  style: new TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.black,
+                  ),
+                  children: <TextSpan>[
+                    new TextSpan(text: 'Your', style: TextStyle()),
+                    new TextSpan(text: ' $workingHours Hours ', style: new TextStyle(fontWeight: FontWeight.bold)),
+                    new TextSpan(text: 'of work is not completed yet'),
+                  ],
+
+                ),
+                textAlign: TextAlign.center,
+
+              ),
               actions: [
                 TextField(
                   keyboardType: TextInputType.multiline,
@@ -327,7 +354,7 @@ class _DashboardState extends State<Dashboard> {
                       title: Text('${Users[index]["UserName"]}',
                           style: TextStyle(color: Colors.white, fontSize: 18)),
                       subtitle: Text(
-                          '${DateFormat('dd-MM-yyyy h:mma').format(DateTime.parse(Users[index]["TakenIn"]))}',
+                          '${DateFormat('dd-MM-yyyy h:mma').format(DateTime.parse(Users[index]["TakenIn"]).toLocal())}',
                           style: TextStyle(color: Colors.white, fontSize: 17)),
                     ),
                   );
@@ -344,7 +371,7 @@ class _DashboardState extends State<Dashboard> {
                   : getDate(),
               style: TextStyle(fontSize: 20),
             ),
-            FlatButton(
+            TextButton(
               onPressed: () {
                 pickDateTime(context);
               },
@@ -353,17 +380,23 @@ class _DashboardState extends State<Dashboard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                RaisedButton(
-                  elevation: 5,
+                _isSignInLoading ?
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 5,
+                    primary: Theme.of(context).primaryColor,
+                    onPrimary: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0)),
+                  ),
+
                   child: Text(
                     transactionType,
                     style: TextStyle(fontSize: 15),
                   ),
-                  color: Theme.of(context).primaryColor,
-                  textColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0)),
+
                   onPressed: () {
+
                     if (transactionType == "i am In") {
                       signIn = DateTime.now();
                       print(signIn);
@@ -376,8 +409,7 @@ class _DashboardState extends State<Dashboard> {
                         if(Users[i]["UserID"] == box1.get("_id")){
                           print("Found");
                           print(Users[i]["TakenIn"]);
-                          DateTime signOut = DateTime.now();
-                          print(box2.get("TakenIn"));
+                          DateTime signOut = DateTime.parse(DateTime.now().toString());
                           DateTime signin = DateTime.parse(Users[i]["TakenIn"]);
                           print(signin);
                           print('signin');
@@ -389,10 +421,6 @@ class _DashboardState extends State<Dashboard> {
                           diff_hr = diff_mins / 60;
                           print(diff_hr);
                           print('time in hours');
-                          print(durationToString(100));
-                          print('duration of 100');
-                          //print(durationToString(diff_hr));
-                          print('difference in minutes and hours');
                           print(earlyReason.text);
                           print('reson for early sign out');
                           if (diff_hr < workingHours) {
@@ -412,7 +440,10 @@ class _DashboardState extends State<Dashboard> {
 
                     }
                   },
-                ),
+                ) : Center(
+
+        child: CircularProgressIndicator(),
+    ),
               ],
             ),
           ],

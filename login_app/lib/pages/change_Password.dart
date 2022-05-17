@@ -29,6 +29,7 @@ class _ChangePasswordState extends State<ChangePassword> {
   bool _isHiddenConfirm = true;
 
   var token;
+  var url;
   late Box box1;
   var _id;
 
@@ -44,6 +45,7 @@ class _ChangePasswordState extends State<ChangePassword> {
   void getData() async {
     if (box1.get('token') != null) {
       token = box1.get('token');
+      url = box1.get('updateUrl');
       _id = box1.get('_id');
     }
   }
@@ -51,7 +53,7 @@ class _ChangePasswordState extends State<ChangePassword> {
     print(password.text);
     try {
       var response = await http.post(
-        Uri.parse(dotenv.env['API_URL']! + "/api/ChangePassword"),
+        Uri.parse(url + "/api/ChangePassword"),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': token

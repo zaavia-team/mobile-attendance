@@ -15,6 +15,7 @@ class _ApprovalListState extends State<ApprovalList> {
 
   late Box box1;
   var token;
+  var url;
   var approvalList = [];
   var _isLoading = true;
   String msg = "";
@@ -27,6 +28,7 @@ class _ApprovalListState extends State<ApprovalList> {
   void getData() async {
     if (box1.get('token') != null) {
       token = box1.get('token');
+      url = box1.get('updateUrl');
       getApprovals();
     }
   }
@@ -41,7 +43,7 @@ class _ApprovalListState extends State<ApprovalList> {
   Future getApprovals() async {
     try {
       var response = await http.post(
-        Uri.parse(dotenv.env['API_URL']! + "/api/getlisPendLeave"),
+        Uri.parse(url + "/api/getlisPendLeave"),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': token
@@ -58,9 +60,9 @@ class _ApprovalListState extends State<ApprovalList> {
     }
   }
   void rejectRequest(index) async {
-    print(Uri.parse(dotenv.env['API_URL']! + "/api/approvalLeave/" + '${approvalList[index]["_id"]}'));
+    print(Uri.parse(url + "/api/approvalLeave/" + '${approvalList[index]["_id"]}'));
     var response = await http.put(
-        Uri.parse(dotenv.env['API_URL']! + "/api/rejectedLeave/" + '${approvalList[index]["_id"]}'),
+        Uri.parse(url + "/api/rejectedLeave/" + '${approvalList[index]["_id"]}'),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': token
@@ -85,9 +87,9 @@ class _ApprovalListState extends State<ApprovalList> {
   }
 
   void approveRequest(index) async {
-    print(Uri.parse(dotenv.env['API_URL']! + "/api/approvalLeave/" + '${approvalList[index]["_id"]}'));
+    print(Uri.parse(url + "/api/approvalLeave/" + '${approvalList[index]["_id"]}'));
     var response = await http.put(
-        Uri.parse(dotenv.env['API_URL']! + "/api/approvalLeave/" + '${approvalList[index]["_id"]}'),
+        Uri.parse(url + "/api/approvalLeave/" + '${approvalList[index]["_id"]}'),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': token

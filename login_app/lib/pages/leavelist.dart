@@ -20,6 +20,7 @@ class _LeaveListState extends State<LeaveList> {
   DateTime? lastDate;
   String selectedValue = 'Single leave';
   var token;
+  var url;
   final reasonController = TextEditingController();
   String enteredReason = "";
   String msg = "";
@@ -36,6 +37,7 @@ class _LeaveListState extends State<LeaveList> {
   void getData() async {
     if (box1.get('token') != null) {
       token = box1.get('token');
+      url = box1.get('updateUrl');
       getRequests();
     }
   }
@@ -43,7 +45,7 @@ class _LeaveListState extends State<LeaveList> {
   void getRequests() async {
     try {
       var response = await http.post(
-        Uri.parse(dotenv.env['API_URL']! + "/api/getUsershowLeave"),
+        Uri.parse(url + "/api/getUsershowLeave"),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': token
@@ -79,7 +81,6 @@ class _LeaveListState extends State<LeaveList> {
     super.initState();
   }
 
-
   Future pickDateTime(BuildContext context) async {
     final date = await pickDate(context);
     if (date == null) return;
@@ -113,6 +114,7 @@ class _LeaveListState extends State<LeaveList> {
       return DateFormat.yMMMEd().format(firstDate!);
     }
   }
+
   String getLastDate() {
     if (lastDate == null) {
       return 'Select Last Date';
@@ -120,9 +122,10 @@ class _LeaveListState extends State<LeaveList> {
       return DateFormat.yMMMEd().format(lastDate!);
     }
   }
-  void onSubmitData(){
+
+  void onSubmitData() {
     enteredReason = reasonController.text;
-    if(enteredReason.isEmpty || firstDate==null){
+    if (enteredReason.isEmpty || firstDate == null) {
       return;
     }
     print(enteredReason);
@@ -130,9 +133,10 @@ class _LeaveListState extends State<LeaveList> {
     leaveRequest();
     getRequests();
   }
-  void onSubmitDataMultiple(){
+
+  void onSubmitDataMultiple() {
     enteredReason = reasonController.text;
-    if(enteredReason.isEmpty || firstDate==null || lastDate==null){
+    if (enteredReason.isEmpty || firstDate == null || lastDate == null) {
       return;
     }
     leaveRequest();
@@ -150,7 +154,6 @@ class _LeaveListState extends State<LeaveList> {
     return newDate!;
   }
 
-
   // void getData () async {
 
   //   if (box1.get('token') != null) {
@@ -166,7 +169,7 @@ class _LeaveListState extends State<LeaveList> {
     print(firstDate);
     print(box1.get('token'));
     var response = await http.post(
-        Uri.parse(dotenv.env['API_URL']! + "/api/LeaveReq"),
+        Uri.parse(url + "/api/LeaveReq"),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': token
@@ -182,18 +185,16 @@ class _LeaveListState extends State<LeaveList> {
     } else {
       msg = "Leave Applied Successfully";
       var snackBar = SnackBar(
-        content: Text(
-            msg,
-            style: TextStyle(fontSize: 16.5)
-        ),
+        content: Text(msg, style: TextStyle(fontSize: 16.5)),
         backgroundColor: Colors.green,
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => Dashboard()),
-      (Route<dynamic> route) => false);
+          (Route<dynamic> route) => false);
     }
   }
+
   final items = ['Single leave', 'Multiple leave'];
 
   @override
@@ -238,92 +239,124 @@ class _LeaveListState extends State<LeaveList> {
                 children: [
                   (selectedValue == singleLeave)
                       ? Padding(
-                        padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                        child: Column(
+                          padding:
+                              const EdgeInsets.only(left: 15.0, right: 15.0),
+                          child: Column(
+                            children: [
+                              RaisedButton(
+                                  color: Theme.of(context).primaryColor,
+                                  textColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(20.0)),
+                                  child: Text('Select Date'),
+                                  onPressed: () => pickDateTime(context)),
+                              Text(firstDate == null
+                                  ? 'Select a Date'
+                                  : getDate()),
+                              TextField(
+                                decoration:
+                                    InputDecoration(labelText: 'Enter Reason'),
+                                controller: reasonController,
+                                keyboardType: TextInputType.multiline,
+                                maxLines: null,
+                                onSubmitted: (_) => onSubmitData(),
+                              ),
+                              SizedBox(
+                                height: 30,
+                              ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Theme.of(context).primaryColor,
+                                  onPrimary: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(20.0)),
+                                ),
+                                onPressed: () => onSubmitData(),
+                                child: Text('Submit'),
+                              )
+                            ],
+                          ),
+                        )
+                      : Column(
                           children: [
-                            RaisedButton(
-                                color: Theme.of(context).primaryColor,
-                                textColor: Colors.white,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Theme.of(context).primaryColor,
+                                      onPrimary: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                          BorderRadius.circular(20.0)),
+                                    ),
+                                    child: Text('Start Date'),
+                                    onPressed: () {
+                                      pickDateTime(context);
+                                    }),
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Theme.of(context).primaryColor,
+                                      onPrimary: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0)),
+                                    ),
+                                    child: Text('End Date'),
+                                    onPressed: () {
+                                      pickLastDateTime(context);
+                                    }),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Text(firstDate == null
+                                    ? 'Select Start Date'
+                                    : getDate()),
+                                Text(lastDate == null
+                                    ? 'Select Last Date'
+                                    : getLastDate()),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 15.0, right: 15.0),
+                              child: TextField(
+                                decoration:
+                                    InputDecoration(labelText: 'Enter Reason'),
+                                controller: reasonController,
+                                keyboardType: TextInputType.multiline,
+                                maxLines: null,
+                                onSubmitted: (_) => onSubmitDataMultiple(),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Theme.of(context).primaryColor,
+                                onPrimary: Colors.white,
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20.0)),
-                                child: Text('Select Date'),onPressed: () => pickDateTime(context)),
-                            Text(firstDate==null ? 'Select a Date' : getDate()),
-                            TextField(
-                              decoration: InputDecoration(labelText: 'Enter Reason'),
-                              controller: reasonController,
-                              keyboardType: TextInputType.multiline,
-                              maxLines: null,
-                              onSubmitted: (_) => onSubmitData(),
-                            ),
-                            SizedBox(height: 30,),
-                            RaisedButton(
-                              color: Theme.of(context).primaryColor,
-                              textColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0)),
-                              onPressed: () => onSubmitData(), child: Text('Submit'),)
+                              ),
+                              onPressed: () => onSubmitDataMultiple(),
+                              child: Text(
+                                'Submit',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            )
                           ],
                         ),
-                      )
-                      : Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              RaisedButton(
-                                  color: Theme.of(context).primaryColor,
-                                  textColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20.0)),
-                                  child: Text('Start Date'),onPressed: () {
-                                pickDateTime(context);
-                              }),
-                              RaisedButton(
-                                  color: Theme.of(context).primaryColor,
-                                  textColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20.0)),
-                                  child: Text('End Date'),onPressed: () {
-                                pickLastDateTime(context);
-                              }),
-
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-
-                              Text(firstDate==null ? 'Select Start Date' : getDate()),
-                              Text(lastDate==null ? 'Select Last Date' : getLastDate()),
-                            ],
-                          ),
-
-
-                          Padding(
-                            padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                            child: TextField(
-                              decoration: InputDecoration(labelText: 'Enter Reason'),
-                              controller: reasonController,
-                              keyboardType: TextInputType.multiline,
-                              maxLines: null,
-                              onSubmitted: (_) => onSubmitDataMultiple(),
-                            ),
-                          ),
-                          SizedBox(height: 30,),
-                          RaisedButton(
-                            color: Theme.of(context).primaryColor,
-                            textColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0)),
-                            onPressed: () => onSubmitDataMultiple(), child: Text('Submit', style: TextStyle(fontSize: 16),),)
-                        ],
-                      ),
                   SizedBox(height: 20),
                   SingleChildScrollView(
                     child: SizedBox(
                       height: MediaQuery.of(context).size.height * .5,
                       child: ListView.builder(
-                       itemCount: leaveRequests.length,
+                        itemCount: leaveRequests.length,
                         itemBuilder: (BuildContext context, int index) {
                           return Card(
                             color: Colors.blueGrey,
@@ -332,13 +365,17 @@ class _LeaveListState extends State<LeaveList> {
                               leading: Icon(Icons.person),
                               title: Text(
                                 '${leaveRequests[index]["Status"]}',
-                                style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold),
                               ),
                               subtitle: Text(
-                                  '${leaveRequests[index]["Date"]["Day"]}/'
-                                      '${leaveRequests[index]["Date"]["Month"] + 1}/'
-                                      '${leaveRequests[index]["Date"]["Year"]}',
-                                  style: TextStyle(color: Colors.white, fontSize: 15),
+                                '${leaveRequests[index]["Date"]["Day"]}/'
+                                '${leaveRequests[index]["Date"]["Month"] + 1}/'
+                                '${leaveRequests[index]["Date"]["Year"]}',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 15),
                               ),
                             ),
                           );
@@ -367,7 +404,8 @@ class _LeaveListState extends State<LeaveList> {
                     //   // ),
                     //   ),
                     // ),
-                  )],
+                  )
+                ],
               ),
             )
           ],
