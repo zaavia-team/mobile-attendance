@@ -6,8 +6,8 @@ const fs = require("fs");
 
 module.exports.attendance = async (req, res) => {
     const DateStr = new Date(req.body.Date);
-    console.log("Body Date ",req.body.Date);
-    console.log("Converted Date ",DateStr);
+    console.log("Body Date ", req.body.Date);
+    console.log("Converted Date ", DateStr);
     const TransactionType = req.body.TransactionType;
     const ActionDetails = {
         ActionTakenByName: req.user.FirstName + ' ' + req.user.LastName,
@@ -110,17 +110,44 @@ module.exports.register = (req, res) => {
 }
 
 
-module.exports.report = (req, res) => {
+module.exports.report = async (req, res) => {
+    console.log(req.body, "Danish")
+    let startDate = new Date(req.body.StartDate);
+    let endDate = new Date(req.body.EndDate);
+    // console.log("===> ", startDate.getDate())
+    // console.log("===> ",startDate.getMonth())
+    // console.log("===> ",startDate.getFullYear())
+    // console.log(endDate.getDate())
+    // console.log(endDate.getMonth())
+    // console.log(endDate.getFullYear())
     const aggr = [
         {
-            $match: {
-                'ActionDetails.ActionTakenOn': {
-                    '$gte': new Date(req.body.StartDate),
-                    '$lte': new Date(new Date(req.body.EndDate).setHours(23, 59, 59))
-                }
-            }
-        },
-        {
+            // '$match': {
+            //     'ActionDetails.ActionTakenOn': {
+            //         '$gte': new Date(req.body.StartDate),
+            //         '$lte': new Date(new Date(req.body.EndDate).setHours(23, 59, 59))
+            //     },
+            '$match': {
+                'Date.Day': {
+                  '$gte': startDate.getDate()
+                }, 
+                'Date.Month': {
+                  '$gte': startDate.getMonth()
+                }, 
+                'Date.Year': {
+                  '$gte': startDate.getFullYear()
+                },
+                'Date.Day': {
+                    '$lte': endDate.getDate()
+                  }, 
+                  'Date.Month': {
+                    '$lte': endDate.getMonth()
+                  }, 
+                  'Date.Year': {
+                    '$lte': endDate.getFullYear()
+                  }
+              }
+        }, {
             '$addFields': {
                 'HOUR': {
                     '$divide': [
@@ -132,8 +159,7 @@ module.exports.report = (req, res) => {
                     ]
                 }
             }
-        },
-        {
+        }, {
             '$group': {
                 '_id': '$UserID',
                 'Details': {
@@ -147,35 +173,27 @@ module.exports.report = (req, res) => {
                 },
                 'ManualAttendance': {
                     '$sum': {
-                        $cond: [{ $eq: ['$WorkingHours', true] }, 1, 0]
+                        '$cond': [
+                            {
+                                '$eq': [
+                                    '$WorkingHours', true
+                                ]
+                            }, 1, 0
+                        ]
                     }
                 },
-              
-            }
-        }
-    ]
-
-    const ShowLeaveagg = [
-        {
-          '$match': {
-            'Date.Month': req.body.Month, 
-            'Date.Day': req.body.Day, 
-            'Date.Year': req.body.Year
-          }
-        },
-        {
-            '$group': {
-                '_id': '$UserID',
-                'Details': {
-                    '$push': '$$ROOT'
-                },
-                
                 'TotalHolidays': {
                     '$sum': {
-                        $cond: [{ $eq: ['$TransactionType', "Holiday"] }, 1, 0]
+                      '$cond': [
+                        {
+                          '$eq': [
+                            '$TransactionType', 'Holiday'
+                          ]
+                        }, 1, 0
+                      ]
                     }
-                },
-                'Leave': {
+                  }, 
+                  'Leave': {
                     '$sum': {
                       '$cond': [
                         {
@@ -193,25 +211,95 @@ module.exports.report = (req, res) => {
                         }, 1, 0
                       ]
                     }
-                  },
-              
+                  }
+
             }
-           
         }
-      ] 
+    ]
+    // const LeaveShow =
+    // [
+    //     {
+    //       '$match': {
+    //         'Date.Day': {
+    //           '$gte': startDate.getDate()
+    //         }, 
+    //         'Date.Month': {
+    //           '$gte': startDate.getMonth()
+    //         }, 
+    //         'Date.Year': {
+    //           '$gte': startDate.getFullYear()
+    //         },
+    //         'Date.Day': {
+    //             '$lte': endDate.getDate()
+    //           }, 
+    //           'Date.Month': {
+    //             '$lte': endDate.getMonth()
+    //           }, 
+    //           'Date.Year': {
+    //             '$lte': endDate.getFullYear()
+    //           }
+    //       }
+    //     }, {
+    //       '$group': {
+    //         '_id': '$UserID', 
+    //         'Details': {
+    //           '$push': '$$ROOT'
+    //         }, 
+    //         'TotalHolidays': {
+    //           '$sum': {
+    //             '$cond': [
+    //               {
+    //                 '$eq': [
+    //                   '$TransactionType', 'Holiday'
+    //                 ]
+    //               }, 1, 0
+    //             ]
+    //           }
+    //         }, 
+    //         'Leave': {
+    //           '$sum': {
+    //             '$cond': [
+    //               {
+    //                 '$and': [
+    //                   {
+    //                     '$eq': [
+    //                       '$TransactionType', 'Leave'
+    //                     ]
+    //                   }, {
+    //                     '$eq': [
+    //                       '$Status', 'Approved'
+    //                     ]
+    //                   }
+    //                 ]
+    //               }, 1, 0
+    //             ]
+    //           }
+    //         }
+    //       }
+    //     }
+    //   ]
+    console.log(req.body)
     if (req.body.userIds && req.body.userIds.length) {
         aggr[0].$match['UserName'] = { $in: req.body.userIds }
     }
-    attendance_repo.aggregate(aggr);
-    attendance_repo.aggregate(ShowLeaveagg);
-    let attendance = [];
-    attendance.push(aggr.ShowLeaveagg)
-        .then(attendance => {
-            res.send({ Status: true, data: attendance })
-        })
-        .catch(error => {
-            res.send({ Status: false, message: error.message })
-        })
+    attendance_repo.aggregate(aggr).then((attend) => {
+        res.send({ Status: true, data: attend })
+    }).catch(error => {
+        res.send({ Status: false, msg: "Msg "+error })
+    })
+    //const show = await attendance_repo.aggregate(LeaveShow)
+    //console.log(show, 'show =======')
+    //console.log(rep, ' rep =======')
+    // let attend = []
+    // attend.push(rep)
+    // console.log("242 =====>> ",attend)
+    // rep.then(attend => {
+    //     console.log(attend, 'Sharjeel')
+    //     res.send({ Status: true, data: attend })
+    // })
+    // .catch(error => {
+    //     res.send({ Status: false, msg: "Msg "+error })
+    // })
 }
 
 module.exports.holiday = async (req, res) => {
