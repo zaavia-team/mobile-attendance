@@ -110,107 +110,112 @@ module.exports.register = (req, res) => {
 }
 
 
-module.exports.report = (req, res) => {
-    const aggr = [
-        {
-            $match: {
+module.exports.report = async (req, res) => {
+    console.log (req.body,"Danish")
+        const aggr = [
+            // {
+            //   '$addFields': {
+            //     'month': {
+            //       '$month': new Date('Tue, 26 Apr 2022 00:00:00 GMT')
+            //     }, 
+            //     'Year': {
+            //       '$year': new Date('Tue, 26 Apr 2022 00:00:00 GMT')
+            //     }, 
+            //     'Day': {
+            //       '$dayOfMonth': new Date(req.body.)
+            //     }
+            //   }
+            // }, 
+            {
+              '$match': {
                 'ActionDetails.ActionTakenOn': {
-                    '$gte': new Date(req.body.StartDate),
-                    '$lte': new Date(new Date(req.body.EndDate).setHours(23, 59, 59))
-                }
-            }
-        },
-        {
-            '$addFields': {
+                  '$gte': new Date(req.body.StartDate), 
+                  '$lte': new Date(new Date(req.body.EndDate).setHours(23, 59, 59))
+                }, 
+                // 'Date.Month': 3, 
+                // 'Date.Day': 18, 
+                // 'Date.Year': 2022
+              }
+            }, {
+              '$addFields': {
                 'HOUR': {
-                    '$divide': [
-                        {
-                            '$subtract': [
-                                '$TakenOut', '$TakenIn'
-                            ]
-                        }, 3600000
-                    ]
-                }
-            }
-        },
-        {
-            '$group': {
-                '_id': '$UserID',
-                'Details': {
-                    '$push': '$$ROOT'
-                },
-                'TotalHours': {
-                    '$sum': '$HOUR'
-                },
-                'WorkingHours': {
-                    '$sum': '$WorkingHours'
-                },
-                'ManualAttendance': {
-                    '$sum': {
-                        $cond: [{ $eq: ['$WorkingHours', true] }, 1, 0]
-                    }
-                },
-              
-            }
-        }
-    ]
-
-    const ShowLeaveagg = [
-        {
-          '$match': {
-            'Date.Month': req.body.Month, 
-            'Date.Day': req.body.Day, 
-            'Date.Year': req.body.Year
-          }
-        },
-        {
-            '$group': {
-                '_id': '$UserID',
-                'Details': {
-                    '$push': '$$ROOT'
-                },
-                
-                'TotalHolidays': {
-                    '$sum': {
-                        $cond: [{ $eq: ['$TransactionType', "Holiday"] }, 1, 0]
-                    }
-                },
-                'Leave': {
-                    '$sum': {
-                      '$cond': [
-                        {
-                          '$and': [
-                            {
-                              '$eq': [
-                                '$TransactionType', 'Leave'
-                              ]
-                            }, {
-                              '$eq': [
-                                '$Status', 'Approved'
-                              ]
-                            }
-                          ]
-                        }, 1, 0
+                  '$divide': [
+                    {
+                      '$subtract': [
+                        '$TakenOut', '$TakenIn'
                       ]
-                    }
-                  },
-              
+                    }, 3600000
+                  ]
+                }
+              }
+            }, {
+              '$group': {
+                '_id': '$UserID', 
+                'Details': {
+                  '$push': '$$ROOT'
+                }, 
+                'TotalHours': {
+                  '$sum': '$HOUR'
+                }, 
+                'WorkingHours': {
+                  '$sum': '$WorkingHours'
+                }, 
+                'ManualAttendance': {
+                  '$sum': {
+                    '$cond': [
+                      {
+                        '$eq': [
+                          '$WorkingHours', true
+                        ]
+                      }, 1, 0
+                    ]
+                  }
+                }, 
+                'TotalHolidays': {
+                  '$sum': {
+                    '$cond': [
+                      {
+                        '$eq': [
+                          '$TransactionType', 'Holiday'
+                        ]
+                      }, 1, 0
+                    ]
+                  }
+                }, 
+                'Leave': {
+                  '$sum': {
+                    '$cond': [
+                      {
+                        '$and': [
+                          {
+                            '$eq': [
+                              '$TransactionType', 'Leave'
+                            ]
+                          }, {
+                            '$eq': [
+                              '$Status', 'Approved'
+                            ]
+                          }
+                        ]
+                      }, 1, 0
+                    ]
+                  }
+                }
+              }
             }
-           
-        }
-      ] 
+          ]
+      
+   console.log(req.body)
     if (req.body.userIds && req.body.userIds.length) {
         aggr[0].$match['UserName'] = { $in: req.body.userIds }
     }
-    attendance_repo.aggregate(aggr);
-    attendance_repo.aggregate(ShowLeaveagg);
-    let attendance = [];
-    attendance.push(aggr.ShowLeaveagg)
+    attendance_repo.aggregate(aggr)
         .then(attendance => {
             res.send({ Status: true, data: attendance })
+            console.log(aggr)
         })
         .catch(error => {
-            res.send({ Status: false, message: error.message })
+        res.send({ Status: false, message: error.message })
         })
 }
 
