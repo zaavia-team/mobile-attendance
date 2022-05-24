@@ -789,7 +789,7 @@ module.exports.GetLastReport = async (req, res) => {
     const aggr = [
         {
           '$match': {
-            'UserID': '6283352fb6cd615101a88806', 
+            'UserID': req.body.UserID, 
             '$and': [
                 {
                     '$and': [
