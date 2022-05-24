@@ -785,3 +785,69 @@ module.exports.GetReportDailyAtt = async (req, res) => {
         })
 }
 
+module.exports.GetLastReport = async (req, res) => {
+    const aggr = [
+        {
+          '$match': {
+            'UserID': '6283352fb6cd615101a88806', 
+            '$and': [
+                {
+                    '$and': [
+                        {
+                            'Date.Day': {
+                                '$gte': startDate.getDate()
+                            }
+                        }, {
+                            'Date.Day': {
+                                '$lte': endDate.getDate()
+                            }
+                        }
+                    ]
+                }, {
+                    '$and': [
+                        {
+                            'Date.Month': {
+                                '$gte': startDate.getMonth()
+                            }
+                        }, {
+                            'Date.Month': {
+                                '$lte': endDate.getMonth()
+                            }
+                        }
+                    ]
+                }, {
+                    '$and': [
+                        {
+                            'Date.Year': {
+                                '$gte': startDate.getFullYear()
+                            }
+                        }, {
+                            'Date.Year': {
+                                '$lte': endDate.getFullYear()
+                            }
+                        }
+                    ]
+                }
+            ]
+          }
+        }, {
+          '$addFields': {
+            'TotalHours': {
+              '$sum': '$HOUR'
+            }, 
+            'WorkingHours': {
+              '$sum': '$WorkingHours'
+            }
+          }
+        }
+      ]
+       await attendance_repo.aggregate(GetLastReport)
+
+        .then(lastReport => {
+            console.log(lastReport)
+            res.send({ Status: true, data: lastReport })
+        })
+        .catch(error => {
+            res.send({ Status: false, message: error.message })
+        })
+}
