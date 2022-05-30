@@ -118,9 +118,10 @@ export default function ImIn() {
 
     const handleSignInAndOut =() =>{
         
+        // setval(true)
 
         const token = localStorage.getItem("token")
-        setReason(true)
+        // setReason(true)
         setopenBackdrop(!openBackdrop);
 
         let data1 = {
@@ -162,9 +163,11 @@ export default function ImIn() {
     const handleSubmit = () => {
         let msg;
         setOpen(true)
-        setval(true)
         if (button == "i am In"){
-            setval(false)
+           
+            handleSignInAndOut();
+            return
+
         }
         
         const token = localStorage.getItem("token")
@@ -188,54 +191,17 @@ export default function ImIn() {
             setOpenModel(true);
             setAgree(true)
 
-            // if (msg === null) {
-            //     return
-            // } else {
-            //     setOpenModel(true);
-            //     setReason(msg)
-            // }
+            
         } else {
-            handleSignInAndOut()
+            // handleSignInAndOut()
             setOpenModel(true);
             console.log("LOGOUT")
             
         }
 
-        // let data1 = {
-        //     Date: form.date,
-        //     TransactionType: button,
-        //     ManualEntry: form.ManualEntry,
-        // }
+     
 
-        // axios.post('/api/attendance_transaction', { ...data1, EarlyReason: msg },
-        //     { headers: { "Authorization": `${token}` } }
-        // )
-        //     .then(function (response) {
-        //         console.log(response.data.message, "Response")
-        //         if (response.data.status === true) {
-        //             SetMessage({ value: response.data.message, type: "success" })
-        //             setButton("i am Out")
-
-        //         } else {
-        //             SetMessage({ value: response.data.message, type: "warning" })
-        //         }
-
-
-        //         axios.get('/api/gettodayattendance',
-        //             { headers: { "Authorization": `${token}` } }
-        //         )
-        //             .then(function (response) {
-        //                 // SetMessage({ value: "Success", type: "success" })
-
-        //                 // handleCloseBackdrop();
-
-        //                 setTakenin(response?.data?.data[0].TakenIn)
-
-        //                 setList(response?.data?.data)
-
-        //             })
-        //         // handleCloseBackdrop();
-        //     })
+    
 
     }
 
