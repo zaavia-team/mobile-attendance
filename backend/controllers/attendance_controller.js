@@ -785,6 +785,13 @@ module.exports.GetReportDailyAtt = async (req, res) => {
         })
 }
 module.exports.GetLastReport = async (req, res) => {
+    let startDate;
+    let endDate;  
+    if(req.body.StartDate)  startDate = new Date(req.body.StartDate)
+    else startDate = new Date(new Date().setDate(1))
+    if(req.body.EndDate)  endDate = new Date(req.body.EndDate)
+    else endDate = new Date(new Date().setDate(30))
+    console.log("startDate", "-------")
     const reportagg = [
         {
           '$match': {
