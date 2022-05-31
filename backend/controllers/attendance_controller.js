@@ -785,7 +785,7 @@ module.exports.GetReportDailyAtt = async (req, res) => {
         })
 }
 module.exports.GetLastReport = async (req, res) => {
-    const aggr = [
+    const reportagg = [
         {
           '$match': {
             'UserID': req.body.UserID, 
@@ -840,7 +840,7 @@ module.exports.GetLastReport = async (req, res) => {
           }
         }
       ]
-       await attendance_repo.aggregate(GetLastReport)
+       await attendance_repo.aggregate(reportagg)
 
         .then(lastReport => {
             console.log(lastReport)
