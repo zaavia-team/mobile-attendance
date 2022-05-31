@@ -116,7 +116,7 @@ export default function UserRegister() {
       // On autofill we get a stringified value.
       
     );
-    console.log("per",personName)
+    
   };
   const classes = useStyles();
   const [users, setUsers] = useState([]);
@@ -133,7 +133,7 @@ export default function UserRegister() {
       .catch(function (error) {
         // handle error
         handleCloseBackdrop();
-        console.log(error);
+       
       })
       .then(function () {
         handleCloseBackdrop();
@@ -168,7 +168,7 @@ export default function UserRegister() {
           })
           .catch(function (error) {
             // handle error
-            console.log(error);
+            
           })
           handleclose();
           handleCloseBackdrop();
@@ -182,7 +182,7 @@ export default function UserRegister() {
     event.preventDefault();
     let api = '/api/register';
 
-    console.log(form._id)
+    
     if (form._id && form.FirstName) {
       api = `/api/user/${form._id}`
       const token = localStorage.getItem('token');

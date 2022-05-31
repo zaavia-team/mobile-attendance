@@ -44,7 +44,7 @@ export default function SignIn({setLoggedin}) {
 
   const handleForgotClick = () =>{
     const {email} = form
-    console.log(form)
+    
     if(email){
       setopenBackdrop(!openBackdrop);
       const data = {
@@ -54,11 +54,11 @@ export default function SignIn({setLoggedin}) {
       .then(function (response) {
         setOpen(true);
         handleCloseBackdrop();
-        console.log(response,"response")
+        
         SetMessage({value: response.data.message, type:"success"})
       })
       .catch(function (error) {
-        console.log(error);
+        
         handleCloseBackdrop();
         
       });
@@ -90,7 +90,7 @@ export default function SignIn({setLoggedin}) {
         setForm({NewPassword:"", ConfirmPassword:""})
       })
       .catch(function (error) {
-        console.log(error);
+        
         handleCloseBackdrop();
         
       });
@@ -113,7 +113,7 @@ export default function SignIn({setLoggedin}) {
 
   const handleChange = (e) =>{
     setForm({...form,[ e.target.name] : e.target.value })
-    console.log(form, "asdasd")
+    
   }
 
  
@@ -131,10 +131,7 @@ export default function SignIn({setLoggedin}) {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'), 
-      password: data.get('password'),
-    });
+   
 
     if(data.get('email') && data.get('password')){
       setopenBackdrop(!openBackdrop);
@@ -146,12 +143,12 @@ export default function SignIn({setLoggedin}) {
     })
     .then(function (response) {
       handleCloseBackdrop();
-      console.log(response);
+     
       if(response.data.status ){
         response.data.token ? localStorage.setItem("token", response.data.token) :  console.log(response)
         localStorage.setItem("data", JSON.stringify(response))
         const token = localStorage.getItem("token")
-        console.log("token", token )
+        
         setLoggedin(true);
         SetMessage({value: "Login Success", type:"success"})
         handleCloseBackdrop();
@@ -162,7 +159,7 @@ export default function SignIn({setLoggedin}) {
       }
     })
     .catch(function (error) {
-      console.log(error);
+     
       handleCloseBackdrop();
 
     });

@@ -14,7 +14,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { mainListItems } from '../components/MainListItems';
+import ImIn from './ImIn';
 import UserRegister from './UserRegister';
 import AdminReport from './AdminReport';
 import { Route, Routes } from 'react-router-dom';
@@ -26,6 +26,13 @@ import ChangePassword from './ChangePassword';
 import HolidayResister from './HolidayRegister'
 import DailyAttendence from './DailyAttendence';
 import MailSetup from './MailSetup';
+import PeopleIcon from '@mui/icons-material/People';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
+
 
 
 
@@ -82,11 +89,83 @@ const mdTheme = createTheme();
 
 
 function DashboardContent({setLoggedin}) {
+
+  const [MainListItems, setMainListItems] = React.useState([])
+
+  const MainListItemsAdmin = [
+     
+    {
+      text: 'User Register',
+      icon: <PeopleIcon />,
+      path: '/userRegister'
+    },
+    {
+      text: 'Admin Report',
+      icon: <AssessmentIcon />,
+      path: '/adminreport'
+    },
+    {
+      text: 'Holiday Register',
+      icon: <AppRegistrationIcon />,
+      path: '/holidayRegistration'
+    },
+    {
+      text: 'Daily Attendence',
+      icon: <AssignmentTurnedInIcon />,
+      path: '/dailyattendence'
+    },
+    {
+      text: 'Mail Setup',
+      icon: <MailOutlineIcon />,
+      path: '/mailsetup'
+    },
+
+  ]
+  
+  const MainListItemsUser = [
+   
+  ]
+  const DefaultMainListItems = [
+    {
+      text: 'attendence',
+      icon: <LockOutlinedIcon />,
+      path: '/'
+    },
+    
+    {
+      text: 'Change Password',
+      icon: <LockOutlinedIcon />,
+      path: '/changepassword'
+    }
+  
+  ]
+  
+  
+  
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
+  
+  
+
+  
+  
+  React.useEffect(()=>{
+    
+    const userData = localStorage.getItem("data") && JSON.parse(localStorage.getItem("data"))
+    
+    if(userData.data?.data.RightsTitle.find(r => r === "Admin")){
+      setMainListItems([...MainListItemsAdmin,...DefaultMainListItems])
+      
+    }else{
+      setMainListItems([...MainListItemsUser,...DefaultMainListItems])
+    }
+     
+    },[])
+   
+
 
   const handleLogout = () =>{
     localStorage.clear()
@@ -94,6 +173,8 @@ function DashboardContent({setLoggedin}) {
     navigate('/')
   
   }
+
+console.log(MainListItems,"MainListItems")
   
 
   return (
@@ -146,7 +227,7 @@ function DashboardContent({setLoggedin}) {
           </Toolbar>
           <Divider />
           <List component="nav">
-            {mainListItems.map(item =>(
+            {MainListItems.map(item =>(
               <ListItemButton
                 key = {item.key}
                 onClick={()=> navigate(item.path)}
@@ -175,7 +256,8 @@ function DashboardContent({setLoggedin}) {
             <Grid container spacing={3}>
                 <Grid item lg={12} md={12}>
                 <Routes>
-                <Route exact path = "/" element = {<UserRegister />} />
+                <Route exact path = "/" element = {<ImIn />} />
+                <Route exact path = "/userRegister" element = {<UserRegister />} />
                 <Route exact path = "/adminreport" element = {<AdminReport />} />
                 <Route exact path = "/changepassword" element = {<ChangePassword />} />
                 <Route exact path = "/holidayRegistration" element = {<HolidayResister />} />
@@ -194,5 +276,7 @@ function DashboardContent({setLoggedin}) {
 }
 
 export default function Dashboard({setLoggedin}) {
+
+  
   return <DashboardContent setLoggedin={setLoggedin} />;
 }
