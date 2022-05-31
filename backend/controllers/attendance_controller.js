@@ -784,7 +784,6 @@ module.exports.GetReportDailyAtt = async (req, res) => {
             res.send({ Status: false, message: error.message })
         })
 }
-
 module.exports.GetLastReport = async (req, res) => {
     const aggr = [
         {
