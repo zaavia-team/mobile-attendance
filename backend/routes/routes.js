@@ -34,7 +34,7 @@ routes.get('/users', controller.getUsers);
 routes.get('/gettodayattendance',auth.authMiddleware,attendance_controller.gettodayattendance)                    
 routes.get('/getreportholiday',auth.authMiddleware,attendance_controller.getreportholiday)
 routes.get ('/getalltitles', auth.authMiddleware,titlesDictionary.getAllTitles)
-routes.get ('/GetLastReport', auth.authMiddleware,attendance_controller.GetLastReport)
+routes.post ('/GetLastReport', auth.authMiddleware,attendance_controller.GetLastReport)
 routes.put('/rejectedLeave/:id',auth.authMiddleware,attendance_controller.rejectedLeave)
 routes.put('/approvalLeave/:id',auth.authMiddleware,attendance_controller.approvedLeave)
 

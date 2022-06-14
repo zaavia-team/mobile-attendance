@@ -16,23 +16,11 @@ class _MonthlyAttendanceState extends State<MonthlyAttendance> {
   var url;
   String msg = "";
   var takenIn;
+  DateTime? startDate;
+  DateTime? endDate;
 
-  List<Map> _list = [
-    {
-      'TakenIn': "2022-05-17 11:14",
-      'TakenOut': "2022-05-17 11:14",
-      'WorkingHours': "8"
-    },
-    {
-      'TakenIn': "2022-05-17 11:14",
-      'TakenOut': "2022-05-17 11:14",
-      'WorkingHours': "8"
-    },
-    {
-      'TakenIn': "2022-05-17 11:14",
-      'TakenOut': "2022-05-17 11:14",
-      'WorkingHours': "8"
-    }
+  List _list = [
+
   ];
 
   DataTable _createDataTable() {
@@ -73,9 +61,13 @@ class _MonthlyAttendanceState extends State<MonthlyAttendance> {
   List<DataRow> _createRows() {
     return _list
         .map((list) => DataRow(cells: [
-              DataCell(Text(list['TakenIn'])),
-              DataCell(Text(list['TakenOut'])),
-              DataCell(Text(list['WorkingHours'])),
+
+              DataCell(Text('${DateFormat('dd-MM-yyyy h:mma').format(DateTime.parse(list['TakenIn'].toString()).toLocal())}')),
+              DataCell(Text(
+                  (list['TakenOut'] != null) ?
+                  '${DateFormat('dd-MM-yyyy h:mma').format(DateTime.parse(list['TakenOut'].toString()).toLocal())}' : "--"
+              )),
+              DataCell(Text(list['TotalHours'].toString())),
             ]))
         .toList();
   }
@@ -99,31 +91,103 @@ class _MonthlyAttendanceState extends State<MonthlyAttendance> {
       url = box1.get('updateUrl');
       print(takenIn);
       print('takenIn');
-      monthlyReport();
     }
   }
   void monthlyReport() async {
+    _list = [];
     print('token');
     print(box1.get('token'));
-    var response = await http.get(
+    var response = await http.post(
         Uri.parse(url + "/api/GetLastReport"),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': token
-        });
+        },
+        body: jsonEncode({
+          'StartDate': startDate?.toString(),
+          'EndDate': endDate?.toString(),
+        }));
+    print(response.body);
     if (response.statusCode == 200 &&
-        jsonDecode(response.body)["status"] == false) {
+        jsonDecode(response.body)["Status"] == false) {
       print('Error');
     } else {
       msg = "Monthly Report Fetched Successfully";
       print("Response from monthly");
       print(response.body);
+      List data =  jsonDecode(response.body)['data'];
+      print(data);
+      setState(() {
+        _list.addAll(data);
+      });
+
+      print("YA string ha");
+      print(_list);
       var snackBar = SnackBar(
         content: Text(msg, style: TextStyle(fontSize: 16.5)),
         backgroundColor: Colors.green,
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
+  }
+  Future<DateTime> pickDate(BuildContext context) async {
+    final initialDate = DateTime.now();
+    final newDate = await showDatePicker(
+      context: context,
+      initialDate: startDate ?? initialDate,
+      firstDate: DateTime(DateTime.now().year - 5),
+      lastDate: DateTime(DateTime.now().year + 5),
+    );
+    return newDate!;
+  }
+
+  Future startDateTime(BuildContext context) async {
+    final date = await pickDate(context);
+    if (date == null) return;
+
+    setState(() {
+      startDate = DateTime(
+        date.year,
+        date.month,
+        date.day,
+      );
+    });
+  }
+
+  Future endDateTime(BuildContext context) async {
+    final date = await pickDate(context);
+    if (date == null) return;
+
+    setState(() {
+      endDate = DateTime(
+        date.year,
+        date.month,
+        date.day,
+      );
+    });
+  }
+
+  String selectStartDate() {
+    if (startDate == null) {
+      return 'Select First Date';
+    } else {
+      return DateFormat.yMMMEd().format(startDate!);
+    }
+  }
+
+  String selectEndDate() {
+    if (endDate == null) {
+      return 'Select Last Date';
+    } else {
+      return DateFormat.yMMMEd().format(endDate!);
+    }
+  }
+
+  void onSubmitDataMultiple() {
+    if (startDate == null || endDate == null) {
+      return;
+    }
+    monthlyReport();
   }
 
   @override
@@ -132,7 +196,68 @@ class _MonthlyAttendanceState extends State<MonthlyAttendance> {
       appBar: AppBar(
         title: const Text('Monthly Attendance'),
       ),
-      body: SingleChildScrollView(child: _createDataTable()),
+      body: SingleChildScrollView(child: Column(
+        children: [
+          SizedBox(height: 15,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Theme.of(context).primaryColor,
+                    onPrimary: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius:
+                        BorderRadius.circular(20.0)),
+                  ),
+                  child: Text('Start Date'),
+                  onPressed: () {
+                    startDateTime(context);
+                  }),
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Theme.of(context).primaryColor,
+                    onPrimary: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius:
+                        BorderRadius.circular(20.0)),
+                  ),
+                  child: Text('End Date'),
+                  onPressed: () {
+                    endDateTime(context);
+                  }),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Text(startDate == null
+                  ? 'Select Start Date'
+                  : selectStartDate()),
+              Text(endDate == null
+                  ? 'Select Last Date'
+                  : selectEndDate()),
+            ],
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Theme.of(context).primaryColor,
+              onPrimary: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+            ),
+            onPressed: () => onSubmitDataMultiple(),
+            child: Text(
+              'Search',
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+          _createDataTable()
+        ],
+      )),
     );
   }
 }
