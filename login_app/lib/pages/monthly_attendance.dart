@@ -67,7 +67,7 @@ class _MonthlyAttendanceState extends State<MonthlyAttendance> {
                   (list['TakenOut'] != null) ?
                   '${DateFormat('dd-MM-yyyy h:mma').format(DateTime.parse(list['TakenOut'].toString()).toLocal())}' : "--"
               )),
-              DataCell(Text(list['TotalHours'].toString())),
+              DataCell(Text(list['TotalHours'].toStringAsFixed(2))),
             ]))
         .toList();
   }

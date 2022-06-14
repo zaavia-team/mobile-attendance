@@ -839,10 +839,23 @@ module.exports.GetLastReport = (req, res) => {
                 }
             ]
           }
+        },
+        {
+            '$addFields': {
+                'HOUR': {
+                    '$divide': [
+                        {
+                            '$subtract': [
+                                '$TakenOut', '$TakenIn'
+                            ]
+                        }, 3600000
+                    ]
+                }
+            }
         }, {
-          '$addFields': {
-            'TotalHours': {
-              '$sum': '$HOUR'
+            '$addFields': {
+                'TotalHours': {
+                    '$sum': '$HOUR'
             }, 
             'WorkingHours': {
               '$sum': '$WorkingHours'
