@@ -790,11 +790,17 @@ module.exports.GetLastReport = (req, res) => {
     if(req.body.StartDate)  {
         startDate = new Date(req.body.StartDate)
     }
-    else { 
-        startDate = new Date(new Date().setDate(1))
+    // else { 
+    //     startDate = new Date(new Date().setDate(1))
+    // }
+    if(req.body.EndDate) {
+         endDate = new Date(req.body.EndDate)
     }
-    if(req.body.EndDate)  endDate = new Date(req.body.EndDate)
-    else endDate = new Date(new Date().setDate(30))
+    // else { 
+    //     endDate = new Date(new Date().setDate(30))
+    // }
+    console.log("startDate ",startDate)
+    console.log("endDate ",endDate)
     const reportagg = [
         {
           '$match': {
