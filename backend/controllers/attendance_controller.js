@@ -784,12 +784,27 @@ module.exports.GetReportDailyAtt = async (req, res) => {
             res.send({ Status: false, message: error.message })
         })
 }
-
-module.exports.GetLastReport = async (req, res) => {
-    const aggr = [
+module.exports.GetLastReport = (req, res) => {
+    let startDate;
+    let endDate;  
+    if(req.body.StartDate)  {
+        startDate = new Date(req.body.StartDate)
+    }
+    // else { 
+    //     startDate = new Date(new Date().setDate(1))
+    // }
+    if(req.body.EndDate) {
+         endDate = new Date(req.body.EndDate)
+    }
+    // else { 
+    //     endDate = new Date(new Date().setDate(30))
+    // }
+    console.log("startDate ",startDate)
+    console.log("endDate ",endDate)
+    const reportagg = [
         {
           '$match': {
-            'UserID': req.body.UserID, 
+            'UserID': req.user._id.toString(), 
             '$and': [
                 {
                     '$and': [
@@ -830,10 +845,23 @@ module.exports.GetLastReport = async (req, res) => {
                 }
             ]
           }
+        },
+        {
+            '$addFields': {
+                'HOUR': {
+                    '$divide': [
+                        {
+                            '$subtract': [
+                                '$TakenOut', '$TakenIn'
+                            ]
+                        }, 3600000
+                    ]
+                }
+            }
         }, {
-          '$addFields': {
-            'TotalHours': {
-              '$sum': '$HOUR'
+            '$addFields': {
+                'TotalHours': {
+                    '$sum': '$HOUR'
             }, 
             'WorkingHours': {
               '$sum': '$WorkingHours'
@@ -841,13 +869,12 @@ module.exports.GetLastReport = async (req, res) => {
           }
         }
       ]
-       await attendance_repo.aggregate(GetLastReport)
-
-        .then(lastReport => {
-            console.log(lastReport)
-            res.send({ Status: true, data: lastReport })
-        })
-        .catch(error => {
-            res.send({ Status: false, message: error.message })
-        })
+      
+      attendance_repo.aggregate(reportagg).then(function(success){
+        console.log(success)
+        res.send({ Status: true, data: success })
+      }).catch(function(err){
+          console.log(err)
+        res.send({ Status: false, message: err.message })
+      })
 }

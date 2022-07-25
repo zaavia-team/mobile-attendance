@@ -6,9 +6,10 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:login_app/pages/approval_List.dart';
 import 'package:login_app/pages/change_Password.dart';
+import '../pages/monthly_attendance.dart';
 import './leavelist.dart';
 import 'package:login_app/data/menu_items.dart';
-import 'package:login_app/model/menu_item.dart';
+import 'package:login_app/model/menu_item.dart' as menu;
 import 'package:login_app/pages/leavelist.dart';
 import 'package:login_app/pages/login.dart';
 
@@ -31,7 +32,7 @@ class _DashboardState extends State<Dashboard> {
   var rightsTitle = "";
   var diff_hr;
   var _isLoading = true;
-  var _isSignInLoading = true;
+  var _isBtnEnable = true;
   DateTime signIn = DateTime.now();
 
   // final
@@ -39,11 +40,11 @@ class _DashboardState extends State<Dashboard> {
   late Box box1;
   late Box box2;
 
-  @override
-  void initState() {
-    super.initState();
-    createBox();
-  }
+    @override
+    void initState() {
+      super.initState();
+      createBox();
+    }
 
   DateTime? _dateTime;
   bool button = false;
@@ -94,7 +95,7 @@ class _DashboardState extends State<Dashboard> {
           transactionType = "i am Out";
         }
         _isLoading = false;
-        _isSignInLoading = true;
+
       });
       print("Users");
       print(Users);
@@ -107,7 +108,7 @@ class _DashboardState extends State<Dashboard> {
 
   void attendanceDetails() async {
 
-    _isSignInLoading = false;
+
     var obj = {};
     if (transactionType == "i am Out" && diff_hr < workingHours) {
       obj = {
@@ -144,6 +145,9 @@ class _DashboardState extends State<Dashboard> {
         content: Text(msg, style: TextStyle(fontSize: 16.5)),
         backgroundColor: Color.fromARGB(255, 185, 175, 40),
       );
+      setState(() {
+        _isBtnEnable = true;
+      });
 
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else {
@@ -156,7 +160,10 @@ class _DashboardState extends State<Dashboard> {
         transactionType =
             transactionType == 'i am Out' ? "i am In" : 'i am Out';
       });
-      //_isSignInLoading = true;
+      setState(() {
+        _isBtnEnable = true;
+      });
+
       getData();
       msg = jsonDecode(response.body)["message"];
       var snackBar = SnackBar(
@@ -175,6 +182,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void hoursAlertDialog(BuildContext context) {
+    _isBtnEnable = true;
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -240,6 +248,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void alertDialog(BuildContext context) {
+    _isBtnEnable = true;
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -278,6 +287,56 @@ class _DashboardState extends State<Dashboard> {
                 )
               ],
             ));
+  }
+
+  void attendanceAction() {
+    setState(() {
+      _isBtnEnable = false;
+    });
+
+    if (transactionType == "i am In") {
+
+      signIn = DateTime.now();
+      print(signIn);
+      print('sign in for work');
+      attendanceDetails();
+    } else {
+      print('In Loop');
+      for(var i = 0; i < Users.length; i++){
+        print(Users[i]["UserID"]);
+        if(Users[i]["UserID"] == box1.get("_id")){
+          print("Found");
+          print(Users[i]["TakenIn"]);
+          DateTime signOut = DateTime.parse(DateTime.now().toString());
+          DateTime signin = DateTime.parse(Users[i]["TakenIn"]);
+          print(signin);
+          print('signin');
+          var diff_mins = signOut.difference(signin).inMinutes;
+          print(signOut);
+          print('Signout from work');
+          print(diff_mins);
+          print('time difference for signin ');
+          diff_hr = diff_mins / 60;
+          print(diff_hr);
+          print('time in hours');
+          print(earlyReason.text);
+          print('reson for early sign out');
+          if (diff_hr < workingHours) {
+            //alertDialog(context);
+            //Navigator.pop(context);
+            hoursAlertDialog(context);
+
+          } else {
+            //hoursAlertDialog(context);
+            alertDialog(context);
+            // Navigator.pop(context);
+          }
+          break;
+        }
+      }
+      print('In Loop');
+
+    }
   }
 
   Future pickDateTime(BuildContext context) async {
@@ -329,7 +388,7 @@ class _DashboardState extends State<Dashboard> {
         automaticallyImplyLeading: false,
         title: const Text("Main Screen"),
         actions: [
-          PopupMenuButton<MenuItem>(
+          PopupMenuButton<menu.MenuItem>(
               onSelected: (item) => onSelected(context, item),
               itemBuilder: (context) => rightsTitle == "Approved Leave"
                   ? MenuItems.itemsFirst.map(buildItem).toList()
@@ -380,7 +439,7 @@ class _DashboardState extends State<Dashboard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _isSignInLoading ?
+
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     elevation: 5,
@@ -395,55 +454,16 @@ class _DashboardState extends State<Dashboard> {
                     style: TextStyle(fontSize: 15),
                   ),
 
-                  onPressed: () {
-
-                    if (transactionType == "i am In") {
-                      signIn = DateTime.now();
-                      print(signIn);
-                      print('sign in for work');
-                      attendanceDetails();
-                    } else {
-                      print('In Loop');
-                      for(var i = 0; i < Users.length; i++){
-                        print(Users[i]["UserID"]);
-                        if(Users[i]["UserID"] == box1.get("_id")){
-                          print("Found");
-                          print(Users[i]["TakenIn"]);
-                          DateTime signOut = DateTime.parse(DateTime.now().toString());
-                          DateTime signin = DateTime.parse(Users[i]["TakenIn"]);
-                          print(signin);
-                          print('signin');
-                          var diff_mins = signOut.difference(signin).inMinutes;
-                          print(signOut);
-                          print('Signout from work');
-                          print(diff_mins);
-                          print('time difference for signin ');
-                          diff_hr = diff_mins / 60;
-                          print(diff_hr);
-                          print('time in hours');
-                          print(earlyReason.text);
-                          print('reson for early sign out');
-                          if (diff_hr < workingHours) {
-                            //alertDialog(context);
-                            //Navigator.pop(context);
-                            hoursAlertDialog(context);
-
-                          } else {
-                            //hoursAlertDialog(context);
-                            alertDialog(context);
-                            // Navigator.pop(context);
-                          }
-                          break;
-                        }
-                      }
-                      print('In Loop');
-
+                  onPressed: _isBtnEnable ?  () {
+                    if(_isBtnEnable){
+                      _isBtnEnable = false;
+                      attendanceAction();
+                    }else{
+                      return;
                     }
-                  },
-                ) : Center(
 
-        child: CircularProgressIndicator(),
-    ),
+                  } : null,
+                )
               ],
             ),
           ],
@@ -456,7 +476,7 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  PopupMenuItem<MenuItem> buildItem(MenuItem item) => PopupMenuItem<MenuItem>(
+  PopupMenuItem<menu.MenuItem> buildItem(menu.MenuItem item) => PopupMenuItem<menu.MenuItem>(
         value: item,
         child: Row(
           children: [
@@ -472,7 +492,7 @@ class _DashboardState extends State<Dashboard> {
         ),
       );
 
-  void onSelected(BuildContext context, MenuItem item) {
+  void onSelected(BuildContext context, menu.MenuItem item) {
     switch (item) {
       case MenuItems.itemLeave:
         Navigator.push(
@@ -491,6 +511,13 @@ class _DashboardState extends State<Dashboard> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => ChangePassword()),
+        );
+        break;
+
+      case MenuItems.monthlyAttendance:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MonthlyAttendance()),
         );
         break;
 
