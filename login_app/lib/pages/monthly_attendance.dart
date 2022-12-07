@@ -62,7 +62,9 @@ class _MonthlyAttendanceState extends State<MonthlyAttendance> {
     return _list
         .map((list) => DataRow(cells: [
 
-              DataCell(Text('${DateFormat('dd-MM-yyyy h:mma').format(DateTime.parse(list['TakenIn'].toString()).toLocal())}')),
+              DataCell(Text(
+                  (list['TakenIn'] != null) ?
+                  '${DateFormat('dd-MM-yyyy h:mma').format(DateTime.parse(list['TakenIn'].toString()).toLocal())}' : "--")),
               DataCell(Text(
                   (list['TakenOut'] != null) ?
                   '${DateFormat('dd-MM-yyyy h:mma').format(DateTime.parse(list['TakenOut'].toString()).toLocal())}' : "--"
