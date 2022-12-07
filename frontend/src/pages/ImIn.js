@@ -102,8 +102,7 @@ export default function ImIn() {
                     user = JSON.parse(user);
                     if (user.data?.data && user.data?.data?._id) {
                         if (response.data?.data?.find(usr => usr.UserID === user.data?.data?._id)) {
-
-                            setButton("I am out")
+                            setButton("i am Out")
                         }
                     }
                 }
@@ -134,7 +133,7 @@ export default function ImIn() {
             { headers: { "Authorization": `${token}` } }
         )
             .then(function (response) {
-                console.log(response.data.message, "Response")
+                console.log(response.data, "Response")
                 if (response.data.status === true) {
                     SetMessage({ value: response.data.message, type: "success" })
                     setButton("i am Out")
